@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Box, CssBaseline, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -8,13 +8,10 @@ import PriceChangeIcon from '@mui/icons-material/PriceChange';
 const drawerWidth = 240;
 const DeveloperDashboard = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const user = location.state?.user;
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-   
-    if (!token || role !== "DEVELOPER") {
+    if (!user || user.role !== "DEVELOPER") {
       navigate("/login"); 
     }
   }, [navigate]);

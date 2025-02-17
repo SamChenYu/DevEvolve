@@ -13,24 +13,15 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await login(formData);
-            console.log(response);
-
-            const token = response.token;
-            const role = response.role;
-            const userId = response.userId;
-
-            localStorage.setItem("token", token);
-            localStorage.setItem("role", role);
-            localStorage.setItem("userId", userId);
-            if (role === "DEVELOPER") {
-                navigate("/developer-dashboard");
-            } else {
-                navigate("/client-dashboard");
+            const user = await login(formData); 
+            console.log('Login response:', user);
+            if (user.role === 'DEVELOPER') {
+                navigate('/developer-dashboard', { state: { user } });
+            } else if (user.role === 'CLIENT') {
+                navigate('/client-dashboard', { state: { user } });
             }
         } catch (error) {
-            console.error(error);
-            alert("An error occurred. Please try again.");
+            alert('Invalid credentials or session expired. Please try again.');
         }
     };
 

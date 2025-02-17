@@ -1,30 +1,39 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = 'http://localhost:8080';
+
+const axiosInstance = axios.create({
+    baseURL: API_URL,
+    withCredentials: true, 
+});
+
 
 export const clientRegistration = async (client) => {
-    const response = await axios.post(`${API_URL}/register/client`, client);
+    const response = await axiosInstance.post('/api/register/client', client);
     return response.data;
 }
 
+
 export const developerRegistration = async (developer) => {
-    const response = await fetch('http://localhost:8080/api/register/developer', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(developer)
-    });
-    
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text);
-    }
-    
-    return response.json();
-};
+    const response = await axiosInstance.post('/api/register/developer', developer);
+    return response.data;
+}
+
 
 export const login = async (credentials) => {
-    const response = await axios.post(`${API_URL}/login`, credentials);
+    const response = await axiosInstance.post('/api/login', credentials);
     return response.data;
+}
+
+export const getCurrentUser = async () => {
+    try {
+        const response = await axiosInstance.get('/auth/users/profile');
+        return response.data;
+    } catch (error) {
+        throw new Error("Unauthorized or session expired.");
+    }
+}
+
+export const logout = async () => {
+    await axiosInstance.post('/api/logout');
 }
