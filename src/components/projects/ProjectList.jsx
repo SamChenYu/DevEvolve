@@ -11,12 +11,8 @@ const ProjectList = ({ clientId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     axios
-      .get(`http://localhost:8080/auth/projects/client/${clientId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-
-      })
+      .get(`http://localhost:8080/auth/projects/client/${clientId}`, { withCredentials: true })
       .then((res) => {
         setProjects(res.data);
         setLoading(false);
@@ -45,7 +41,7 @@ const ProjectList = ({ clientId }) => {
         Your Projects
       </Typography>
       {loading ? (
-        <CircularProgress color="primary" />
+        <CircularProgress color="secondary" />
       ) : projects.length > 0 ? (
         <Slider {...sliderSettings}>
           {projects.map((project) => (

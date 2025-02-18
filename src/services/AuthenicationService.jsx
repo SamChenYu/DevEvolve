@@ -13,7 +13,6 @@ export const clientRegistration = async (client) => {
     return response.data;
 }
 
-
 export const developerRegistration = async (developer) => {
     const response = await axiosInstance.post('/api/register/developer', developer);
     return response.data;
@@ -25,9 +24,9 @@ export const login = async (credentials) => {
     return response.data;
 }
 
-export const getCurrentUser = async () => {
+export const getUserFromToken = async () => {
     try {
-        const response = await axiosInstance.get('/auth/users/profile');
+        const response = await axiosInstance.get('/auth/users/profile', { withCredentials: true });
         return response.data;
     } catch (error) {
         throw new Error("Unauthorized or session expired.");

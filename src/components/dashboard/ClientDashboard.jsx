@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, CssBaseline, Typography } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
@@ -7,17 +7,29 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Sidebar from '../layout/Sidebar';
 import ProjectList from '../projects/ProjectList';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { getCurrentUser } from '/Users/vishvamehta/Documents/swe_group16_project copy 2/src/services/AuthenicationService.jsx';
+import { getUserFromToken } from '/Users/vishvamehta/Documents/swe_group16_project copy 2/src/services/AuthenicationService.jsx';
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
-  const [coins, setCoins] = useState(null);
   const location = useLocation();
-  const user = location.state?.user;
+  const storedRole = location.state?.user.role;
+  const [user, setUser] = useState(null);
   useEffect(() => {
-    if (user.role !== "DEVELOPER") {
-      navigate("/login"); 
-    }
+    const verifyUser = async () => {
+      try {
+        const response = await getUserFromToken();
+        console.log('User:', response);
+        if (!response || storedRole !== "CLIENT") {
+          navigate("/login");
+        } else {
+          setUser(response);
+        }
+      } catch (error) {
+        navigate("/login");
+      }
+    };
+
+    verifyUser();
   }, [navigate]);
   
   const menuItems = [
@@ -35,8 +47,8 @@ const ClientDashboard = () => {
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4">Welcome to the Client Dashboard</Typography>
-        {/* {storedClientId && <ProjectList clientId={storedClientId} />} */}
-        {coins !== null && (
+        {user?.id && <ProjectList clientId={user?.id} />}
+        {user?.coins !== null && (
           <Box sx={{
             position: 'absolute',
             top: 20,
@@ -49,7 +61,7 @@ const ClientDashboard = () => {
           }}>
             <MonetizationOnIcon sx={{ color: '#FFD700', mr: 1 }} />
             <Typography variant="body1" sx={{ color: 'white' }}>
-              50 Coins
+              {user?.coins} Coins
             </Typography>
           </Box>
         )}
