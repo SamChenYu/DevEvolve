@@ -4,19 +4,23 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
 
+const handleClick = () => {
+  navigate(`/projects/${project.id}`);
+};
+
 const ProjectItem = ({ project}) => {
   return (
-    <Card sx={{ minWidth: 275, bgcolor: "#1e1e1e", color: "white", borderRadius: 2, m: 1 }}>
+    <Card sx={{ minWidth: 275, bgcolor: "#1e1e1e", color: "white", borderRadius: 2, m: 1 }} onClick={handleClick}>
       <CardContent>
         <Box sx={{ width: "100%", height: 200, mb: 2 }}>
           <img
             src={placeholderThumbnail}
             alt="Project Thumbnail"
             style={{
-              width: "100%", // makes it fill the container width
-              height: "100%", // makes the image fill the height
-              objectFit: "cover", // ensures the image covers the entire area without distorting
-              borderRadius: "8px", // optional: to give rounded corners to the image
+              width: "100%", 
+              height: "100%", 
+              objectFit: "cover", 
+              borderRadius: "8px", 
             }}
           />
         </Box>
