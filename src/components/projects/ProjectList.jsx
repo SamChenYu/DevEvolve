@@ -40,7 +40,7 @@ const ProjectList = ({ clientId }) => {
       <Typography variant="h5" color="white" gutterBottom>
         Your Projects
       </Typography>
-      {loading ? (
+      {/* {loading ? (
         <CircularProgress color="secondary" />
       ) : projects.length > 0 ? (
         <Slider {...sliderSettings}>
@@ -50,7 +50,7 @@ const ProjectList = ({ clientId }) => {
         </Slider>
       ) : (
         <Typography color="gray">No projects found.</Typography>
-      )}
+      )} */}
     </Box>
   );
 };

@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, CardContent, Typography, Box, Chip, Avatar } from "@mui/material";
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import { useNavigate } from "react-router-dom";
 
 const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
-
 const handleClick = () => {
   navigate(`/projects/${project.id}`);
 };
