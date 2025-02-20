@@ -592,7 +592,6 @@ const LandingPage = () => {
         </Box>
       </Container>
 
-      {/* Footer - Enhanced */}
       <Box 
         component="footer" 
         sx={{ bgcolor: "background.paper", py: 6, borderTop: 1, borderColor: "divider" }}
