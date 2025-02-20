@@ -4,11 +4,14 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { useNavigate } from "react-router-dom";
 
 const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
-const handleClick = () => {
-  navigate(`/projects/${project.id}`);
-};
 
-const ProjectItem = ({ project}) => {
+
+const ProjectItem = ({ project, clientId }) => {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    
+    navigate(`/projects/${clientId}/${project.id}`);
+  };
   return (
     <Card sx={{ minWidth: 275, bgcolor: "#1e1e1e", color: "white", borderRadius: 2, m: 1 }} onClick={handleClick}>
       <CardContent>
@@ -24,9 +27,7 @@ const ProjectItem = ({ project}) => {
             }}
           />
         </Box>
-        
-          
-          
+ 
         <Typography variant="h6" gutterBottom>
             {project.title}
         </Typography>
@@ -34,9 +35,6 @@ const ProjectItem = ({ project}) => {
             {project.description}
         </Typography>
           
-       
-
-        
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
             <Chip
                 label={

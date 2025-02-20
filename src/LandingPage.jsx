@@ -377,7 +377,7 @@ const LandingPage = () => {
                           p: 2, 
                           borderRadius: 2,
                           bgcolor: item.color,
-                          color: i === 3 ? 'white' : 'text.primary',
+                          color: i >= 2 ? 'white' : 'text.primary',
                           mb: 2
                         }}
                       >

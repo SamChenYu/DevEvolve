@@ -34,7 +34,7 @@ const ClientDashboard = () => {
   
   const menuItems = [
     { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
-    { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
+    { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project", {state : {storedRole}} ) },
     { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
   ];
 

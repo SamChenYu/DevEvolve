@@ -6,6 +6,7 @@ import LandingPage from "./LandingPage";
 import DeveloperDashboard from "./components/dashboard/DeveloperDashboard";
 import ClientDashboard from "./components/dashboard/ClientDashboard";
 import CreateProjectForm from "./components/projects/CreateProjectForm";
+import ProjectDetails from "./components/projects/ProjectDetails";
 
 const AppRoutes = () => {
     return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
                 <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
                 <Route path="/client-dashboard" element={<ClientDashboard />} />
                 <Route path="/create-project" element={<CreateProjectForm />} />
+                <Route path="/projects/:clientId/:projectId" element={<ProjectDetails />} />
             </Routes>
         </Router>
     );

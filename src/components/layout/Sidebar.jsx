@@ -1,8 +1,11 @@
 import React from 'react'
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
+import CodeIcon from '@mui/icons-material/Code';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 const Sidebar = ({menuItems}) => {
+  const navigate = useNavigate();
   return (
     <Drawer
         variant="permanent"
@@ -18,7 +21,7 @@ const Sidebar = ({menuItems}) => {
         }}
       >
         <Box sx={{ textAlign: "center", py: 3 }}>
-          <Typography variant="h6" fontWeight={700} color="white">Client Dashboard</Typography>
+          <Typography sx={{display: "flex", alignItems: "center", paddingLeft: 4}} variant="h6" fontWeight={700} color="white" onClick={() => {navigate("/")}}> <CodeIcon /> DevEvolve</Typography>
         </Box>
         <List>
           {menuItems.map((item, index) => (

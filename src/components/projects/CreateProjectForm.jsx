@@ -1,10 +1,11 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { Box, CssBaseline, Paper, Typography, TextField, Button } from '@mui/material';
 import { PersonSearch as PersonSearchIcon, Create as CreateIcon, AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
+import { getUserFromToken } from '../../services/AuthenicationService';
 
 const CreateProjectForm = () => {
     const [formData, setFormData] = useState({
@@ -12,13 +13,26 @@ const CreateProjectForm = () => {
         description: "",
         repoLink: "",
       });
+    const [user, setUser] = useState(null);
+    const location = useLocation();
+    const storedRole = location.state?.storedRole;
     const navigate = useNavigate();
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
-        if (!token || role !== "CLIENT") {
-          navigate("/login");
-        }
+        const verifyUser = async () => {
+          try {
+            const response = await getUserFromToken();
+            console.log('User:', response);
+            if (!response || storedRole !== "CLIENT") {
+              navigate("/login");
+            } else {
+              setUser(response);
+            }
+          } catch (error) {
+            navigate("/login");
+          }
+        };
+    
+        verifyUser();
       }, [navigate]);
 
       const handleChange = (e) => {
@@ -27,20 +41,14 @@ const CreateProjectForm = () => {
     
       const handleSubmit = async (e) => {
         e.preventDefault();
-        const clientId = localStorage.getItem("userId");
-
-        if (!clientId) {
-          alert("Client ID not found. Please log in again.");
-          navigate("/login");
-          return;
-        }
+        
 
         try {
-          await createProject(clientId, formData);
+          await createProject(user.id, formData);
           alert("Project Created Successfully!");
-          navigate("/client-dashboard"); // Redirect to dashboard
+          navigate("/client-dashboard");
         } catch (error) {
-          alert(error.message || "An error occurred. Please try again.");
+          alert(error || "An error occurred. Please try again.");
         }
       };
     
