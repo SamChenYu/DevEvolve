@@ -24,7 +24,7 @@ import StarIcon from '@mui/icons-material/Star';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import GroupIcon from '@mui/icons-material/Group';
-import AOS from 'aos'; // Animation on scroll library
+import AOS from 'aos'; 
 import 'aos/dist/aos.css';
 
 
