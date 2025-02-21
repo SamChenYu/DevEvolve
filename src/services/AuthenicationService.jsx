@@ -29,10 +29,31 @@ export const getUserFromToken = async () => {
         const response = await axiosInstance.get('/auth/users/profile', { withCredentials: true });
         return response.data;
     } catch (error) {
+        console.error("Failed to get user:", error.response?.data || error.message);
         throw new Error("Unauthorized or session expired.");
     }
 }
 
 export const logout = async () => {
     await axiosInstance.post('/api/logout');
+}
+
+export const getAllDevelopers = async () => {
+    try {
+        const response = await axiosInstance.get('/auth/users/all');
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching developers:", error.response?.data || error.message);
+        throw new Error("Failed to fetch developers.");
+    }
+}
+
+export const searchDevelopers = async (query) => {
+    try {
+        const response = await axiosInstance.get(`/auth/users/search?query=${query}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error searching developers:", error.response?.data || error.message);
+        throw new Error("Failed to search developers.");
+    }
 }

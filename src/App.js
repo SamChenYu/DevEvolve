@@ -1,6 +1,4 @@
-import logo from './logo.svg';
 import './App.css';
-import LandingPage from './LandingPage';
 import AppRoutes from './routes';
 
 function App() {

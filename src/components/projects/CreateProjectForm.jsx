@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { use, useContext } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { Box, CssBaseline, Paper, Typography, TextField, Button } from '@mui/material';
 import { PersonSearch as PersonSearchIcon, Create as CreateIcon, AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
-import { getUserFromToken } from '../../services/AuthenicationService';
+import { UserContext } from '../../context/UserContext';
 
 const CreateProjectForm = () => {
     const [formData, setFormData] = useState({
@@ -13,27 +13,17 @@ const CreateProjectForm = () => {
         description: "",
         repoLink: "",
       });
-    const [user, setUser] = useState(null);
+    const { user } = useContext(UserContext);
+    localStorage.setItem("user", JSON.stringify(user));
+    const navigate = useNavigate();
     const location = useLocation();
     const storedRole = location.state?.storedRole;
-    const navigate = useNavigate();
-    useEffect(() => {
-        const verifyUser = async () => {
-          try {
-            const response = await getUserFromToken();
-            console.log('User:', response);
-            if (!response || storedRole !== "CLIENT") {
-              navigate("/login");
-            } else {
-              setUser(response);
-            }
-          } catch (error) {
-            navigate("/login");
-          }
-        };
     
-        verifyUser();
-      }, [navigate]);
+    useEffect(() => {
+      if (!localStorage.getItem("user") || storedRole !== "CLIENT") {
+          navigate("/login");
+      }
+    }, [user, navigate]);
 
       const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,8 +31,6 @@ const CreateProjectForm = () => {
     
       const handleSubmit = async (e) => {
         e.preventDefault();
-        
-
         try {
           await createProject(user.id, formData);
           alert("Project Created Successfully!");

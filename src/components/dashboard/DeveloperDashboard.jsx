@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Box, CssBaseline, Typography } from "@mui/material";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
@@ -6,30 +6,18 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import Sidebar from "../layout/Sidebar";
 import { getUserFromToken } from "../../services/AuthenicationService";
+import { UserContext } from "../../context/UserContext";
 
-const drawerWidth = 240;
+
 const DeveloperDashboard = () => {
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const location = useLocation();
-  const storedRole = location.state?.user.role;
-  const [user, setUser] = useState(null);
-  //const user = location.state?.user;
-  useEffect(() => {
-    const verifyUser = async () => {
-      try {
-        const response = await getUserFromToken();
-        console.log("User:", response);
-        if (!response || storedRole !== "DEVELOPER") {
-          navigate("/login");
-        } else {
-          setUser(response);
-        }
-      } catch (error) {
-        navigate("/login");
-      }
-    };
+  console.log("User in developer dashboard:", user);
 
-    verifyUser();
+  useEffect(() => {
+    if (!user || user.role !== "DEVELOPER") {
+      navigate("/login");
+    }
   }, [navigate]);
 
   const menuItems = [

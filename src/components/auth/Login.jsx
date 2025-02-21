@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField, Typography, Container, Box, Paper } from "@mui/material";
 import { login } from "../../services/AuthenicationService";
+import { UserContext } from "../../context/UserContext";
+import { getUserFromToken } from "../../services/AuthenicationService";
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -13,15 +16,21 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const user = await login(formData); 
-            console.log('Login response:', user);
-            if (user.role === 'DEVELOPER') {
-                navigate('/developer-dashboard', { state: { user } });
-            } else if (user.role === 'CLIENT') {
-                navigate('/client-dashboard', { state: { user } });
+            const user = await login(formData);
+            const { role, userId } = user; 
+            //setUser(user); 
+
+            const fullUser = await getUserFromToken();
+            setUser(fullUser);
+            console.log("User in login:", fullUser);
+
+            if (role === "DEVELOPER") {
+                navigate("/developer-dashboard", { state: { userRole: role } });
+            } else if (role === "CLIENT") {
+                navigate("/client-dashboard", { state: { userRole: role } });
             }
         } catch (error) {
-            alert('Invalid credentials or session expired. Please try again.');
+            alert("Invalid credentials or session expired. Please try again.");
         }
     };
 

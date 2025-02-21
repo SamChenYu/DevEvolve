@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, CssBaseline, Typography } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
@@ -7,34 +7,34 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Sidebar from '../layout/Sidebar';
 import ProjectList from '../projects/ProjectList';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { getUserFromToken } from '/Users/vishvamehta/Documents/swe_group16_project copy 2/src/services/AuthenicationService.jsx';
+import { UserContext } from '../../context/UserContext';
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const storedRole = location.state?.user.role;
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    const verifyUser = async () => {
-      try {
-        const response = await getUserFromToken();
-        console.log('User:', response);
-        if (!response || storedRole !== "CLIENT") {
-          navigate("/login");
-        } else {
-          setUser(response);
-        }
-      } catch (error) {
-        navigate("/login");
-      }
-    };
+  const storedRole = location.state?.userRole;
 
-    verifyUser();
-  }, [navigate]);
+  const { user, loading } = useContext(UserContext);
+  localStorage.setItem("user", JSON.stringify(user));
+  console.log("User in client dashboard:", user);
+
+  useEffect(() => {
+    if (!loading && (!localStorage.getItem("user") || storedRole !== "CLIENT")) {
+      navigate("/login");
+    }
+  }, [navigate, user, loading]);
+
+  if (loading) {
+    return <Typography variant="h4">Loading...</Typography>;
+  }
+
+  if (!user || storedRole !== "CLIENT") {
+    return null; 
+  }
   
   const menuItems = [
     { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
-    { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project", {state : {storedRole}} ) },
+    { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project", {state: { storedRole: storedRole }} ) },
     { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
   ];
 
