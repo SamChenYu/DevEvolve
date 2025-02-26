@@ -8,6 +8,8 @@ import Sidebar from '../layout/Sidebar';
 import ProjectList from '../projects/ProjectList';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { UserContext } from '../../context/UserContext';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -36,6 +38,7 @@ const ClientDashboard = () => {
     { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
     { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project", {state: { storedRole: storedRole }} ) },
     { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
+    { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
   ];
 
   return (

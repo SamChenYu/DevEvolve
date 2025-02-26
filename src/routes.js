@@ -8,6 +8,8 @@ import ClientDashboard from "./components/dashboard/ClientDashboard";
 import CreateProjectForm from "./components/projects/CreateProjectForm";
 import ProjectDetails from "./components/projects/ProjectDetails";
 import BrowseDevelopers from "./components/browse/BrowseDevelopers";
+import DevProfile from "./components/profile/DevProfile";
+import Logout from "./components/auth/Logout";
 
 const AppRoutes = () => {
     return (
@@ -22,6 +24,8 @@ const AppRoutes = () => {
                 <Route path="/create-project" element={<CreateProjectForm />} />
                 <Route path="/projects/:clientId/:projectId" element={<ProjectDetails />} />
                 <Route path="/browse-developers" element={<BrowseDevelopers />} />
+                <Route path="/developer/:id" element={<DevProfile />} />
+                <Route path="/logout" element={<Logout />} />
             </Routes>
         </Router>
     );

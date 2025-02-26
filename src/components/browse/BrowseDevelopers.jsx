@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, CssBaseline, Typography, TextField, InputAdornment, List, ListItem, ListItemAvatar, Avatar, ListItemText, CircularProgress } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Sidebar from '../layout/Sidebar';
@@ -6,6 +6,8 @@ import { getAllDevelopers, searchDevelopers } from '../../services/Authenication
 import { useNavigate } from 'react-router-dom';
 import {Create as CreateIcon} from '@mui/icons-material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { UserContext } from '../../context/UserContext';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 
 const BrowseDevelopers = () => {
@@ -14,14 +16,22 @@ const BrowseDevelopers = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const { user } = useContext(UserContext);
+  localStorage.setItem("user", JSON.stringify(user));
+
+
   useEffect(() => {
+    if (!localStorage.getItem("user") || !user) {
+      navigate("/login");
+    }
     fetchDevelopers();
-  }, []);
+  }, [user, navigate]);
 
   const fetchDevelopers = async () => {
     setLoading(true);
     try {
       const data = await getAllDevelopers();
+      console.log("Developers:", data);
       setDevelopers(data);
     } catch (error) {
       console.error("Error fetching developers:", error);
@@ -49,6 +59,7 @@ const BrowseDevelopers = () => {
     { text: "Browse Developers", icon: <SearchIcon />, onClick: () => navigate("/browse-developers") },
     { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
     { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
+    { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
   ];
 
   return (
@@ -81,7 +92,7 @@ const BrowseDevelopers = () => {
           <List sx={{ bgcolor: "#1e1e1e", borderRadius: 2, p: 2 }}>
             {developers.length > 0 ? (
               developers.map((dev) => (
-                <ListItem key={dev.id} sx={{ borderBottom: "1px solid #444" }}>
+                <ListItem key={dev.id} sx={{ borderBottom: "1px solid #444" }} onClick={() => navigate(`/developer/${dev.id}`)}>
                   <ListItemAvatar>
                     <Avatar>{dev.firstName.charAt(0)}</Avatar>
                   </ListItemAvatar>

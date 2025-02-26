@@ -6,6 +6,7 @@ import { PersonSearch as PersonSearchIcon, Create as CreateIcon, AccountCircle a
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const CreateProjectForm = () => {
     const [formData, setFormData] = useState({
@@ -44,6 +45,7 @@ const CreateProjectForm = () => {
         { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
         { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project"), selected: true },
         { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
+        { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     
       return (

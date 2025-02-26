@@ -18,6 +18,15 @@ export const developerRegistration = async (developer) => {
     return response.data;
 }
 
+export const getDeveloperById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/auth/users/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching developer:", error.response?.data || error.message);
+        throw new Error("Failed to fetch developer.");
+    }
+};
 
 export const login = async (credentials) => {
     const response = await axiosInstance.post('/api/login', credentials);
@@ -34,9 +43,9 @@ export const getUserFromToken = async () => {
     }
 }
 
-export const logout = async () => {
-    await axiosInstance.post('/api/logout');
-}
+// export const logout = async () => {
+//     await axiosInstance.post('/api/logout');
+// }
 
 export const getAllDevelopers = async () => {
     try {
@@ -57,3 +66,13 @@ export const searchDevelopers = async (query) => {
         throw new Error("Failed to search developers.");
     }
 }
+
+export const logout = async () => {
+    try {
+        await axiosInstance.post('/api/logout'); // Calls backend logout endpoint
+        localStorage.clear(); // Clears localStorage
+    } catch (error) {
+        console.error("Error during logout:", error.response?.data || error.message);
+        throw new Error("Logout failed.");
+    }
+};
