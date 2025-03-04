@@ -4,10 +4,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import Sidebar from '../layout/Sidebar';
 import { getAllDevelopers, searchDevelopers } from '../../services/AuthenicationService';
 import { useNavigate } from 'react-router-dom';
-import {Create as CreateIcon} from '@mui/icons-material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { UserContext } from '../../context/UserContext';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+
 
 
 const BrowseDevelopers = () => {
@@ -55,17 +53,12 @@ const BrowseDevelopers = () => {
   };
 
 
-  const menuItems = [
-    { text: "Browse Developers", icon: <SearchIcon />, onClick: () => navigate("/browse-developers") },
-    { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
-    { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
-    { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
-  ];
+  
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
       <CssBaseline />
-      <Sidebar menuItems={menuItems} />
+      <Sidebar />
       
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4" gutterBottom>Browse Developers</Typography>

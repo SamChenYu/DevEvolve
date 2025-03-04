@@ -69,8 +69,8 @@ export const searchDevelopers = async (query) => {
 
 export const logout = async () => {
     try {
-        await axiosInstance.post('/api/logout'); // Calls backend logout endpoint
-        localStorage.clear(); // Clears localStorage
+        await axiosInstance.post('/api/logout'); 
+        localStorage.clear(); 
     } catch (error) {
         console.error("Error during logout:", error.response?.data || error.message);
         throw new Error("Logout failed.");

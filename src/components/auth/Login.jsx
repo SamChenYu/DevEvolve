@@ -16,18 +16,25 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            
             const user = await login(formData);
-            const { role, userId } = user; 
-            //setUser(user); 
+            const { token } = user; 
+            console.log("User in login:", user);
 
+            
+            document.cookie = `access_token=${token}; path=/; Secure`;
+            console.log(document.cookie);
+
+            
             const fullUser = await getUserFromToken();
             setUser(fullUser);
             console.log("User in login:", fullUser);
 
-            if (role === "DEVELOPER") {
-                navigate("/developer-dashboard", { state: { userRole: role } });
-            } else if (role === "CLIENT") {
-                navigate("/client-dashboard", { state: { userRole: role } });
+            
+            if (fullUser.role === "DEVELOPER") {
+                navigate("/developer-dashboard");
+            } else if (fullUser.role === "CLIENT") {
+                navigate("/client-dashboard");
             }
         } catch (error) {
             alert("Invalid credentials or session expired. Please try again.");

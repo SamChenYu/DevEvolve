@@ -7,9 +7,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import CreateIcon from '@mui/icons-material/Create';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 
 const ProjectDetails = () => {
@@ -37,16 +34,12 @@ const ProjectDetails = () => {
     if (loading) return <CircularProgress color="secondary" />;
     if (!project) return <Typography color="gray">Project not found.</Typography>;
 
-    const menuItems = [
-        { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
-        { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
-        { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
-    ];
+    
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
             <CssBaseline />
-            <Sidebar menuItems={menuItems} />
+            <Sidebar  />
 
 
             <Box component="main" sx={{ flexGrow: 1, p: 4, position: "relative" }}>
@@ -100,7 +93,9 @@ const ProjectDetails = () => {
                         </Box>
                     </Box>
 
-
+                    <Button variant='contained' color='primary' sx={{ mt: 4,mx: 4, px: 4, py: 1 }} onClick={()=> console.log('View Bids')}>
+                        View Bids
+                    </Button>
                     <Button
                         variant="contained"
                         color="secondary"

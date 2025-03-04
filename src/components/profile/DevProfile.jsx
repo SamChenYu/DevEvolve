@@ -5,10 +5,6 @@ import Sidebar from '../layout/Sidebar';
 import { getDeveloperById } from '/Users/vishvamehta/Documents/swe_group16_project_copy_2/src/services/AuthenicationService.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
-import {Create as CreateIcon} from '@mui/icons-material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import SearchIcon from '@mui/icons-material/Search';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const DevProfile = () => {
   const { id } = useParams();
@@ -31,17 +27,12 @@ const DevProfile = () => {
   }, [id]);
 
   
-  const menuItems = [
-    { text: "Browse Developers", icon: <SearchIcon />, onClick: () => navigate("/browse-developers") },
-    { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
-    { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
-    { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
-  ];
+  
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
       <CssBaseline />
-      <Sidebar menuItems={menuItems} />
+      <Sidebar />
 
       
       <Box component="main" sx={{ flexGrow: 1, p: 3, textAlign: "center", position: "relative" }}>

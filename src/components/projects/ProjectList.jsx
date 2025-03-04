@@ -46,7 +46,7 @@ const ProjectList = ({ clientId }) => {
       ) : projects.length > 0 ? (
         <Slider {...sliderSettings}>
           {projects.map((project) => (
-            <ProjectItem key={project.id} project={project} clientId={clientId} />
+            <ProjectItem key={project.id} project={project} clientId={clientId} sx={{cursor: 'pointer'}} />
           ))}
         </Slider>
       ) : (

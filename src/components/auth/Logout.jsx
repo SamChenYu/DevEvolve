@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../services/AuthenticationService';
+import { logout } from '/Users/vishvamehta/Documents/swe_group16_project_copy_2/src/services/AuthenicationService.jsx';
 import { UserContext } from '../../context/UserContext';
 
 const Logout = () => {
@@ -13,7 +13,7 @@ const Logout = () => {
         await logout(); 
         localStorage.clear(); 
         setUser(null); 
-        navigate('/login'); 
+        navigate('/'); 
       } catch (error) {
         console.error("Logout failed:", error);
       }

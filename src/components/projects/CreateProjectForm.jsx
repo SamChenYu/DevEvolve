@@ -1,12 +1,11 @@
-import React, { use, useContext } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { Box, CssBaseline, Paper, Typography, TextField, Button } from '@mui/material';
-import { PersonSearch as PersonSearchIcon, Create as CreateIcon, AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+
 
 const CreateProjectForm = () => {
     const [formData, setFormData] = useState({
@@ -14,17 +13,18 @@ const CreateProjectForm = () => {
         description: "",
         repoLink: "",
       });
-    const { user } = useContext(UserContext);
-    localStorage.setItem("user", JSON.stringify(user));
-    const navigate = useNavigate();
-    const location = useLocation();
-    const storedRole = location.state?.storedRole;
+      const { user, loading } = useContext(UserContext);
+      const navigate = useNavigate();
+      
+      
+      useEffect(() => {
+        if (loading) return;  
     
-    useEffect(() => {
-      if (!localStorage.getItem("user") || storedRole !== "CLIENT") {
+        if (!user || user.role !== "CLIENT") {
           navigate("/login");
-      }
-    }, [user, navigate]);
+        }
+      }, [user, loading, navigate]);
+    
 
       const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,18 +41,12 @@ const CreateProjectForm = () => {
         }
       };
     
-      const menuItems = [
-        { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
-        { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project"), selected: true },
-        { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
-        { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
-      ];
     
       return (
         <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
           <CssBaseline />
     
-          <Sidebar menuItems={menuItems} />
+          <Sidebar />
     
           <Box component="main" sx={{ flexGrow: 1, p: 3, display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Paper

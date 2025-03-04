@@ -9,11 +9,11 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
+
       try {
         const response = await getUserFromToken();
-        console.log("User in context:", response);
         if (response) {
-          setUser(response);
+          setUser(response); 
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -25,5 +25,5 @@ export const UserProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ user, setUser, loading }}>{children}</UserContext.Provider>;
 };
