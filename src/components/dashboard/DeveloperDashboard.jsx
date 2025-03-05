@@ -20,8 +20,6 @@ const DeveloperDashboard = () => {
     return <Typography variant="h4">Loading...</Typography>;
   }
 
- 
-
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
       <CssBaseline />
@@ -30,7 +28,7 @@ const DeveloperDashboard = () => {
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4">Welcome to the Developer Dashboard</Typography>
-        <Typography variant="h6">Developer: {user?.firstName} {user?.lastName}</Typography>
+        <Typography variant="h6">Developer: {user.user?.firstName} {user.user?.lastName}</Typography>
       </Box>
     </Box>
   );

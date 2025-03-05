@@ -40,7 +40,7 @@ const Sidebar = () => {
     }
     else if (user.role === "DEVELOPER") {
       menuItems = [
-        { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
+        { text: "Browse Projects", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-projects") },
         { text: "Your Bids", icon: <PriceChangeIcon />, onClick: () => navigate("/your-bids") },
         { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate("/profile") },
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
