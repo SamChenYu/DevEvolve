@@ -1,0 +1,162 @@
+package com.devfreelance.models;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+
+
+
+@Entity
+public class Projects {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+	
+	private String title;
+	private String description;
+	private Integer cost = 250;
+	private String repoLink;
+	private LocalDateTime postedAt = LocalDateTime.now();
+	private boolean completed = false;
+	
+	@ManyToOne
+    @JoinColumn(name = "client_id")
+    @JsonBackReference("client-projects")
+    private Client client;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("project-bids")
+    private List<Bids> bids = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "developer_id")
+    @JsonBackReference("developer-projects")
+    private Developer developer;
+    
+    
+
+	public Projects() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+
+	public Projects(Integer id, String title, String description, Integer cost, String repoLink, LocalDateTime postedAt,
+			boolean completed, Client client, List<Bids> bids, Developer developer) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.cost = cost;
+		this.repoLink = repoLink;
+		this.postedAt = postedAt;
+		this.completed = completed;
+		this.client = client;
+		this.bids = bids;
+		this.developer = developer;
+	}
+
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Integer getCost() {
+		return cost;
+	}
+
+	public void setCost(Integer cost) {
+		this.cost = cost;
+	}
+
+	public String getRepoLink() {
+		return repoLink;
+	}
+
+	public void setRepoLink(String repoLink) {
+		this.repoLink = repoLink;
+	}
+
+	public LocalDateTime getPostedAt() {
+		return postedAt;
+	}
+
+	public void setPostedAt(LocalDateTime postedAt) {
+		this.postedAt = postedAt;
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	public List<Bids> getBids() {
+		return bids;
+	}
+
+	public void setBids(List<Bids> bids) {
+		this.bids = bids;
+	}
+
+	public Developer getDeveloper() {
+		return developer;
+	}
+
+	public void setDeveloper(Developer developer) {
+		this.developer = developer;
+	}
+    
+    
+	
+	
+}
