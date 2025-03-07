@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, CssBaseline, Typography, Avatar, IconButton, CircularProgress } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
-import { getDeveloperById } from '/Users/vishvamehta/Documents/swe_group16_project_copy_2/src/services/AuthenicationService.jsx';
+import { getDeveloperById } from '../../services/AuthenicationService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 

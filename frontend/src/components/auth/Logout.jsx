@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '/Users/vishvamehta/Documents/swe_group16_project_copy_2/src/services/AuthenicationService.jsx';
+import { logout } from '../../services/AuthenicationService';
 import { UserContext } from '../../context/UserContext';
 
 const Logout = () => {
