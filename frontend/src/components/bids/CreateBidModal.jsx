@@ -15,6 +15,7 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId }) => {
         setLoading(true);
 
         // call api here, need to make changes to project service and import
+        // maybe add currency to modal or top right corner of dashboard
     };
 
     return (
