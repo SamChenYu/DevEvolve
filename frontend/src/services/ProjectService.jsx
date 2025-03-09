@@ -45,3 +45,23 @@ export const createProject = async (clientId, projectData) => {
     throw error.response?.data?.message || "Failed to create project";
   }
 };
+
+export const placeBid = async (developerId, projectId, bidData) => {
+  try {
+    const response = await axiosInstance.post(`/auth/bids/place/${developerId}/${projectId}`, bidData);
+    return response.data;
+  } catch (error) {
+    console.error("Error placing bid:", error);
+    throw error.response?.data?.message || "Failed to place bid";
+  }
+};
+
+export const minBidLevel = async (level) => {
+  try {
+    const response = await axiosInstance.get(`/auth/bids/min-bid/${level}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    throw error;
+  }
+}

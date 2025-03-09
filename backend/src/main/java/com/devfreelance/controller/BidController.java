@@ -46,12 +46,18 @@ public class BidController {
             throw new Exception("Your bid amount must be at least " + minBid + " coins.");
         }
 
+        if (project.getBids().stream().anyMatch(b -> b.getDeveloper().getId().equals(developerId))) {
+            throw new Exception("You have already placed a bid for this project.");
+        }
+
         Bids newBid = new Bids();
         newBid.setAmount(bid.getAmount());
         newBid.setDeveloper(developer); 
         newBid.setProject(project);
         newBid.setAccepted(false);
         newBid.setProposal(bid.getProposal());
+        System.out.println("Current bids for the project: ");
+        projectRepository.save(project);
 
         return bidRepository.save(newBid);
     }
@@ -75,7 +81,8 @@ public class BidController {
     }
 
     // Helper function to get the minimum bid amount based on the developer's level
-    private int getMinBidByLevel(String level) {
+    @GetMapping("/min-bid/{level}")
+    public int getMinBidByLevel(@PathVariable String level) {
         switch (level) {
             case "Novice":
                 return 100;

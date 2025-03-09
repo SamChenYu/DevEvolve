@@ -1,21 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextField, Typography, Box, Modal, Paper, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { placeBid } from "../../services/ProjectService";
+import { minBidLevel } from "../../services/ProjectService";
 
-const CreateBidModal = ({ open, handleClose, developerId, projectId }) => {
+const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLevel }) => {
     const [formData, setFormData] = useState({ amount: "", proposal: "" });
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [minBid, setMinBid] = useState(0);
+
+    useEffect(() => {
+        if (open && developerLevel) {
+            setMinBid(null);
+            minBidLevel(developerLevel)
+                .then((minAmount) => {
+                    setMinBid(minAmount);
+                    setFormData((prev) => ({ ...prev, amount: minAmount }));
+                })
+                .catch((err) => {
+                    console.error("Error fetching min bid:", err);
+                    setError("Failed to fetch minimum bid.");
+                });
+        }
+    }, [open, developerLevel]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        if (name === "amount") {
+            const numericValue = parseFloat(value);
+            if (numericValue < minBid) return; 
+        }
+
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        
+        try {
+            const bidData = {
+                amount: parseFloat(formData.amount), 
+                proposal: formData.proposal,
+            };
 
-        // call api here, need to make changes to project service and import
-        // maybe add currency to modal or top right corner of dashboard
+            await placeBid(developerId, projectId, bidData);
+            alert("Bid placed successfully!");
+            handleClose(); 
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -66,7 +104,7 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId }) => {
                             fullWidth 
                             variant="outlined"
                             InputProps={{ 
-                                style: { color: "white", backgroundColor: "#333", borderRadius: "8px" } 
+                                style: { color: "white", backgroundColor: "#333", borderRadius: "8px" }, inputProps: { min: minBid || 0 }, disabled: minBid === null, 
                             }}
                             InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
                         />

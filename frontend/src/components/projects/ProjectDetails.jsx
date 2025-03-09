@@ -14,6 +14,7 @@ const ProjectDetails = () => {
     const navigate = useNavigate();
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
     
     useEffect(() => {
         const fetchDetails = async () => {

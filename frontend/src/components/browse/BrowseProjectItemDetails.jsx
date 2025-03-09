@@ -5,7 +5,6 @@ import Sidebar from '../layout/Sidebar';
 import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CreateBidModal from '../bids/CreateBidModal';
-import { DateTime } from 'luxon';
 import { UserContext } from '../../context/UserContext';
 
 
@@ -17,10 +16,24 @@ const BrowseProjectItemDetails = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (!loading && (!user || user.role !== "DEVELOPER")) {
+      navigate("/login");
+    }
+  }, [navigate, user, loading]);
+
+  useEffect(() => {
     browseProjectDetails(projectId)
       .then(setProject)
       .catch((error) => console.error('Error fetching project details:', error));
-  }, [projectId]);
+  }, [projectId, open]);
+
+  if (loading || !user) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#121212' }}>
+        <CircularProgress color="secondary" />
+      </Box>
+    );
+  }
 
   if (!project) {
     return (
@@ -70,6 +83,7 @@ const BrowseProjectItemDetails = () => {
         handleClose={() => setOpen(false)} 
         developerId={user.user?.id}  
         projectId={project.id} 
+        developerLevel={user.user?.level}
       />
     </Box>
   );
