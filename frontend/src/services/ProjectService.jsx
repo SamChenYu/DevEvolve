@@ -65,3 +65,13 @@ export const minBidLevel = async (level) => {
     throw error;
   }
 }
+
+export const fetchBidsForProject = async (projectId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/bids/project/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching bids:", error);
+    throw error;
+  }
+};

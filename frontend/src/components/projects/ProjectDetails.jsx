@@ -7,6 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ViewBidsModal from './ViewBidsModal';
 
 
 const ProjectDetails = () => {
@@ -94,7 +95,7 @@ const ProjectDetails = () => {
                         </Box>
                     </Box>
 
-                    <Button variant='contained' color='primary' sx={{ mt: 4,mx: 4, px: 4, py: 1 }} onClick={()=> console.log('View Bids')}>
+                    <Button variant='contained' color='primary' sx={{ mt: 4,mx: 4, px: 4, py: 1 }} onClick={()=> setOpen(true)}>
                         View Bids
                     </Button>
                     <Button
@@ -107,6 +108,7 @@ const ProjectDetails = () => {
                     </Button>
                 </Box>
             </Box>
+            <ViewBidsModal open={open} onClose={() => setOpen(false)} projectId={projectId} />
         </Box>
     )
 }

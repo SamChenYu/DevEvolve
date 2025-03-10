@@ -1,4 +1,7 @@
 package com.devfreelance.controller;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +17,7 @@ import com.devfreelance.models.Projects;
 import com.devfreelance.repository.BidRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.repository.ProjectRepository;
+import com.devfreelance.response.BidResponse;
 
 @RestController
 @RequestMapping("/auth/bids")
@@ -64,11 +68,11 @@ public class BidController {
 
     // Get bids for a project
     @GetMapping("/project/{projectId}")
-    public Iterable<Bids> getBidsForProject(@PathVariable Integer projectId) {
-        return bidRepository.findAll()
-                .stream()
+    public List<BidResponse> getBidsForProject(@PathVariable Integer projectId) {
+        return bidRepository.findAll().stream()
                 .filter(bid -> bid.getProject().getId().equals(projectId))
-                .toList();
+                .map(BidResponse::new) 
+                .collect(Collectors.toList());
     }
 
     // Get bids by developer
