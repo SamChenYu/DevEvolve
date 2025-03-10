@@ -93,7 +93,8 @@ const BidsModal = ({ open, onClose, projectId }) => {
                         position: 'absolute', top: '50%', left: '50%',
                         transform: 'translate(-50%, -50%)',
                         width: 350, bgcolor: '#222', color: 'white',
-                        boxShadow: 24, p: 3, borderRadius: 2
+                        boxShadow: 24, p: 3, borderRadius: 2,
+                        overflowY: 'auto', maxHeight: '80vh'
                     }}
                 >
                     
