@@ -108,7 +108,7 @@ const ProjectDetails = () => {
                     </Button>
                 </Box>
             </Box>
-            <ViewBidsModal open={open} onClose={() => setOpen(false)} projectId={projectId} />
+            <ViewBidsModal open={open} onClose={() => setOpen(false)} projectId={projectId} clientId={clientId} />
         </Box>
     )
 }

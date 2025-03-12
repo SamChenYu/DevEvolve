@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { browseProjectDetails } from '../../services/ProjectService';
+import { browseProjectDetails, hasDeveloperBid } from '../../services/ProjectService';
 import Sidebar from '../layout/Sidebar';
 import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -14,6 +14,7 @@ const BrowseProjectItemDetails = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [open, setOpen] = useState(false);
+  const [hasBidded, setHasBidded] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "DEVELOPER")) {
@@ -26,6 +27,20 @@ const BrowseProjectItemDetails = () => {
       .then(setProject)
       .catch((error) => console.error('Error fetching project details:', error));
   }, [projectId, open]);
+
+  useEffect(() => {
+    const checkIfBidded = async () => {
+      try {
+        const response = await hasDeveloperBid(user.user.id, projectId);
+        console.log("Has Bidded:", response); 
+        setHasBidded(response);
+      } catch (error) {
+        console.error("Error checking bid status:", error);
+      }
+    };
+
+    checkIfBidded();
+  }, [user, projectId, open]);
 
   if (loading || !user) {
     return (
@@ -72,9 +87,29 @@ const BrowseProjectItemDetails = () => {
           <CardContent>
             <Typography variant="h4" color="secondary" sx={{ fontWeight: 700 }}>{project.title}</Typography>
             <Typography variant="body1" sx={{ mt: 2 }}>{project.description}</Typography>
-            <Typography variant="body2" sx={{ mt: 2, color: 'gray' }}><strong>Posted At:</strong> {new Date(project.postedAt).toLocaleDateString("en-US", { year: "numeric", month: "long",day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })} </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}><strong>Amount of Bids:</strong> {project.bids.length > 0 ? project.bids.length : 0}</Typography>
-            <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}>Place Bid</Button>
+            <Typography variant="body2" sx={{ mt: 2, color: 'gray' }}>
+              <strong>Posted At:</strong> {new Date(project.postedAt).toLocaleDateString("en-US", { 
+                year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
+              })} 
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
+              <strong>Amount of Bids:</strong> {project.bids.length > 0 ? project.bids.length : 0}
+            </Typography>
+
+            
+            {hasBidded ? (
+              <Button 
+                variant="contained" 
+                sx={{ mt: 2, backgroundColor: "#333", color: "white" }} 
+                disabled
+              >
+                Already Bidded
+              </Button>
+            ) : (
+              <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}>
+                Place Bid
+              </Button>
+            )}
           </CardContent>
         </Card>
       </Box>

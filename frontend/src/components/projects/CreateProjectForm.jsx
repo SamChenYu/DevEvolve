@@ -33,11 +33,11 @@ const CreateProjectForm = () => {
       const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-          await createProject(user.id, formData);
+          await createProject(user.user.id, formData);
           alert("Project Created Successfully!");
           navigate("/client-dashboard");
         } catch (error) {
-          alert(error || "An error occurred. Please try again.");
+          alert("An error occurred. Please try again.");
         }
       };
     

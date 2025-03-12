@@ -9,6 +9,7 @@ public class BidResponse {
     private boolean accepted;
     private Integer developerId;
     private String developerName; 
+    private Integer projectId;
 
     public BidResponse(Bids bid) {
         this.id = bid.getId();
@@ -17,6 +18,7 @@ public class BidResponse {
         this.accepted = bid.isAccepted();
         this.developerId = (bid.getDeveloper() != null) ? bid.getDeveloper().getId() : null;
         this.developerName = (bid.getDeveloper() != null) ? bid.getDeveloper().getFirstName() + " " + bid.getDeveloper().getLastName() : "Unknown";
+        this.projectId = (bid.getProject() != null) ? bid.getProject().getId() : null;
     }
 
     public Integer getId() {
@@ -64,6 +66,14 @@ public class BidResponse {
 
     public void setDeveloperName(String developerName) {
         this.developerName = developerName;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BrowseProjectItem from './BrowseProjectItem';
 import Sidebar from '../layout/Sidebar';
 import { fetchAllProjects } from '../../services/ProjectService';
-import { Box, Typography, Grid, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid} from '@mui/material';
 
 const BrowseProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -18,7 +18,10 @@ const BrowseProjects = () => {
   if (projects.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#121212' }}>
-        <CircularProgress color="secondary" />
+        <Sidebar/>
+        <Typography variant="h4" color="white" sx={{ fontWeight: 600 }}>
+          No projects found :(
+        </Typography>
       </Box>
     );
   }
@@ -27,7 +30,7 @@ const BrowseProjects = () => {
     <Box sx={{ display: 'flex', backgroundColor: '#121212', height: '100vh', color: 'white' }}>
       <Sidebar />
       <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h4" color="secondary" sx={{ fontWeight: 600, mb: 3 }}>
+        <Typography variant="h4" color="white" sx={{ fontWeight: 600, mb: 3 }}>
           Browse Projects
         </Typography>
         <Grid container spacing={3}>

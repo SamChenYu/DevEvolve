@@ -75,3 +75,23 @@ export const fetchBidsForProject = async (projectId) => {
     throw error;
   }
 };
+
+export const hasDeveloperBid = async (developerId, projectId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/bids/developer-bidded/${developerId}/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching bids:", error);
+    throw error;
+  }
+}
+
+export const developerBids = async (developerId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/bids/developer/${developerId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching bids:", error);
+    throw error;
+  }
+}

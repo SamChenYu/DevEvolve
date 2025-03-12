@@ -77,11 +77,24 @@ public class BidController {
 
     // Get bids by developer
     @GetMapping("/developer/{developerId}")
-    public Iterable<Bids> getBidsByDeveloper(@PathVariable Integer developerId) {
+    public List<BidResponse> getBidsByDeveloper(@PathVariable Integer developerId) {
+        return bidRepository.findAll().stream()
+                .filter(bid -> bid.getDeveloper().getId().equals(developerId))
+                .map(BidResponse::new)  
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/developer-bidded/{developerId}/{projectId}")
+    public Boolean hasDeveloperBidded(@PathVariable Integer developerId, @PathVariable Integer projectId) {
         return bidRepository.findAll()
                 .stream()
-                .filter(bid -> bid.getDeveloper().getId().equals(developerId))
-                .toList();
+                .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId) && bid.getProject().getId().equals(projectId));
+    }
+
+    public Boolean hasDeveloperBidded(@PathVariable Integer developerId) {
+        return bidRepository.findAll()
+                .stream()
+                .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId));
     }
 
     // Helper function to get the minimum bid amount based on the developer's level

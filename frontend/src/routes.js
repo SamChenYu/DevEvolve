@@ -12,6 +12,7 @@ import BrowseProjects from "./components/browse/BrowseProjects";
 import BrowseProjectItemDetails from "./components/browse/BrowseProjectItemDetails";
 import DevProfile from "./components/profile/DevProfile";
 import Logout from "./components/auth/Logout";
+import BidList from "./components/bids/BidList";
 
 const AppRoutes = () => {
     return (
@@ -29,6 +30,7 @@ const AppRoutes = () => {
                 <Route path="/browse-projects" element={<BrowseProjects />} />
                 <Route path="/project-details/:projectId" element={<BrowseProjectItemDetails />} />
                 <Route path="/developer/:id" element={<DevProfile />} />
+                <Route path="/your-bids" element={<BidList />} />
                 <Route path="/logout" element={<Logout />} />
             </Routes>
         </Router>
