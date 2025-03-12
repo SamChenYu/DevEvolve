@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devfreelance.models.BidStatus;
 import com.devfreelance.models.Bids;
 import com.devfreelance.models.Client;
 import com.devfreelance.models.Developer;
+import com.devfreelance.models.ProjectStatus;
 import com.devfreelance.models.Projects;
 import com.devfreelance.models.Ratings;
 import com.devfreelance.repository.BidRepository;
@@ -108,20 +110,19 @@ public class ProjectController {
         Bids bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new Exception("Bid not found."));
 
-        Developer developer = bid.getDeveloper(); // Correctly access the developer
-
+        Developer developer = bid.getDeveloper(); 
         Client client = project.getClient();
 
         if (client.getCoins() < bid.getAmount()) {
             throw new Exception("Client does not have enough coins.");
         }
 
-        // Deduct coins from client
+
         client.setCoins(client.getCoins() - bid.getAmount());
 
-        // Add developer to project
-        project.setDeveloper(developer); // Assign the developer to the project
-        bid.setAccepted(true);
+        project.setDeveloper(developer);
+        project.setStatus(ProjectStatus.IN_PROGRESS);
+        bid.setStatus(BidStatus.ACCEPTED);
 
         projectRepository.save(project);
         bidRepository.save(bid);
@@ -155,7 +156,7 @@ public class ProjectController {
         developer.getRatings().add(devRating);
         ratingRepository.save(devRating);
 
-        project.setCompleted(true);
+        project.setStatus(ProjectStatus.COMPLETED);
         projectRepository.save(project);
 
         return "Project completed and payments distributed.";

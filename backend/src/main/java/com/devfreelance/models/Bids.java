@@ -3,6 +3,8 @@ package com.devfreelance.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,102 +16,85 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "bids")
 public class Bids {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	private Integer amount;
-	private String proposal;
-	private boolean accepted = false;
-	
-	@ManyToOne
-	@JoinColumn(name = "developer_id")
-	@JsonBackReference("developer-bids")
-	private Developer developer;
-	
-	
-	@ManyToOne
-	@JoinColumn(name = "project_id")
-	@JsonBackReference("project-bids")
-	private Projects project;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    
+    private Integer amount;
+    private String proposal;
+    
+    @Enumerated(EnumType.STRING)
+    private BidStatus status = BidStatus.PENDING;
+    
+    @ManyToOne
+    @JoinColumn(name = "developer_id")
+    @JsonBackReference("developer-bids")
+    private Developer developer;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @JsonBackReference("project-bids")
+    private Projects project;
 
-	public Bids() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public Bids() {
+        super();
+    }
 
+    public Bids(Integer id, Integer amount, String proposal, BidStatus status, Developer developer, Projects project) {
+        this.id = id;
+        this.amount = amount;
+        this.proposal = proposal;
+        this.status = status;
+        this.developer = developer;
+        this.project = project;
+    }
 
-	public Bids(Integer id, Integer amount, String proposal, boolean accepted, Developer developer, Projects project) {
-		super();
-		this.id = id;
-		this.amount = amount;
-		this.proposal = proposal;
-		this.accepted = accepted;
-		this.developer = developer;
-		this.project = project;
-	}
+    public Integer getId() {
+        return id;
+    }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getAmount() {
+        return amount;
+    }
 
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public String getProposal() {
+        return proposal;
+    }
 
+    public void setProposal(String proposal) {
+        this.proposal = proposal;
+    }
 
-	public Integer getAmount() {
-		return amount;
-	}
+    public BidStatus getStatus() {
+        return status;
+    }
 
+    public void setStatus(BidStatus status) {
+        this.status = status;
+    }
 
-	public void setAmount(Integer amount) {
-		this.amount = amount;
-	}
+    public Developer getDeveloper() {
+        return developer;
+    }
 
+    public void setDeveloper(Developer developer) {
+        this.developer = developer;
+    }
 
-	public String getProposal() {
-		return proposal;
-	}
+    public Projects getProject() {
+        return project;
+    }
 
-
-	public void setProposal(String proposal) {
-		this.proposal = proposal;
-	}
-
-
-	public boolean isAccepted() {
-		return accepted;
-	}
-
-
-	public void setAccepted(boolean accepted) {
-		this.accepted = accepted;
-	}
-
-
-	public Developer getDeveloper() {
-		return developer;
-	}
-
-
-	public void setDeveloper(Developer developer) {
-		this.developer = developer;
-	}
-
-
-	public Projects getProject() {
-		return project;
-	}
-
-
-	public void setProject(Projects project) {
-		this.project = project;
-	}
-	
-	
-	
+    public void setProject(Projects project) {
+        this.project = project;
+    }
 }

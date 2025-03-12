@@ -37,8 +37,8 @@ const BidList = () => {
     return <Typography variant="h4" sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Typography>;
   }
 
-  const acceptedBids = bids.filter((bid) => bid.accepted);
-  const pendingBids = bids.filter((bid) => !bid.accepted);
+  const acceptedBids = bids.filter((bid) => bid.status === "ACCEPTED");
+  const pendingBids = bids.filter((bid) => bid.status !== "ACCEPTED");
 
   return (
     <Box display="flex" color="white" bgcolor="black" minHeight="100vh">
@@ -122,9 +122,9 @@ const BidList = () => {
                               }
                             />
                             <Chip
-                              icon={bid.accepted === false ? <HourglassEmptyIcon/> : <CancelIcon />}
-                              label={bid.accepted === false ? "Pending" : "Rejected"}
-                              color={bid.accepted === false ? "warning" : "error"}
+                              icon={bid.status === "PENDING" ? <HourglassEmptyIcon/> : <CancelIcon />}
+                              label={bid.status === "PENDING" ? "Pending" : "Rejected"}
+                              color={bid.status === "PENDING" ? "warning" : "error"}
                               sx={{ fontWeight: "bold" }}
                             />
                           </ListItem>

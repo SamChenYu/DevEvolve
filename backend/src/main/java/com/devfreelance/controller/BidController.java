@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,7 +59,6 @@ public class BidController {
         newBid.setAmount(bid.getAmount());
         newBid.setDeveloper(developer); 
         newBid.setProject(project);
-        newBid.setAccepted(false);
         newBid.setProposal(bid.getProposal());
         System.out.println("Current bids for the project: ");
         projectRepository.save(project);
@@ -84,18 +84,30 @@ public class BidController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/developer-bidded/{developerId}/{projectId}")
-    public Boolean hasDeveloperBidded(@PathVariable Integer developerId, @PathVariable Integer projectId) {
+    // @GetMapping("/developer-bidded/{developerId}/{projectId}")
+    // public Boolean hasDeveloperBidded(@PathVariable Integer developerId, @PathVariable Integer projectId) {
+    //     return bidRepository.findAll()
+    //             .stream()
+    //             .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId) && bid.getProject().getId().equals(projectId));
+    // }
+
+    @GetMapping("/developer-bid/{developerId}/{projectId}")
+    public ResponseEntity<BidResponse> getDeveloperBid(@PathVariable Integer developerId, @PathVariable Integer projectId) {
+        
         return bidRepository.findAll()
                 .stream()
-                .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId) && bid.getProject().getId().equals(projectId));
+                .filter(bid -> bid.getDeveloper().getId().equals(developerId) && bid.getProject().getId().equals(projectId))
+                .findFirst()
+                .map(bid -> ResponseEntity.ok(new BidResponse(bid)))
+                .orElse(ResponseEntity.noContent().build());
     }
 
-    public Boolean hasDeveloperBidded(@PathVariable Integer developerId) {
-        return bidRepository.findAll()
-                .stream()
-                .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId));
-    }
+
+    // public Boolean hasDeveloperBidded(@PathVariable Integer developerId) {
+    //     return bidRepository.findAll()
+    //             .stream()
+    //             .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId));
+    // }
 
     // Helper function to get the minimum bid amount based on the developer's level
     @GetMapping("/min-bid/{level}")

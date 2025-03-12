@@ -76,9 +76,9 @@ export const fetchBidsForProject = async (projectId) => {
   }
 };
 
-export const hasDeveloperBid = async (developerId, projectId) => {
+export const getDeveloperBid = async (developerId, projectId) => {
   try {
-    const response = await axiosInstance.get(`/auth/bids/developer-bidded/${developerId}/${projectId}`);
+    const response = await axiosInstance.get(`/auth/bids/developer-bid/${developerId}/${projectId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching bids:", error);
@@ -93,5 +93,15 @@ export const developerBids = async (developerId) => {
   } catch (error) {
     console.error("Error fetching bids:", error);
     throw error;
+  }
+}
+
+export const hireDeveloper = async (projectId, bidId) => {
+  try {
+    const response = await axiosInstance.put(`/auth/projects/hire/${projectId}/${bidId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error hiring developer:", error);
+    throw error.response?.data?.message || "Failed to hire developer";
   }
 }

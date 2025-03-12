@@ -36,6 +36,7 @@ const CreateProjectForm = () => {
           await createProject(user.user.id, formData);
           alert("Project Created Successfully!");
           navigate("/client-dashboard");
+          window.location.reload();
         } catch (error) {
           alert("An error occurred. Please try again.");
         }

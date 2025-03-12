@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { browseProjectDetails, hasDeveloperBid } from '../../services/ProjectService';
+import { browseProjectDetails, getDeveloperBid } from '../../services/ProjectService';
 import Sidebar from '../layout/Sidebar';
-import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button } from '@mui/material';
+import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button, Chip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CreateBidModal from '../bids/CreateBidModal';
 import { UserContext } from '../../context/UserContext';
 
+const bidStatusLabels = {
+  PENDING: { label: "Pending", color: "warning" },
+  ACCEPTED: { label: "Accepted", color: "success" },
+  REJECTED: { label: "Rejected", color: "error" },
+};
 
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
@@ -14,7 +19,7 @@ const BrowseProjectItemDetails = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [open, setOpen] = useState(false);
-  const [hasBidded, setHasBidded] = useState(false);
+  const [bid, setBid] = useState(null);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "DEVELOPER")) {
@@ -29,17 +34,19 @@ const BrowseProjectItemDetails = () => {
   }, [projectId, open]);
 
   useEffect(() => {
-    const checkIfBidded = async () => {
+    const fetchBid = async () => {
       try {
-        const response = await hasDeveloperBid(user.user.id, projectId);
-        console.log("Has Bidded:", response); 
-        setHasBidded(response);
+        const response = await getDeveloperBid(user.user.id, projectId);
+        //console.log(response);
+        if (response) {
+          setBid(response); 
+        }
       } catch (error) {
-        console.error("Error checking bid status:", error);
+        console.error("Error fetching bid status:", error);
       }
     };
 
-    checkIfBidded();
+    fetchBid();
   }, [user, projectId, open]);
 
   if (loading || !user) {
@@ -96,15 +103,21 @@ const BrowseProjectItemDetails = () => {
               <strong>Amount of Bids:</strong> {project.bids.length > 0 ? project.bids.length : 0}
             </Typography>
 
-            
-            {hasBidded ? (
-              <Button 
-                variant="contained" 
-                sx={{ mt: 2, backgroundColor: "#333", color: "white" }} 
-                disabled
-              >
-                Already Bidded
-              </Button>
+            {bid ? (
+              <Box sx={{ mt: 2 }}>
+                <Button 
+                  variant="contained" 
+                  sx={{ backgroundColor: "#333", color: "white" }} 
+                  disabled
+                >
+                  Already Bidded
+                </Button>
+                <Chip 
+                  label={bidStatusLabels[bid.status]?.label || "Unknown"} 
+                  color={bidStatusLabels[bid.status]?.color || "default"} 
+                  sx={{ ml: 2 }}
+                />
+              </Box>
             ) : (
               <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}>
                 Place Bid
