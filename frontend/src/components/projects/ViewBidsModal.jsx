@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { fetchBidsForProject } from '../../services/ProjectService';
+import { fetchBidsForProject, hireDeveloper } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, Modal, IconButton, Divider, CircularProgress, Button, Avatar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 
-const ViewBidsModal = ({ open, onClose, projectId }) => {
+const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
     const [bids, setBids] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedProposal, setSelectedProposal] = useState(null); 
     const [selectedDeveloper, setSelectedDeveloper] = useState(null);
     const [devLoading, setDevLoading] = useState(false);
+    const [hiredDeveloperId, setHiredDeveloperId] = useState(null);
 
     useEffect(() => {
         if (!open) return; 
@@ -36,6 +37,16 @@ const ViewBidsModal = ({ open, onClose, projectId }) => {
             console.error("Error fetching developer details:", error);
         }
         setDevLoading(false);
+    };
+
+    const handleHireDeveloper = async (bidId) => {
+        try {
+            await hireDeveloper(projectId, bidId);
+            setHiredDeveloperId(bidId);
+            onDeveloperHired();
+        } catch (error) {
+            console.error("Error hiring developer:", error);
+        }
     };
 
     return (
@@ -75,7 +86,7 @@ const ViewBidsModal = ({ open, onClose, projectId }) => {
                                         sx={{ color: '#00bcd4', cursor: 'pointer', mt: 1 }}
                                         onClick={() => setSelectedProposal(bid.proposal)}
                                     >
-                                        📜 View Proposal
+                                        📝 View Proposal
                                     </Typography>
 
                                     <Typography 
@@ -86,8 +97,14 @@ const ViewBidsModal = ({ open, onClose, projectId }) => {
                                         👨‍💻 View Developer Profile
                                     </Typography>
 
-                                    <Button variant="contained" color="secondary" sx={{ mt: 2, mx: 'auto', display: 'block' }} onClick={() => console.log("Select Developer functionality here.")}>
-                                        Select Developer
+                                    <Button 
+                                        variant="contained" 
+                                        color="secondary" 
+                                        sx={{ mt: 2, mx: 'auto', display: 'block' }} 
+                                        onClick={() => handleHireDeveloper(bid.id)}
+                                        disabled={!!hiredDeveloperId}
+                                    >
+                                        {hiredDeveloperId === bid.developerId ? "Developer Hired" : "Select Developer"}
                                     </Button>
 
                                     {index < bids.length - 1 && <Divider sx={{ my: 2, bgcolor: "gray" }} />}
@@ -98,7 +115,6 @@ const ViewBidsModal = ({ open, onClose, projectId }) => {
                 </Box>
             </Modal>
 
-            
             <Modal open={!!selectedProposal} onClose={() => setSelectedProposal(null)}>
                 <Box 
                     sx={{
@@ -123,7 +139,6 @@ const ViewBidsModal = ({ open, onClose, projectId }) => {
                 </Box>
             </Modal>
 
-           
             <Modal open={!!selectedDeveloper} onClose={() => setSelectedDeveloper(null)}>
                 <Box 
                     sx={{

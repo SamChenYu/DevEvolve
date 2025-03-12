@@ -9,20 +9,20 @@ import CssBaseline from '@mui/material/CssBaseline';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ViewBidsModal from './ViewBidsModal';
 
-
 const ProjectDetails = () => {
     const {clientId, projectId} = useParams();
     const navigate = useNavigate();
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
+    const [developerHired, setDeveloperHired] = useState(false);
     
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 const response = await fetchProjectDetails(clientId, projectId);
-                console.log('Project details:', response);
                 setProject(response);
+                setDeveloperHired(response.status !== "FINDING_DEVELOPER");
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
@@ -33,19 +33,28 @@ const ProjectDetails = () => {
         fetchDetails();
     }, [clientId, projectId]);
 
+    const handleDeveloperHired = () => {
+        setDeveloperHired(true);
+        setProject(prev => ({ ...prev, status: "IN_PROGRESS" }));
+    };
+
     if (loading) return <CircularProgress color="secondary" />;
     if (!project) return <Typography color="gray">Project not found.</Typography>;
 
-    
+    const statusColors = {
+        FINDING_DEVELOPER: "orange",
+        IN_PROGRESS: "blue",
+        COMPLETED: "green",
+        ARCHIVED: "gray",
+        LATE: "red"
+    };
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
             <CssBaseline />
-            <Sidebar  />
-
+            <Sidebar />
 
             <Box component="main" sx={{ flexGrow: 1, p: 4, position: "relative" }}>
-
                 <IconButton
                     onClick={() => navigate(-1)}
                     sx={{
@@ -61,7 +70,6 @@ const ProjectDetails = () => {
                     <ArrowBackIcon />
                 </IconButton>
 
-      
                 <Box sx={{ maxWidth: "800px", mx: "auto", textAlign: "center", mt: 6 }}>
                     <Typography variant="h4" fontWeight={700} gutterBottom>
                         {project.title}
@@ -70,7 +78,6 @@ const ProjectDetails = () => {
                         {project.description}
                     </Typography>
 
-             
                     <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
                         <Box sx={{
                             display: "flex",
@@ -87,16 +94,22 @@ const ProjectDetails = () => {
                             px: 3,
                             py: 1,
                             borderRadius: 2,
-                            bgcolor: project.completed ? "green" : "orange"
+                            bgcolor: statusColors[project.status]
                         }}>
                             <Typography variant="body1" fontWeight={600}>
-                                {project.completed ? "✅ Completed" : "🕒 In Progress"}
+                                {project.status.replace("_", " ")}
                             </Typography>
                         </Box>
                     </Box>
 
-                    <Button variant='contained' color='primary' sx={{ mt: 4,mx: 4, px: 4, py: 1 }} onClick={()=> setOpen(true)}>
-                        View Bids
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        sx={{ mt: 4, mx: 4, px: 4, py: 1 }}
+                        onClick={() => setOpen(true)}
+                        disabled={developerHired}
+                    >
+                        {developerHired ? "Developer Hired" : "View Bids"}
                     </Button>
                     <Button
                         variant="contained"
@@ -108,9 +121,9 @@ const ProjectDetails = () => {
                     </Button>
                 </Box>
             </Box>
-            <ViewBidsModal open={open} onClose={() => setOpen(false)} projectId={projectId} clientId={clientId} />
+            <ViewBidsModal open={open} onClose={() => setOpen(false)} projectId={projectId} clientId={clientId} onDeveloperHired={handleDeveloperHired} />
         </Box>
     )
 }
 
-export default ProjectDetails
+export default ProjectDetails;

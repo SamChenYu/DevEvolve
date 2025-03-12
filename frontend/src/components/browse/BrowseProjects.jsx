@@ -11,7 +11,10 @@ const BrowseProjects = () => {
 
   useEffect(() => {
     fetchAllProjects()
-      .then(setProjects)
+      .then((data) => {
+        const filteredProjects = data.filter(project => project.status === "FINDING_DEVELOPER");
+        setProjects(filteredProjects);
+      })
       .catch((error) => console.error('Error fetching projects:', error));
   }, []);
 
