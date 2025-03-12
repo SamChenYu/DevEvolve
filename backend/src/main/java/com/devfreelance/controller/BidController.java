@@ -1,4 +1,7 @@
 package com.devfreelance.controller;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +17,7 @@ import com.devfreelance.models.Projects;
 import com.devfreelance.repository.BidRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.repository.ProjectRepository;
+import com.devfreelance.response.BidResponse;
 
 @RestController
 @RequestMapping("/auth/bids")
@@ -46,36 +50,56 @@ public class BidController {
             throw new Exception("Your bid amount must be at least " + minBid + " coins.");
         }
 
+        if (project.getBids().stream().anyMatch(b -> b.getDeveloper().getId().equals(developerId))) {
+            throw new Exception("You have already placed a bid for this project.");
+        }
+
         Bids newBid = new Bids();
         newBid.setAmount(bid.getAmount());
         newBid.setDeveloper(developer); 
         newBid.setProject(project);
         newBid.setAccepted(false);
         newBid.setProposal(bid.getProposal());
+        System.out.println("Current bids for the project: ");
+        projectRepository.save(project);
 
         return bidRepository.save(newBid);
     }
 
     // Get bids for a project
     @GetMapping("/project/{projectId}")
-    public Iterable<Bids> getBidsForProject(@PathVariable Integer projectId) {
-        return bidRepository.findAll()
-                .stream()
+    public List<BidResponse> getBidsForProject(@PathVariable Integer projectId) {
+        return bidRepository.findAll().stream()
                 .filter(bid -> bid.getProject().getId().equals(projectId))
-                .toList();
+                .map(BidResponse::new) 
+                .collect(Collectors.toList());
     }
 
     // Get bids by developer
     @GetMapping("/developer/{developerId}")
-    public Iterable<Bids> getBidsByDeveloper(@PathVariable Integer developerId) {
+    public List<BidResponse> getBidsByDeveloper(@PathVariable Integer developerId) {
+        return bidRepository.findAll().stream()
+                .filter(bid -> bid.getDeveloper().getId().equals(developerId))
+                .map(BidResponse::new)  
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/developer-bidded/{developerId}/{projectId}")
+    public Boolean hasDeveloperBidded(@PathVariable Integer developerId, @PathVariable Integer projectId) {
         return bidRepository.findAll()
                 .stream()
-                .filter(bid -> bid.getDeveloper().getId().equals(developerId))
-                .toList();
+                .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId) && bid.getProject().getId().equals(projectId));
+    }
+
+    public Boolean hasDeveloperBidded(@PathVariable Integer developerId) {
+        return bidRepository.findAll()
+                .stream()
+                .anyMatch(bid -> bid.getDeveloper().getId().equals(developerId));
     }
 
     // Helper function to get the minimum bid amount based on the developer's level
-    private int getMinBidByLevel(String level) {
+    @GetMapping("/min-bid/{level}")
+    public int getMinBidByLevel(@PathVariable String level) {
         switch (level) {
             case "Novice":
                 return 100;

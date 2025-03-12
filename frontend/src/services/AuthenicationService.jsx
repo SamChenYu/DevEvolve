@@ -43,10 +43,6 @@ export const getUserFromToken = async () => {
     }
 }
 
-// export const logout = async () => {
-//     await axiosInstance.post('/api/logout');
-// }
-
 export const getAllDevelopers = async () => {
     try {
         const response = await axiosInstance.get('/auth/users/all');
