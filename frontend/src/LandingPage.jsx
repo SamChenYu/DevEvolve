@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { 
   AppBar, 
   Toolbar, 
@@ -11,7 +11,6 @@ import {
   Box,
   useScrollTrigger,
   Fade,
-  Divider,
   Avatar,
   Paper,
   Stack
@@ -26,6 +25,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import GroupIcon from '@mui/icons-material/Group';
 import AOS from 'aos'; 
 import 'aos/dist/aos.css';
+import {UserContext} from './context/UserContext';
 
 
 const HeroSection = styled("div")(() => ({
@@ -100,6 +100,7 @@ const TestimonialCard = styled(Paper)(({ theme }) => ({
 const LandingPage = () => {
   const trigger = useScrollTrigger({ disableHysteresis: true, threshold: 100 });
   const navigate = useNavigate();
+  const { user, loading } = useContext(UserContext);
   
   // Initialize AOS animation library
   useEffect(() => {
@@ -109,6 +110,21 @@ const LandingPage = () => {
       mirror: true,
     });
   }, []);
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "CLIENT") {
+        navigate("/client-dashboard");
+      } else if (user.role === "DEVELOPER") {
+        navigate("/developer-dashboard");
+      }
+    }
+  }, [loading, user, navigate]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
 
 
   const stats = [

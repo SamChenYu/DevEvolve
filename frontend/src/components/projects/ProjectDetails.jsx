@@ -1,13 +1,19 @@
 import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { fetchProjectDetails } from '../../services/ProjectService';
+import { browseProjectDetails, fetchProjectDetails } from '../../services/ProjectService';
+import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, CircularProgress, Button, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ViewBidsModal from './ViewBidsModal';
+import Modal from '@mui/material/Modal';
+import CloseIcon from '@mui/icons-material/Close';
+import { Avatar } from '@mui/material';
+import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
+
 
 const ProjectDetails = () => {
     const {clientId, projectId} = useParams();
@@ -16,16 +22,18 @@ const ProjectDetails = () => {
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [developerHired, setDeveloperHired] = useState(false);
+    const [devLoading, setDevLoading] = useState(false);
+    const [selectedDeveloper, setSelectedDeveloper] = useState(null);
     
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 const response = await fetchProjectDetails(clientId, projectId);
-                console.log(response);
+                //console.log(response);
                 setProject(response);
                 const hired = response.status !== "FINDING_DEVELOPER";
                 setDeveloperHired(hired);
-                console.log(hired);
+                //console.log(hired);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
@@ -39,6 +47,17 @@ const ProjectDetails = () => {
     const handleDeveloperHired = () => {
         setDeveloperHired(true);
         setProject(prev => ({ ...prev, status: "IN_PROGRESS" }));
+    };
+
+    const handleViewDeveloper = async (developerId) => {
+            setDevLoading(true);
+            try {
+                const devData = await getDeveloperById(developerId);
+                setSelectedDeveloper(devData);
+            } catch (error) {
+                console.error("Error fetching developer details:", error);
+            }
+            setDevLoading(false);
     };
 
     if (loading) return <CircularProgress color="secondary" />;
@@ -116,9 +135,9 @@ const ProjectDetails = () => {
                                 px: 4,
                                 py: 1,
                                 opacity: 1,  
-                                pointerEvents: "none", 
-                                cursor: "not-allowed",
+                                
                             }}
+                            onClick={async () => handleViewDeveloper((await browseProjectDetails(projectId)).developerId)}
                         >
                             Developer Hired
                         </Button>
@@ -145,6 +164,45 @@ const ProjectDetails = () => {
                 </Box>
             </Box>
             <ViewBidsModal open={open} onClose={() => setOpen(false)} projectId={projectId} clientId={clientId} onDeveloperHired={handleDeveloperHired} />
+            <Modal open={!!selectedDeveloper} onClose={() => setSelectedDeveloper(null)}>
+                <Box 
+                    sx={{
+                        position: 'absolute', top: '50%', left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 350, bgcolor: '#222', color: 'white',
+                        boxShadow: 24, p: 3, borderRadius: 2,
+                        textAlign: 'center'
+                    }}
+                >
+                    <IconButton onClick={() => setSelectedDeveloper(null)} sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}>
+                        <CloseIcon />
+                    </IconButton>
+
+                    {devLoading ? (
+                        <CircularProgress color="secondary" sx={{ mt: 3 }} />
+                    ) : selectedDeveloper ? (
+                        <>
+                            <Avatar 
+                                sx={{ width: 80, height: 80, margin: "auto", bgcolor: "gray" }} 
+                                src="/placeholder-profile.png" 
+                                alt={`${selectedDeveloper.firstName} ${selectedDeveloper.lastName}`} 
+                            />
+
+                            <Typography variant="h5" sx={{ mt: 2 }}>{selectedDeveloper.firstName} {selectedDeveloper.lastName}</Typography>
+                            <Typography variant="subtitle2" sx={{ color: "gray" }}>{selectedDeveloper.email}</Typography>
+
+                            <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
+                                <IconButton sx={{ color: "white" }}><Facebook /></IconButton>
+                                <IconButton sx={{ color: "white" }}><Twitter /></IconButton>
+                                <IconButton sx={{ color: "white" }}><LinkedIn /></IconButton>
+                                <IconButton sx={{ color: "white" }}><GitHub /></IconButton>
+                            </Box>
+                        </>
+                    ) : (
+                        <Typography variant="body1">Developer not found.</Typography>
+                    )}
+                </Box>
+            </Modal>
         </Box>
     )
 }

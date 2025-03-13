@@ -130,7 +130,7 @@ const BrowseProjectItemDetails = () => {
         open={open} 
         handleClose={() => setOpen(false)} 
         developerId={user.user?.id}  
-        projectId={project.id} 
+        projectId={projectId} 
         developerLevel={user.user?.level}
       />
     </Box>
