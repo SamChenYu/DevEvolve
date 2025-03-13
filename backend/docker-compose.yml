@@ -8,8 +8,8 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Allows root login without a password
-      MYSQL_DATABASE: devevolve  # Matches Spring Boot
+      MYSQL_DATABASE: devevolve
+      MYSQL_ROOT_PASSWORD: DevEvolve321!
     volumes:
       - db_data:/var/lib/mysql
 
@@ -22,7 +22,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: root
-      PMA_PASSWORD: ""  # No password for root
+      PMA_PASSWORD: ""
     depends_on:
       - db
 
