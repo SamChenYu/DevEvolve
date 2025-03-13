@@ -21,8 +21,11 @@ const ProjectDetails = () => {
         const fetchDetails = async () => {
             try {
                 const response = await fetchProjectDetails(clientId, projectId);
+                console.log(response);
                 setProject(response);
-                setDeveloperHired(response.status !== "FINDING_DEVELOPER");
+                const hired = response.status !== "FINDING_DEVELOPER";
+                setDeveloperHired(hired);
+                console.log(hired);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
@@ -101,16 +104,36 @@ const ProjectDetails = () => {
                             </Typography>
                         </Box>
                     </Box>
+                    
+                    {developerHired ? (
+                        
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                                mt: 4,
+                                mx: 4,
+                                px: 4,
+                                py: 1,
+                                opacity: 1,  
+                                pointerEvents: "none", 
+                                cursor: "not-allowed",
+                            }}
+                        >
+                            Developer Hired
+                        </Button>
+                    ) : (
+                        
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ mt: 4, mx: 4, px: 4, py: 1 }}
+                            onClick={() => setOpen(true)}
+                        >
+                            View Bids
+                        </Button>
+                    )}
 
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        sx={{ mt: 4, mx: 4, px: 4, py: 1 }}
-                        onClick={() => setOpen(true)}
-                        disabled={developerHired}
-                    >
-                        {developerHired ? "Developer Hired" : "View Bids"}
-                    </Button>
                     <Button
                         variant="contained"
                         color="secondary"

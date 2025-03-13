@@ -44,6 +44,7 @@ const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
             await hireDeveloper(projectId, bidId);
             setHiredDeveloperId(bidId);
             onDeveloperHired();
+            window.location.reload();
         } catch (error) {
             console.error("Error hiring developer:", error);
         }
