@@ -23,6 +23,7 @@ import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.repository.ProjectRepository;
 import com.devfreelance.repository.RatingRepository;
+import com.devfreelance.response.ProjectResponse;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -55,10 +56,13 @@ public class ProjectController {
     }
     
     @GetMapping("/{projectId}")
-    public Projects getProjectDetails(@PathVariable("projectId") Integer projectId) throws Exception {
-    	Projects project = projectRepository.findById(projectId).orElseThrow(() -> new Exception("Project not found,"));
-    	return project;
+    public ProjectResponse getProjectDetails(@PathVariable("projectId") Integer projectId) throws Exception {
+        Projects project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new Exception("Project not found"));
+
+        return new ProjectResponse(project);
     }
+
     
     @GetMapping("/client/{clientId}/{projectId}")
     public Projects getProject(@PathVariable("clientId") Integer clientId, @PathVariable("projectId") Integer projectId) throws Exception {
