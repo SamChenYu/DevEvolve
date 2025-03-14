@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "messages")
-public class Messages {
+@Table(name = "message")
+public class Message {
 
     @EmbeddedId
     private MessagesID messagesID;
@@ -22,6 +22,17 @@ public class Messages {
     @ManyToOne
     @JoinColumn(name = "chatID", insertable = false, updatable = false)
     @JsonBackReference
-    private Chats chats;
+    private Chat chats;
 
+    public void setMessageID(int i) {
+        messagesID.setMessageID(i);
+    }
+
+    public String getChatID() {
+        return messagesID.getChatID();
+    }
+
+    public int getMessageID() {
+        return messagesID.getMessageID();
+    }
 }

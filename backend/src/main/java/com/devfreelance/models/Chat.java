@@ -9,51 +9,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "chats")
+@Table(name = "chat")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Chats {
+public class Chat {
+
+    public Chat() {
+
+    }
+
+    public Chat(Client client, Developer developer) {
+        this.client = client;
+        this.developer = developer;
+    }
 
     @Id
     @Column(name = "chatID")
-    private String chatID;
-
-    @ElementCollection@CollectionTable(name="users", joinColumns=@JoinColumn(name="chatID"))
-    @Column(name = "userID")
-    private List<String> users = new ArrayList<>();
+    private String chatID = java.util.UUID.randomUUID().toString();;
 
 
-    @OneToMany(mappedBy = "chats", cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "client", nullable = false)
+    private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "developer", nullable = false)
+    private Developer developer;
+
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     @JsonManagedReference // Manage references for JSON serialization
-    private List<Messages> messages = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
 
 
     @Column(name = "currentMessageID")
     private int currentMessageID = -1; // keeps track of mesaageSize (used for updating sockets)
 
-    public void addMessage(Messages newMessage) {
+
+
+    public void addMessage(Message newMessage) {
         if(messages == null) {
             messages = new ArrayList<>();
         }
         messages.add(newMessage);
     }
 
-    public void addUser(String userID) {
-        if(users == null) {
-            users = new ArrayList<>();
-        }
-        users.add(userID);
-    }
+
 
 
     public String getChatID() {
         return chatID;
     }
 
-    public List<String> getUsers() {
-        return users;
-    }
 
-    public List<Messages> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 
@@ -61,21 +68,17 @@ public class Chats {
         return currentMessageID;
     }
 
-    public void setChatID() {
-       this.chatID = java.util.UUID.randomUUID().toString();
-    }
 
-    public void setUsers(List<String> users) {
-        this.users = users;
-    }
-
-    public void setMessages(List<Messages> messages) {
+    public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
 
 
+    public Client getClient() {
+        return client;
+    }
 
-
-
-
+    public Developer getDeveloper() {
+        return developer;
+    }
 }
