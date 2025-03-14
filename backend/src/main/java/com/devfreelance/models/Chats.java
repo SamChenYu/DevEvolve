@@ -21,6 +21,7 @@ public class Chats {
     @Column(name = "userID")
     private List<String> users = new ArrayList<>();
 
+
     @OneToMany(mappedBy = "chats", cascade = CascadeType.ALL)
     @JsonManagedReference // Manage references for JSON serialization
     private List<Messages> messages = new ArrayList<>();

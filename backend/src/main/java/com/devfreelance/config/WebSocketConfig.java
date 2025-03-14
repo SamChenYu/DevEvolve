@@ -2,7 +2,6 @@ package com.devfreelance.config;
 
 import com.devfreelance.service.MessagingService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +25,6 @@ import java.util.Map;
 
 public class WebSocketConfig {
 
-    @Autowired
-    private MessagingService messagingService;
+    //@Autowired
+    //private MessagingService messagingService;
 }
