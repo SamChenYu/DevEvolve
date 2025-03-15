@@ -7,10 +7,16 @@ import jakarta.persistence.*;
 @Table(name = "message")
 public class Message {
 
-    @EmbeddedId
-    private MessagesID messagesID;
+    public Message() {
+    }
+    public Message(MessageID messageID) {
+        this.messageID = messageID;
+    }
 
-    @Column(name = "'from'") // quotations because from is a reserved keyword in sql
+    @EmbeddedId
+    private MessageID messageID;
+
+    @Column(name = "`from`") // quotations because from is a reserved keyword in sql
     private String from;
 
     @Column(name = "text")
@@ -22,17 +28,17 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "chatID", insertable = false, updatable = false)
     @JsonBackReference
-    private Chat chats;
+    private Chat chat;
 
     public void setMessageID(int i) {
-        messagesID.setMessageID(i);
+        messageID.setMessageID(i);
     }
 
     public String getChatID() {
-        return messagesID.getChatID();
+        return messageID.getChatID();
     }
 
     public int getMessageID() {
-        return messagesID.getMessageID();
+        return messageID.getMessageID();
     }
 }

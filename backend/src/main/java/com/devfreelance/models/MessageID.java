@@ -5,13 +5,13 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 /*
-    * This class is used to create a composite primary key for the Messages table.
+ * This class is used to create a composite primary key for the Messages table.
  */
 
 
 
 @Embeddable
-public class MessagesID implements Serializable {
+public class MessageID implements Serializable {
     private String chatID;
     private int messageID;
 
