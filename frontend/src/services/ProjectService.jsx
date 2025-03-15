@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 const API_BASE_URL = "http://localhost:8080"; 
 
 const axiosInstance = axios.create({
@@ -19,12 +20,23 @@ export const fetchAllProjects = async () => {
 export const browseProjectDetails = async (projectId) => {
   try {
     const response = await axiosInstance.get(`/auth/projects/${projectId}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching project details:", error);
     throw error;
   }
 }
+
+export const fetchProjectRating = async (projectId) => {
+  try {
+      const response = await fetch(`/auth/projects/rating/${projectId}`);
+      return response.data; 
+  } catch (error) {
+      console.error("Error fetching project rating:", error);
+      return null; 
+  }
+};
 
 export const fetchProjectDetails = async (clientId, projectId) => {
   try {
@@ -119,3 +131,17 @@ export const completeProject = async (projectId, report) => {
     throw error.response?.data?.message || "Failed to complete project";
   }
 }
+
+export const handleRatingSubmit = async (projectId, rating, feedback, ) => {
+  try {
+      const response = await axiosInstance.put(`/auth/projects/rate/${projectId}`, {
+          ratingOutOfFive: rating,
+          feedback: feedback
+      });
+      console.log("Rating submitted successfully:", response.data);
+     
+  } catch (error) {
+      console.error("Error submitting rating:", error);
+      alert("Failed to submit rating. Please try again.");
+  }
+};

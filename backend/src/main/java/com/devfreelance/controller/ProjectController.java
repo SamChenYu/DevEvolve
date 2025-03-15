@@ -64,6 +64,10 @@ public class ProjectController {
         return new ProjectResponse(project);
     }
 
+    @GetMapping("/rating/{projectId}")
+    public Ratings getProjectRating(@PathVariable Integer projectId) {
+        return ratingRepository.findByProjectId(projectId).orElse(null);
+    }
     
     @GetMapping("/client/{clientId}/{projectId}")
     public Projects getProject(@PathVariable("clientId") Integer clientId, @PathVariable("projectId") Integer projectId) throws Exception {
@@ -176,13 +180,14 @@ public class ProjectController {
         
         Ratings devRating = new Ratings();
         devRating.setDeveloper(developer);
+        devRating.setProject(project);
         devRating.setRatingOutOfFive(rating);
+        devRating.setFeedback(ratings.getFeedback());
         developer.getRatings().add(devRating);
         developerRepository.save(developer);
-        ratingRepository.save(devRating);
+        
 
-        project.setStatus(ProjectStatus.COMPLETED);
-        projectRepository.save(project);
+        
 
         return "Developer rated successfully.";
     }

@@ -54,13 +54,17 @@ public class Projects {
     @JoinColumn(name = "developer_id")
     @JsonBackReference("developer-projects")
     private Developer developer;
+
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonManagedReference("project-rating") 
+    private Ratings rating;
     
     public Projects() {
         super();
     }
 
     public Projects(Integer id, String title, String description, Integer cost, String repoLink, String finalReport, LocalDateTime postedAt,
-                    ProjectStatus status, Client client, List<Bids> bids, Developer developer) {
+                    ProjectStatus status, Client client, List<Bids> bids, Developer developer, Ratings rating) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -72,6 +76,7 @@ public class Projects {
         this.client = client;
         this.bids = bids;
         this.developer = developer;
+        this.rating = rating;
     }
 
     public Integer getId() {
@@ -160,5 +165,13 @@ public class Projects {
 
     public void setDeveloper(Developer developer) {
         this.developer = developer;
+    }
+
+    public Ratings getRating() {
+        return rating;
+    }
+
+    public void setRating(Ratings rating) {
+        this.rating = rating;
     }
 }

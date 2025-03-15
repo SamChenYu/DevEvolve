@@ -49,6 +49,7 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
             await placeBid(developerId, projectId, bidData);
             alert("Bid placed successfully!");
             handleClose(); 
+            window.location.reload();
         } catch (err) {
             setError(err);
         } finally {

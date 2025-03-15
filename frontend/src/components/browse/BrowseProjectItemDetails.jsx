@@ -31,26 +31,37 @@ const BrowseProjectItemDetails = () => {
   }, [navigate, user, loading]);
 
   useEffect(() => {
-    browseProjectDetails(projectId)
-      .then(setProject)
-      .catch((error) => console.error('Error fetching project details:', error));
+    const fetchProjectDetails = async () => {
+      try {
+        const projectDetails = await browseProjectDetails(projectId);
+        //console.log(projectDetails);
+        setProject(projectDetails);
+      } catch (error) {
+      console.error('Error fetching project details:', error);
+      }
+    };
+
+    fetchProjectDetails();
   }, [projectId, project, open]);
+
+  
 
   useEffect(() => {
     const fetchBid = async () => {
-      try {
-        const response = await getDeveloperBid(user.user.id, projectId);
-        //console.log(response);
-        if (response) {
-          setBid(response); 
+      if (user && user.user?.id && projectId) {
+        try {
+          const response = await getDeveloperBid(user.user.id, projectId);
+          if (response) {
+            setBid(response);
+          }
+        } catch (error) {
+          console.error("Error fetching bid status:", error);
         }
-      } catch (error) {
-        console.error("Error fetching bid status:", error);
       }
     };
 
     fetchBid();
-  }, [user, projectId, open]);
+  }, [user, projectId]);
 
   if (loading || !user) {
     return (
@@ -127,7 +138,8 @@ const BrowseProjectItemDetails = () => {
                       color={bidStatusLabels[bid.status]?.color || "default"} 
                     />
                   </Box>
-                  {bid.status === "ACCEPTED" && !!project.finalReport ? (
+                  
+                  {bid.status === "ACCEPTED" && project.finalReport === null ? (
                     <>
                       <Button variant="contained" onClick={() => setOpenCompleteModal(true)}>
                         Complete Project
@@ -138,8 +150,9 @@ const BrowseProjectItemDetails = () => {
                         handleSubmit={handleProjectCompletion}
                       />
                     </>
-                  ) :
-                  <Chip label={"Work sent for review"} color="warning" />}
+                  ) : project.finalReport && bid.status === "ACCEPTED" ? (
+                    <Chip label={"Work sent for review"} color="warning" />
+                  ) : null}
               </Box>
             ) : (
               <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}>

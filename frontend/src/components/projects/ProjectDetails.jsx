@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { browseProjectDetails, fetchProjectDetails } from '../../services/ProjectService';
+import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, CircularProgress, Button, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,6 +13,9 @@ import Modal from '@mui/material/Modal';
 import CloseIcon from '@mui/icons-material/Close';
 import { Avatar } from '@mui/material';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
+import Rating from '@mui/material/Rating';
+import TextField from '@mui/material/TextField';
+
 
 
 const ProjectDetails = () => {
@@ -24,6 +27,10 @@ const ProjectDetails = () => {
     const [developerHired, setDeveloperHired] = useState(false);
     const [devLoading, setDevLoading] = useState(false);
     const [selectedDeveloper, setSelectedDeveloper] = useState(null);
+    const [ratingModalOpen, setRatingModalOpen] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [feedback, setFeedback] = useState("");
+    const [hasRated, setHasRated] = useState(false);
     
     useEffect(() => {
         const fetchDetails = async () => {
@@ -33,7 +40,8 @@ const ProjectDetails = () => {
                 setProject(response);
                 const hired = response.status !== "FINDING_DEVELOPER";
                 setDeveloperHired(hired);
-                //console.log(hired);
+                const ratingData = await fetchProjectRating(projectId);
+                setHasRated(ratingData !== null);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
@@ -69,6 +77,19 @@ const ProjectDetails = () => {
         COMPLETED: "green",
         ARCHIVED: "gray",
         LATE: "red"
+    };
+
+    const handleRatingSubmitClick = () => {
+        
+        handleRatingSubmit(projectId, rating, feedback)
+            .then(() => {
+                alert("Rating submitted successfully!");
+                setRatingModalOpen(false);  
+            })
+            .catch((error) => {
+                alert("Failed to submit rating. Please try again.");
+                console.error("Rating submission failed:", error);
+            });
     };
 
     return (
@@ -124,6 +145,17 @@ const ProjectDetails = () => {
                         </Box>
                     </Box>
                     
+                    {project.status === "COMPLETED" && !hasRated && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ mt: 4, mx: 4, px: 4, py: 1 }}
+                            onClick={() => setRatingModalOpen(true)}
+                        >
+                            Rate Developer
+                        </Button>
+                    )}
+
                     {developerHired ? (
                         
                         <Button
@@ -201,6 +233,52 @@ const ProjectDetails = () => {
                     ) : (
                         <Typography variant="body1">Developer not found.</Typography>
                     )}
+                </Box>
+            </Modal>
+            <Modal open={ratingModalOpen} onClose={() => setRatingModalOpen(false)}>
+                <Box
+                    sx={{
+                        position: 'absolute', top: '50%', left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 350, bgcolor: '#222', color: 'white',
+                        boxShadow: 24, p: 3, borderRadius: 2,
+                        textAlign: 'center'
+                    }}
+                >
+                    <IconButton onClick={() => setRatingModalOpen(false)} sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}>
+                        <CloseIcon />
+                    </IconButton>
+
+                    <Typography variant="h5" sx={{ mt: 2 }}>Rate Developer</Typography>
+
+                    <Box sx={{ mt: 2 }}>
+                        <Rating
+                            name="rating"
+                            value={rating}
+                            onChange={(event, newValue) => setRating(newValue)}
+                            precision={1}
+                        />
+                    </Box>
+
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                        sx={{ mt: 3, bgcolor: "#333", color: "white" }}
+                        label="Feedback"
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                    />
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ mt: 3 }}
+                        onClick={handleRatingSubmitClick}
+                    >
+                        Submit Rating
+                    </Button>
                 </Box>
             </Modal>
         </Box>
