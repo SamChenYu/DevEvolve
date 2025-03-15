@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { browseProjectDetails, getDeveloperBid, completeProject } from '../../services/ProjectService';
+import { browseProjectDetails, getDeveloperBid, completeProject, fetchProjectRating } from '../../services/ProjectService';
 import Sidebar from '../layout/Sidebar';
 import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button, Chip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CreateBidModal from '../bids/CreateBidModal';
 import { UserContext } from '../../context/UserContext';
 import CompleteProjectModal from './CompleteProjectModal';
+import ReviewModal from './ReviewModal';
 
 const bidStatusLabels = {
   PENDING: { label: "Pending", color: "warning" },
@@ -22,6 +23,8 @@ const BrowseProjectItemDetails = () => {
   const [open, setOpen] = useState(false);
   const [bid, setBid] = useState(null);
   const [openCompleteModal, setOpenCompleteModal] = useState(false);
+  const [projectRating, setProjectRating] = useState(null);
+  const [openReviewModal, setOpenReviewModal] = useState(false);
 
 
   useEffect(() => {
@@ -34,7 +37,6 @@ const BrowseProjectItemDetails = () => {
     const fetchProjectDetails = async () => {
       try {
         const projectDetails = await browseProjectDetails(projectId);
-        //console.log(projectDetails);
         setProject(projectDetails);
       } catch (error) {
       console.error('Error fetching project details:', error);
@@ -62,6 +64,24 @@ const BrowseProjectItemDetails = () => {
 
     fetchBid();
   }, [user, projectId]);
+
+  useEffect(() => {
+    
+      const fetchRating = async () => {
+        try {
+          const response = await fetchProjectRating(projectId);
+          setProjectRating(response);
+          console.log("Rating fetched successfully:", response);
+        } catch (error) {
+          console.error("Error fetching project rating:", error);
+        }
+      };
+  
+      fetchRating();
+    
+  }, []);
+
+  
 
   if (loading || !user) {
     return (
@@ -138,6 +158,7 @@ const BrowseProjectItemDetails = () => {
                       color={bidStatusLabels[bid.status]?.color || "default"} 
                     />
                   </Box>
+
                   
                   {bid.status === "ACCEPTED" && project.finalReport === null ? (
                     <>
@@ -150,8 +171,27 @@ const BrowseProjectItemDetails = () => {
                         handleSubmit={handleProjectCompletion}
                       />
                     </>
-                  ) : project.finalReport && bid.status === "ACCEPTED" ? (
-                    <Chip label={"Work sent for review"} color="warning" />
+                  ) : bid.status === "ACCEPTED" && project.finalReport ? (
+                    projectRating ? (
+                      <>
+                        <Button 
+                          variant="contained" 
+                          color="secondary" 
+                          onClick={() => setOpenReviewModal(true)}
+                        >
+                          View Feedback
+                        </Button>
+                  
+                        <ReviewModal 
+                          open={openReviewModal} 
+                          handleClose={() => setOpenReviewModal(false)} 
+                          feedback={projectRating.feedback} 
+                          rating={projectRating.ratingOutOfFive}
+                        />
+                      </>
+                    ) : (
+                      <Chip label={"Work sent for review"} color="warning" />
+                    )
                   ) : null}
               </Box>
             ) : (

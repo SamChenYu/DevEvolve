@@ -20,7 +20,6 @@ export const fetchAllProjects = async () => {
 export const browseProjectDetails = async (projectId) => {
   try {
     const response = await axiosInstance.get(`/auth/projects/${projectId}`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching project details:", error);
@@ -30,7 +29,8 @@ export const browseProjectDetails = async (projectId) => {
 
 export const fetchProjectRating = async (projectId) => {
   try {
-      const response = await fetch(`/auth/projects/rating/${projectId}`);
+      const response = await axiosInstance.get(`/auth/projects/rating/${projectId}`);
+      //console.log("Rating fetched successfully:", response.data);
       return response.data; 
   } catch (error) {
       console.error("Error fetching project rating:", error);
