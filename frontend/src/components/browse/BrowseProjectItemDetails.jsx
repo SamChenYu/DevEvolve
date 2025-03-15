@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { browseProjectDetails, getDeveloperBid } from '../../services/ProjectService';
+import { browseProjectDetails, getDeveloperBid, completeProject } from '../../services/ProjectService';
 import Sidebar from '../layout/Sidebar';
 import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button, Chip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CreateBidModal from '../bids/CreateBidModal';
 import { UserContext } from '../../context/UserContext';
+import CompleteProjectModal from './CompleteProjectModal';
 
 const bidStatusLabels = {
   PENDING: { label: "Pending", color: "warning" },
@@ -20,6 +21,8 @@ const BrowseProjectItemDetails = () => {
   const [project, setProject] = useState(null);
   const [open, setOpen] = useState(false);
   const [bid, setBid] = useState(null);
+  const [openCompleteModal, setOpenCompleteModal] = useState(false);
+
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "DEVELOPER")) {
@@ -31,7 +34,7 @@ const BrowseProjectItemDetails = () => {
     browseProjectDetails(projectId)
       .then(setProject)
       .catch((error) => console.error('Error fetching project details:', error));
-  }, [projectId, open]);
+  }, [projectId, project, open]);
 
   useEffect(() => {
     const fetchBid = async () => {
@@ -65,6 +68,15 @@ const BrowseProjectItemDetails = () => {
     );
   }
 
+  const handleProjectCompletion = async (report) => {
+    try {
+      const response = await completeProject(projectId, report);
+      setProject(response);
+    } catch (error) {
+      console.error("Error completing project:", error);
+    }
+  }
+
   return (
     <Box sx={{ display: 'flex', backgroundColor: '#121212', height: '100vh', color: 'white' }}>
       <Sidebar />
@@ -94,7 +106,7 @@ const BrowseProjectItemDetails = () => {
           <CardContent>
             <Typography variant="h4" color="secondary" sx={{ fontWeight: 700 }}>{project.title}</Typography>
             <Typography variant="body1" sx={{ mt: 2 }}>{project.description}</Typography>
-            <Typography variant="body2" sx={{ mt: 2, color: 'gray' }}>
+            <Typography variant="bod</Typography>y2" sx={{ mt: 2, color: 'gray' }}>
               <strong>Posted At:</strong> {new Date(project.postedAt).toLocaleDateString("en-US", { 
                 year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
               })} 
@@ -104,19 +116,30 @@ const BrowseProjectItemDetails = () => {
             </Typography>
 
             {bid ? (
-              <Box sx={{ mt: 2 }}>
-                <Button 
-                  variant="contained" 
-                  sx={{ backgroundColor: "#333", color: "white" }} 
-                  disabled
-                >
-                  Already Bidded
-                </Button>
-                <Chip 
-                  label={bidStatusLabels[bid.status]?.label || "Unknown"} 
-                  color={bidStatusLabels[bid.status]?.color || "default"} 
-                  sx={{ ml: 2 }}
-                />
+                <Box sx={{ mt: 2 }} display="flex" justifyContent="space-evenly" alignItems="center">
+                  
+                  <Box display="flex" alignItems="center" sx={{ ml: 2 }}>
+                    <Typography variant="body1" sx={{ mr: 1, color: "gray" }}>
+                      Bid Status:
+                    </Typography>
+                    <Chip 
+                      label={bidStatusLabels[bid.status]?.label || "Unknown"} 
+                      color={bidStatusLabels[bid.status]?.color || "default"} 
+                    />
+                  </Box>
+                  {bid.status === "ACCEPTED" && !!project.finalReport ? (
+                    <>
+                      <Button variant="contained" onClick={() => setOpenCompleteModal(true)}>
+                        Complete Project
+                      </Button>
+                      <CompleteProjectModal
+                        open={openCompleteModal}
+                        handleClose={() => setOpenCompleteModal(false)}
+                        handleSubmit={handleProjectCompletion}
+                      />
+                    </>
+                  ) :
+                  <Chip label={"Work sent for review"} color="warning" />}
               </Box>
             ) : (
               <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}>

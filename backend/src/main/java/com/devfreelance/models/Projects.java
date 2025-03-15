@@ -35,6 +35,7 @@ public class Projects {
     private String description;
     private Integer cost = 250;
     private String repoLink;
+    private String finalReport;
     private LocalDateTime postedAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
@@ -58,13 +59,14 @@ public class Projects {
         super();
     }
 
-    public Projects(Integer id, String title, String description, Integer cost, String repoLink, LocalDateTime postedAt,
+    public Projects(Integer id, String title, String description, Integer cost, String repoLink, String finalReport, LocalDateTime postedAt,
                     ProjectStatus status, Client client, List<Bids> bids, Developer developer) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.cost = cost;
         this.repoLink = repoLink;
+        this.finalReport = finalReport;
         this.postedAt = postedAt;
         this.status = status;
         this.client = client;
@@ -110,6 +112,14 @@ public class Projects {
 
     public void setRepoLink(String repoLink) {
         this.repoLink = repoLink;
+    }
+
+    public String getFinalReport() {
+        return finalReport;
+    }
+
+    public void setFinalReport(String finalReport) {
+        this.finalReport = finalReport;
     }
 
     public LocalDateTime getPostedAt() {

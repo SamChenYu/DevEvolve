@@ -105,3 +105,17 @@ export const hireDeveloper = async (projectId, bidId) => {
     throw error.response?.data?.message || "Failed to hire developer";
   }
 }
+
+export const completeProject = async (projectId, report) => {
+  try {
+    const response = await axiosInstance.put(`/auth/projects/complete/${projectId}`, report, {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error completing project:", error);
+    throw error.response?.data?.message || "Failed to complete project";
+  }
+}

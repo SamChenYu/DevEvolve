@@ -159,14 +159,15 @@ public class AuthController {
 	    }
 
 	    String email = JwtProvider.extractEmail(refreshToken);
-	    Authentication auth = new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
+        UserDetails userDetails = userDetailService.loadUserByUsername(email);
+	    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
 	    String newAccessToken = JwtProvider.generateToken(auth);
 
 	    ResponseCookie newAccessCookie = ResponseCookie.from("access_token", newAccessToken)
 	        .httpOnly(true)
 	        .secure(true)
-	        .sameSite("Strict")
+	        .sameSite("Lax")
 	        .path("/")
 	        .maxAge(Duration.ofMinutes(15))
 	        .build();

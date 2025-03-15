@@ -23,6 +23,7 @@ import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.repository.ProjectRepository;
 import com.devfreelance.repository.RatingRepository;
+import com.devfreelance.response.BidResponse;
 import com.devfreelance.response.ProjectResponse;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -136,7 +137,23 @@ public class ProjectController {
     }
 
     @PutMapping("/complete/{projectId}")
-    public String completeProject(@PathVariable Integer projectId, @RequestBody List<Integer> ratings) throws Exception {
+    public Projects developerCompletesProject(@PathVariable Integer projectId, @RequestBody String report) throws Exception {
+        Projects project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new Exception("Project not found."));
+
+        if (project.getDeveloper() == null) {
+            throw new Exception("No developer worked on this project.");
+        }
+
+        project.setStatus(ProjectStatus.COMPLETED);
+        project.setFinalReport(report);
+        projectRepository.save(project);
+
+        return project;
+    }
+
+    @PutMapping("/rate/{projectId}")
+    public String rateDeveloper(@PathVariable Integer projectId, @RequestBody Ratings ratings) throws Exception {
         Projects project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new Exception("Project not found."));
 
@@ -145,25 +162,29 @@ public class ProjectController {
         }
 
         Developer developer = project.getDeveloper();
-        int rating = ratings.get(0);  // Assuming one developer per project in this context
-        int totalPayment = (int) (developer.getCoins() * (rating / 5.0));
+        int rating = ratings.getRatingOutOfFive();  // Assuming one developer per project in this context
+        
+        Bids bid = bidRepository.findByProjectIdAndDeveloperId(projectId, developer.getId());
+        int totalPayment = (int) (bid.getAmount() * (rating / 5.0));
+
 
         developer.setCoins(developer.getCoins() + totalPayment);
         developer.setCoinsEarnedAllTime(developer.getCoinsEarnedAllTime() + totalPayment);
         developer.updateLevel();
         developer.getCompletedProjects().add(project);
-        developerRepository.save(developer);
+        
         
         Ratings devRating = new Ratings();
         devRating.setDeveloper(developer);
         devRating.setRatingOutOfFive(rating);
         developer.getRatings().add(devRating);
+        developerRepository.save(developer);
         ratingRepository.save(devRating);
 
         project.setStatus(ProjectStatus.COMPLETED);
         projectRepository.save(project);
 
-        return "Project completed and payments distributed.";
+        return "Developer rated successfully.";
     }
 }
 
