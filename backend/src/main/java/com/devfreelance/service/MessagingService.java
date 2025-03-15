@@ -98,7 +98,9 @@ public class MessagingService {
         return messagesSince;
     }
 
-
+    public Chat getChat(String chatID) {
+        return chatRepository.findById(chatID).orElse(null);
+    }
 
 
 
