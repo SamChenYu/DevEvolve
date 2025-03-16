@@ -13,6 +13,7 @@ import BrowseProjectItemDetails from "./components/browse/BrowseProjectItemDetai
 import DevProfile from "./components/profile/DevProfile";
 import Logout from "./components/auth/Logout";
 import BidList from "./components/bids/BidList";
+import Chat from "./components/chat/Chat";
 
 const AppRoutes = () => {
     return (
@@ -32,6 +33,7 @@ const AppRoutes = () => {
                 <Route path="/developer/:id" element={<DevProfile />} />
                 <Route path="/your-bids" element={<BidList />} />
                 <Route path="/logout" element={<Logout />} />
+                <Route path="/chat" element={<Chat />} />
             </Routes>
         </Router>
     );
