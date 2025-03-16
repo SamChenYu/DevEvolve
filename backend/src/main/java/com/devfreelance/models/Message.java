@@ -33,7 +33,7 @@ public class Message {
 
     @ManyToOne
     @MapsId("chatID")
-    @JsonIgnore
+    @JsonBackReference("chat-messages")
     private Chat chat;
 
 
