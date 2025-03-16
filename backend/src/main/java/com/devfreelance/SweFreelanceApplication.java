@@ -8,7 +8,7 @@ public class SweFreelanceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SweFreelanceApplication.class, args);
-		System.out.println("Backend sevice running ....");
+		System.out.println("Backend service running ....");
 	}
 
 }

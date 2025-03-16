@@ -33,6 +33,10 @@ public class Developer extends Users {
     @JsonManagedReference("developer-projects")
     private List<Projects> completedProjects = new ArrayList<>();
 
+	@OneToMany(mappedBy = "developer", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("developer-chats")
+	private List<Chat> chats = new ArrayList<>();
+
 	public Developer() {
 		super();
 		// TODO Auto-generated constructor stub

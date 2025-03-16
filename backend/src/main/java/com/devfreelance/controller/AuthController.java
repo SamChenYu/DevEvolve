@@ -74,7 +74,7 @@ public class AuthController {
         return new RegisterResponse("Client successfully registered.", "CLIENT", registeredClient.getId());
     }
     
-    @PostMapping(value = "/register/developer", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register/developer")
     public RegisterResponse registerDeveloper(@RequestBody Developer developer) throws Exception {
         if (developer.getEmail() == null || developer.getPassword() == null) {
             throw new Exception("Invalid data. Email and password are required.");

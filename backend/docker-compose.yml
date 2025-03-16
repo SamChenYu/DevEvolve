@@ -22,7 +22,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: root
-      PMA_PASSWORD: ""
+      PMA_PASSWORD: "DevEvolve321!"
     depends_on:
       - db
 
