@@ -29,17 +29,17 @@ public class Chat {
 
 
     @ManyToOne
-    @JoinColumn(name = "client", nullable = false)
+    @JoinColumn(name = "client_id", nullable = false)
     @JsonBackReference("client-chats")  // Prevents infinite recursion
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "developer", nullable = false)
+    @JoinColumn(name = "developer_id", nullable = false)
     @JsonBackReference("developer-chats")  // Prevents infinite recursion
     private Developer developer;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
-    @JsonManagedReference // Manage references for JSON serialization
+    @JsonManagedReference("chat-messages")
     private List<Message> messages = new ArrayList<>();
 
 
@@ -84,5 +84,13 @@ public class Chat {
 
     public Developer getDeveloper() {
         return developer;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public void setDeveloper(Developer developer) {
+        this.developer = developer;
     }
 }
