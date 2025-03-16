@@ -42,15 +42,14 @@ const DeveloperDashboard = () => {
     infinite: false,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 1,
-    centerMode: true, // Add centerMode for better spacing
+    slidesToScroll: 2,
     focusOnSelect: true,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 1,
+          slidesToScroll: 2,
         }
       },
       {
@@ -68,7 +67,7 @@ const DeveloperDashboard = () => {
       <CssBaseline />
       <Sidebar />
       
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, overflowX: "hidden",  }}>
         <Typography variant="h4">Welcome Back {user.user?.firstName}!</Typography>
         
         {user.user?.coins !== null && (
