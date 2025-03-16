@@ -34,7 +34,7 @@ public class Developer extends Users {
     private List<Projects> completedProjects = new ArrayList<>();
 
 	@OneToMany(mappedBy = "developer", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonManagedReference("developer-chats")
 	private List<Chat> chats = new ArrayList<>();
 
 	public Developer() {

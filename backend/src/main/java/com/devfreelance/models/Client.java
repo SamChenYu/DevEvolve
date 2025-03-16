@@ -16,8 +16,8 @@ public class Client extends Users {
     @JsonManagedReference("client-projects") 
     private List<Projects> ownedProjects = new ArrayList<>();
 
-	@OneToMany(mappedBy = "developer", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("client-chats")
 	private List<Chat> chats = new ArrayList<>();
 
 	public Client() {

@@ -10,6 +10,7 @@ import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.devfreelance.request.MessageSendRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 public class MessagingService {
 
     @Autowired
-    private MessageRepository messagesRepository;
+    private MessageRepository messageRepository;
     @Autowired
     private ChatRepository chatRepository;
 
@@ -68,19 +69,24 @@ public class MessagingService {
         return developers;
     }
 
-    public boolean sendMessage(Message message) {
+    public boolean sendMessage(MessageSendRequest messageSendRequest) {
         // return -> success or failure
-        if(message == null) return false;
-        String chatID = message.getChatID();
-        if(chatID == null) return false;
-        Chat chat = chatRepository.findById(chatID).orElse(null);
-        if(chat == null) {
-            System.out.println("Error: Chat not found");
+        if(messageSendRequest.getChatID() == null) {
+            System.out.println("Error MessagingService /sendMessage: ChatID is null");
             return false;
         }
+        String chatID = messageSendRequest.getChatID();
+        Chat chat = chatRepository.findById(chatID).orElse(null);
+        if(chat == null) {
+            System.out.println("Error MessagingService /sendMessage: Chat not found");
+            return false;
+        }
+
         int currentMessageID = chat.getCurrentMessageID();
-        message.setMessageID(currentMessageID + 1);
+        messageSendRequest.setMessageID(currentMessageID);
+        Message message = messageSendRequest.toMessage();
         chat.addMessage(message);
+        message.setChat(chat);
         chatRepository.save(chat);
         return true;
     }

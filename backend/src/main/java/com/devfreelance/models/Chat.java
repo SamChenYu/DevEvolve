@@ -1,6 +1,7 @@
 package com.devfreelance.models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -29,10 +30,12 @@ public class Chat {
 
     @ManyToOne
     @JoinColumn(name = "client", nullable = false)
+    @JsonBackReference("client-chats")  // Prevents infinite recursion
     private Client client;
 
     @ManyToOne
     @JoinColumn(name = "developer", nullable = false)
+    @JsonBackReference("developer-chats")  // Prevents infinite recursion
     private Developer developer;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
@@ -41,7 +44,7 @@ public class Chat {
 
 
     @Column(name = "currentMessageID")
-    private int currentMessageID = -1; // keeps track of mesaageSize (used for updating sockets)
+    private int currentMessageID = 0; // keeps track of messages size (used for updating sockets)
 
 
 
@@ -50,6 +53,7 @@ public class Chat {
             messages = new ArrayList<>();
         }
         messages.add(newMessage);
+        currentMessageID++;
     }
 
 

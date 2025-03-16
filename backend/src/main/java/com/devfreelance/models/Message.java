@@ -1,6 +1,7 @@
 package com.devfreelance.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,16 +9,21 @@ import jakarta.persistence.*;
 public class Message {
 
     public Message() {
+        this.messageID = new MessageID();
     }
-    public Message(MessageID messageID) {
-        this.messageID = messageID;
+
+    public Message(int messageID, String chatID, String sender, String text, String timestamp) {
+        this.messageID = new MessageID(chatID, messageID);
+        this.sender = sender;
+        this.text = text;
+        this.timestamp = timestamp;
     }
 
     @EmbeddedId
-    private MessageID messageID;
+    private MessageID messageID = new MessageID();
 
-    @Column(name = "`from`") // quotations because from is a reserved keyword in sql
-    private String from;
+    @Column(name = "sender")
+    private String sender;
 
     @Column(name = "text")
     private String text;
@@ -26,9 +32,10 @@ public class Message {
     private String timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "chatID", insertable = false, updatable = false)
-    @JsonBackReference
+    @MapsId("chatID")
+    @JsonIgnore
     private Chat chat;
+
 
     public void setMessageID(int i) {
         messageID.setMessageID(i);
@@ -40,5 +47,21 @@ public class Message {
 
     public int getMessageID() {
         return messageID.getMessageID();
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getSender() {
+        return sender;
     }
 }

@@ -7,6 +7,9 @@ import com.devfreelance.models.Developer;
 import com.devfreelance.models.Message;
 import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
+import com.devfreelance.request.ChatRequest;
+import com.devfreelance.request.MessageSendRequest;
+import com.devfreelance.request.MessageUpdateRequest;
 import com.devfreelance.service.MessagingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth/chat")
+@RequestMapping("/chat") // no auth for now Todo: update this
 public class ChatController {
 
     @Autowired
@@ -39,57 +43,62 @@ public class ChatController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Chat> getChat(@RequestBody String clientName, String developerName) {
+    public ResponseEntity<Chat> getChat(@RequestBody ChatRequest chatRequest) {
+        String clientEmail = chatRequest.getClientEmail();
+        String developerEmail = chatRequest.getDeveloperEmail();
         // String inputs because the frontend will not know the IDs of both client and developer
-        if(clientName == null || developerName == null) {
+        if(clientEmail == null || developerEmail == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Client clientObj = clientRepository.searchUser(clientName).get(0);
-        Developer developerObj = developerRepository.searchUser(developerName).get(0);
-        if(clientObj == null || developerObj == null) {
+        Optional<Client> clientObj = clientRepository.findByEmail(clientEmail);
+        Optional<Developer> developerObj = developerRepository.findByEmail(developerEmail);
+        if(clientObj.isEmpty() || developerObj.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         // Todo: web socket updates
 
-        Chat chat = messagingService.getChat(clientObj, developerObj);
+        Chat chat = messagingService.getChat(clientObj.get(), developerObj.get());
         return ResponseEntity.ok(chat);
     }
 
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<Chat>> getAllChats(@RequestBody String name) {
-        if(name == null) {
+    @GetMapping("/getall/{email}")
+    public ResponseEntity<List<Chat>> getAllChats(@PathVariable String email) {
+        if(email == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         List<Chat> chats = new ArrayList<>();
 
         // Assume name is a developer
-        Developer developerObj = developerRepository.searchUser(name).get(0);
-        if(developerObj != null) {
-            List<Client> clients = messagingService.getClientChats(developerObj);
+        Optional<Developer> developerObj = developerRepository.findByEmail(email);
+        if(developerObj.isPresent()) {
+            List<Client> clients = messagingService.getClientChats(developerObj.get());
             for(Client client : clients) {
-                chats.add(messagingService.getChat(client, developerObj));
+                chats.add(messagingService.getChat(client, developerObj.get()));
             }
             return ResponseEntity.ok(chats);
         }
 
         // Assume name is a client
-        Client clientObj = clientRepository.searchUser(name).get(0);
-        if(clientObj != null) {
-            List<Developer> developers = messagingService.getDeveloperChats(clientObj);
+        Optional<Client> clientObj = clientRepository.findByEmail(email);
+        if(clientObj.isPresent()) {
+            List<Developer> developers = messagingService.getDeveloperChats(clientObj.get());
             for(Developer developer : developers) {
-                chats.add(messagingService.getChat(clientObj, developer));
+                chats.add(messagingService.getChat(clientObj.get(), developer));
             }
             return ResponseEntity.ok(chats);
         }
         // If name is neither a client nor a developer
+        System.out.println("Error: ChatController /getall: Email not found");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @GetMapping("/messageUpdate")
-    public ResponseEntity<List<Message>> getMessages(@RequestBody String chatID, int messageID) {
+    public ResponseEntity<List<Message>> getMessages(@RequestBody MessageUpdateRequest messageUpdateRequest) {
         // Frontend has the last messageID, so it can request for new messages
+        String chatID = messageUpdateRequest.getChatID();
+        int messageIDRequest = messageUpdateRequest.getMessageID();
         if(chatID == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -97,10 +106,12 @@ public class ChatController {
         if(chat == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        // Return only the messages that are newer than the last messageID
         List<Message> messages = chat.getMessages();
         List<Message> newMessages = new ArrayList<>();
         for(Message message : messages) {
-            if(message.getMessageID() > messageID) {
+            System.out.println("MessageID: " + message.getMessageID() + " MessageIDRequest: " + messageIDRequest);
+            if(message.getMessageID() > messageIDRequest) {
                 newMessages.add(message);
             }
         }
@@ -108,31 +119,36 @@ public class ChatController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<Void> sendMessage(@RequestBody Message message) {
-
-        boolean success = messagingService.sendMessage(message);
+    public ResponseEntity<Void> sendMessage(@RequestBody MessageSendRequest messageSendRequest) {
+        //System.out.println("Controller level" + message.getChatID() + " " + message.getMessageID());
+        boolean success = messagingService.sendMessage(messageSendRequest);
         if(!success) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getMessageID(), "Incoming Message"); // Sends a notification to the socket
+        //messagingService.sendWebSocketUpdate(); // Todo
+        //simpMessagingTemplate.convertAndSend("/topic/" + message.getMessageID(), "Incoming Message"); // Sends a notification to the socket
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Chat> newChat(@RequestBody String clientName, String developerName) {
+    public ResponseEntity<Chat> newChat(@RequestBody ChatRequest chatRequest) {
+        String clientEmail = chatRequest.getClientEmail();
+        String developerEmail = chatRequest.getDeveloperEmail();
         // String inputs because the frontend will not know the IDs of both client and developer
-        if(clientName == null || developerName == null) {
+        if(clientEmail == null || developerEmail == null) {
+            System.out.println("RequestBody is null");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Client clientObj = clientRepository.searchUser(clientName).get(0);
-        Developer developerObj = developerRepository.searchUser(developerName).get(0);
-        if(clientObj == null || developerObj == null) {
+        Optional<Client> clientObj = clientRepository.findByEmail(clientEmail);
+        Optional<Developer> developerObj = developerRepository.findByEmail(developerEmail);
+        if(clientObj.isEmpty() || developerObj.isEmpty()) {
+            System.out.println("Client or Developer not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         //Todo: web socket updates
 
-        Chat chat = messagingService.getChat(clientObj, developerObj);
+        Chat chat = messagingService.getChat(clientObj.get(), developerObj.get());
         return ResponseEntity.ok(chat);
     }
 
