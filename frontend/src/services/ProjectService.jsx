@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 const API_BASE_URL = "http://localhost:8080"; 
 
 const axiosInstance = axios.create({
@@ -16,6 +17,16 @@ export const fetchAllProjects = async () => {
   }
 };
 
+export const fetchProjectsByDeveloper = async (developerId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/projects/developer/${developerId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching projects by developer:", error);
+    throw error;
+  }
+};
+
 export const browseProjectDetails = async (projectId) => {
   try {
     const response = await axiosInstance.get(`/auth/projects/${projectId}`);
@@ -25,6 +36,17 @@ export const browseProjectDetails = async (projectId) => {
     throw error;
   }
 }
+
+export const fetchProjectRating = async (projectId) => {
+  try {
+      const response = await axiosInstance.get(`/auth/projects/rating/${projectId}`);
+      console.log("Rating fetched successfully:", response.data);
+      return response.data; 
+  } catch (error) {
+      console.error("Error fetching project rating:", error);
+      return null; 
+  }
+};
 
 export const fetchProjectDetails = async (clientId, projectId) => {
   try {
@@ -105,3 +127,31 @@ export const hireDeveloper = async (projectId, bidId) => {
     throw error.response?.data?.message || "Failed to hire developer";
   }
 }
+
+export const completeProject = async (projectId, report) => {
+  try {
+    const response = await axiosInstance.put(`/auth/projects/complete/${projectId}`, report, {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error completing project:", error);
+    throw error.response?.data?.message || "Failed to complete project";
+  }
+}
+
+export const handleRatingSubmit = async (projectId, rating, feedback, ) => {
+  try {
+      const response = await axiosInstance.put(`/auth/projects/rate/${projectId}`, {
+          ratingOutOfFive: rating,
+          feedback: feedback
+      });
+      console.log("Rating submitted successfully:", response.data);
+     
+  } catch (error) {
+      console.error("Error submitting rating:", error);
+      alert("Failed to submit rating. Please try again.");
+  }
+};

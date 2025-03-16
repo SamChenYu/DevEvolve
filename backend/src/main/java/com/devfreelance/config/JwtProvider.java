@@ -22,7 +22,7 @@ public class JwtProvider {
 	}
 	
 	public static String generateRefreshToken(Authentication auth) {
-		return Jwts.builder().setIssuer("DevEvolve").setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)).signWith(key).compact();
+		return Jwts.builder().setIssuer("DevEvolve").setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)).claim("email", auth.getName()).signWith(key).compact();
 		
 	}
 	
@@ -35,21 +35,21 @@ public class JwtProvider {
 	        Claims claims = Jwts.parser()
 	                            .setSigningKey(key)
 	                            .build()
-	                            .parseClaimsJws(jwt)  // Parse the JWT to extract claims
+	                            .parseClaimsJws(jwt)  
 	                            .getBody();
-	        return String.valueOf(claims.get("email")); // Extract "email" claim
+	        return String.valueOf(claims.get("email")); 
 	    } catch (Exception e) {
-	        e.printStackTrace(); // Print the exception to see if there's a parsing issue
+	        e.printStackTrace(); 
 	        return null;
 	    }
 	}
 	
 	public static Claims extractClaims(String jwt) {
 		if (jwt.startsWith("Bearer ")) {
-	        jwt = jwt.substring(7);  // Remove "Bearer " prefix
-	    } // Remove "Bearer " prefix
+	        jwt = jwt.substring(7);  
+	    } 
 	    return Jwts.parser()
-	            .setSigningKey(key)  // Use setSigningKey instead of verifyWith
+	            .setSigningKey(key)  
 	            .build()
 	            .parseClaimsJws(jwt)
 	            .getBody();
@@ -58,18 +58,18 @@ public class JwtProvider {
 	public static boolean isTokenValid(String token) {
 		try {
 	        Jwts.parser()
-	            .setSigningKey(key) // Set the signing key
+	            .setSigningKey(key)
 	            .build()
-	            .parseClaimsJws(token); // This will throw an exception if the token is invalid
+	            .parseClaimsJws(token); 
 	        return true;
 	    } catch (ExpiredJwtException e) {
-	        // Handle expired token
+	        
 	        return false;
 	    } catch (SignatureException e) {
-	        // Handle invalid signature
+	        
 	        return false;
 	    } catch (Exception e) {
-	        // Handle other exceptions (e.g., malformed token)
+	        
 	        return false;
 	    }
     }

@@ -35,6 +35,7 @@ public class Projects {
     private String description;
     private Integer cost = 250;
     private String repoLink;
+    private String finalReport;
     private LocalDateTime postedAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
@@ -53,23 +54,29 @@ public class Projects {
     @JoinColumn(name = "developer_id")
     @JsonBackReference("developer-projects")
     private Developer developer;
+
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonManagedReference("project-rating") 
+    private Ratings rating;
     
     public Projects() {
         super();
     }
 
-    public Projects(Integer id, String title, String description, Integer cost, String repoLink, LocalDateTime postedAt,
-                    ProjectStatus status, Client client, List<Bids> bids, Developer developer) {
+    public Projects(Integer id, String title, String description, Integer cost, String repoLink, String finalReport, LocalDateTime postedAt,
+                    ProjectStatus status, Client client, List<Bids> bids, Developer developer, Ratings rating) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.cost = cost;
         this.repoLink = repoLink;
+        this.finalReport = finalReport;
         this.postedAt = postedAt;
         this.status = status;
         this.client = client;
         this.bids = bids;
         this.developer = developer;
+        this.rating = rating;
     }
 
     public Integer getId() {
@@ -112,6 +119,14 @@ public class Projects {
         this.repoLink = repoLink;
     }
 
+    public String getFinalReport() {
+        return finalReport;
+    }
+
+    public void setFinalReport(String finalReport) {
+        this.finalReport = finalReport;
+    }
+
     public LocalDateTime getPostedAt() {
         return postedAt;
     }
@@ -150,5 +165,13 @@ public class Projects {
 
     public void setDeveloper(Developer developer) {
         this.developer = developer;
+    }
+
+    public Ratings getRating() {
+        return rating;
+    }
+
+    public void setRating(Ratings rating) {
+        this.rating = rating;
     }
 }

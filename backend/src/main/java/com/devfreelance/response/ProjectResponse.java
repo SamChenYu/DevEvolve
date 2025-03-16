@@ -14,6 +14,7 @@ public class ProjectResponse {
     private String description;
     private Integer cost;
     private String repoLink;
+    private String finalReport;
     private LocalDateTime postedAt;
     private ProjectStatus status;
     private Integer clientId;
@@ -27,6 +28,7 @@ public class ProjectResponse {
         this.description = project.getDescription();
         this.cost = project.getCost();
         this.repoLink = project.getRepoLink();
+        this.finalReport = project.getFinalReport();
         this.postedAt = project.getPostedAt();
         this.status = project.getStatus();
         this.clientId = (project.getClient() != null) ? project.getClient().getId() : null;
@@ -74,6 +76,14 @@ public class ProjectResponse {
 
     public void setRepoLink(String repoLink) {
         this.repoLink = repoLink;
+    }
+
+    public String getFinalReport() {
+        return finalReport;
+    }
+
+    public void setFinalReport(String finalReport) {
+        this.finalReport = finalReport;
     }
 
     public LocalDateTime getPostedAt() {

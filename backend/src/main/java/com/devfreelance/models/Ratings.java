@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
@@ -27,17 +28,23 @@ public class Ratings {
     @JsonBackReference("developer-ratings")
     private Developer developer;
 
+	@OneToOne
+	@JoinColumn(name = "project_id")
+	@JsonBackReference("project-rating")
+	private Projects project;
+	
 	public Ratings() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Ratings(Integer id, Integer ratingOutOfFive, String feedback, Developer developer) {
+	public Ratings(Integer id, Integer ratingOutOfFive, String feedback, Developer developer, Projects project) {
 		super();
 		this.id = id;
 		this.ratingOutOfFive = ratingOutOfFive;
 		this.feedback = feedback;
 		this.developer = developer;
+		this.project = project;
 	}
 
 	public Integer getId() {
@@ -72,5 +79,12 @@ public class Ratings {
 		this.developer = developer;
 	}
     
+	public Projects getProject() {
+		return project;
+	}
+
+	public void setProject(Projects project) {
+		this.project = project;
+	}
     
 }

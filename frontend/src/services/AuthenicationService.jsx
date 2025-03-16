@@ -43,6 +43,17 @@ export const getUserFromToken = async () => {
     }
 }
 
+export const refreshToken = async () => {
+    try {
+      const response = await axiosInstance.post("/api/refresh");
+      return response.data;
+    } catch (error) {
+        console.error("Error refreshing token:", error);
+        //throw new Error("Refresh failed. User needs to log in.");
+        
+    }
+};
+
 export const getAllDevelopers = async () => {
     try {
         const response = await axiosInstance.get('/auth/users/all');
