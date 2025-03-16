@@ -153,29 +153,42 @@ public class AuthController {
 	}
 	
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
-	    if (refreshToken == null || !JwtProvider.isTokenValid(refreshToken)) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
-	    }
+    public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null || !JwtProvider.isTokenValid(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
 
-	    String email = JwtProvider.extractEmail(refreshToken);
+        
+        String email = JwtProvider.extractEmail(refreshToken);
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+
+        
         UserDetails userDetails = userDetailService.loadUserByUsername(email);
-	    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
 
-	    String newAccessToken = JwtProvider.generateToken(auth);
+        
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-	    ResponseCookie newAccessCookie = ResponseCookie.from("access_token", newAccessToken)
-	        .httpOnly(true)
-	        .secure(true)
-	        .sameSite("Lax")
-	        .path("/")
-	        .maxAge(Duration.ofMinutes(15))
-	        .build();
+        
+        String newAccessToken = JwtProvider.generateToken(auth);
 
-	    response.addHeader(HttpHeaders.SET_COOKIE, newAccessCookie.toString());
+        
+        ResponseCookie newAccessCookie = ResponseCookie.from("access_token", newAccessToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Strict")
+            .path("/")
+            .maxAge(Duration.ofMinutes(15))
+            .build();
 
-	    return ResponseEntity.ok("Token refreshed");
-	}
+        response.addHeader(HttpHeaders.SET_COOKIE, newAccessCookie.toString());
+
+        return ResponseEntity.ok("Token refreshed");
+    }
 	
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletResponse response) {

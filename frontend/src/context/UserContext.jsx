@@ -20,6 +20,7 @@ export const UserProvider = ({ children }) => {
         const refreshed = await refreshToken();
         if (refreshed) {
           try {
+            console.log("In here...");
             let response = await getUserFromToken();
             if (response) {
               setUser(response);
