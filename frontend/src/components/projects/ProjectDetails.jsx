@@ -41,7 +41,7 @@ const ProjectDetails = () => {
                 const hired = response.status !== "FINDING_DEVELOPER";
                 setDeveloperHired(hired);
                 const ratingData = await fetchProjectRating(projectId);
-                setHasRated(ratingData !== null);
+                setHasRated(ratingData !== null && ratingData !== undefined && ratingData !== "");
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
@@ -84,7 +84,8 @@ const ProjectDetails = () => {
         handleRatingSubmit(projectId, rating, feedback)
             .then(() => {
                 alert("Rating submitted successfully!");
-                setRatingModalOpen(false);  
+                setRatingModalOpen(false); 
+                window.location.reload(); 
             })
             .catch((error) => {
                 alert("Failed to submit rating. Please try again.");

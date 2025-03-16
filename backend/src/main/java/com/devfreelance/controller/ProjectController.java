@@ -55,6 +55,15 @@ public class ProjectController {
         //System.out.println("Projects found: " + projects.size()); // Debugging
         return projects;
     }
+
+    @GetMapping("/developer/{developerId}")
+    public List<Projects> getProjectsByDeveloper(@PathVariable("developerId") Integer developerId) throws Exception {
+        Developer developer = developerRepository.findById(developerId)
+                .orElseThrow(() -> new Exception("Developer not found."));
+        
+        return projectRepository.findByDeveloperId(developerId);
+    }
+
     
     @GetMapping("/{projectId}")
     public ProjectResponse getProjectDetails(@PathVariable("projectId") Integer projectId) throws Exception {
@@ -132,6 +141,13 @@ public class ProjectController {
         project.setDeveloper(developer);
         project.setStatus(ProjectStatus.IN_PROGRESS);
         bid.setStatus(BidStatus.ACCEPTED);
+
+        for (Bids otherBid : project.getBids()) {
+            if (!otherBid.getId().equals(bidId)) {
+                otherBid.setStatus(BidStatus.REJECTED);
+                bidRepository.save(otherBid); 
+            }
+        }
 
         projectRepository.save(project);
         bidRepository.save(bid);

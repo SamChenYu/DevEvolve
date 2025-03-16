@@ -2,18 +2,16 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { browseProjectDetails, getDeveloperBid, completeProject, fetchProjectRating } from '../../services/ProjectService';
 import Sidebar from '../layout/Sidebar';
-import { Box, Card, CardContent, Typography, IconButton, CardMedia, CircularProgress, Button, Chip } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Paper, Grid, Divider, Badge, useTheme } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EngineeringIcon from '@mui/icons-material/Engineering';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import GroupsIcon from '@mui/icons-material/Groups';
+import FactoryIcon from '@mui/icons-material/Factory';
 import CreateBidModal from '../bids/CreateBidModal';
 import { UserContext } from '../../context/UserContext';
 import CompleteProjectModal from './CompleteProjectModal';
 import ReviewModal from './ReviewModal';
-
-const bidStatusLabels = {
-  PENDING: { label: "Pending", color: "warning" },
-  ACCEPTED: { label: "Accepted", color: "success" },
-  REJECTED: { label: "Rejected", color: "error" },
-};
 
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
@@ -25,7 +23,31 @@ const BrowseProjectItemDetails = () => {
   const [openCompleteModal, setOpenCompleteModal] = useState(false);
   const [projectRating, setProjectRating] = useState(null);
   const [openReviewModal, setOpenReviewModal] = useState(false);
+  const theme = useTheme();
+  
+  
+  const secondaryColor = theme.palette.secondary.main;
+  const secondaryLight = theme.palette.secondary.light;
+  const secondaryDark = theme.palette.secondary.dark;
 
+  
+  const bidStatusStyles = {
+    PENDING: { 
+      label: "Pending Review", 
+      color: theme.palette.warning.main, 
+      backgroundColor: `${theme.palette.warning.main}10`
+    },
+    ACCEPTED: { 
+      label: "Bid Accepted", 
+      color: theme.palette.success.main, 
+      backgroundColor: `${theme.palette.success.main}10`
+    },
+    REJECTED: { 
+      label: "Not Selected", 
+      color: theme.palette.error.main, 
+      backgroundColor: `${theme.palette.error.main}10`
+    },
+  };
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "DEVELOPER")) {
@@ -39,14 +61,12 @@ const BrowseProjectItemDetails = () => {
         const projectDetails = await browseProjectDetails(projectId);
         setProject(projectDetails);
       } catch (error) {
-      console.error('Error fetching project details:', error);
+        console.error('Error fetching project details:', error);
       }
     };
 
     fetchProjectDetails();
   }, [projectId, project, open]);
-
-  
 
   useEffect(() => {
     const fetchBid = async () => {
@@ -66,22 +86,17 @@ const BrowseProjectItemDetails = () => {
   }, [user, projectId]);
 
   useEffect(() => {
-    
-      const fetchRating = async () => {
-        try {
-          const response = await fetchProjectRating(projectId);
-          setProjectRating(response);
-          console.log("Rating fetched successfully:", response);
-        } catch (error) {
-          console.error("Error fetching project rating:", error);
-        }
-      };
-  
-      fetchRating();
-    
-  }, []);
+    const fetchRating = async () => {
+      try {
+        const response = await fetchProjectRating(projectId);
+        setProjectRating(response);
+      } catch (error) {
+        console.error("Error fetching project rating:", error);
+      }
+    };
 
-  
+    fetchRating();
+  }, [projectId]);
 
   if (loading || !user) {
     return (
@@ -109,105 +124,216 @@ const BrowseProjectItemDetails = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', backgroundColor: '#121212', height: '100vh', color: 'white' }}>
+    <Box sx={{ display: 'flex', backgroundColor: '#121212', minHeight: '100vh', color: '#E0E0E0' }}>
       <Sidebar />
-      <IconButton
-          onClick={() => navigate(-1)}
-          sx={{
-              position: "absolute",
-              top: 20,
-              left: 20,
-              color: "white",
-              bgcolor: "#333",
-              borderRadius: "50%",
-              "&:hover": { bgcolor: "#555" }
-          }}
+      <Button
+        onClick={() => navigate(-1)}
+        startIcon={<ArrowBackIcon />}
+        sx={{
+          position: "absolute",
+          top: 20,
+          left: 20,
+          color: "#E0E0E0",
+          bgcolor: "rgba(255, 255, 255, 0.05)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "4px",
+          "&:hover": { bgcolor: "rgba(255, 255, 255, 0.1)" }
+        }}
       >
-          <ArrowBackIcon />
-      </IconButton>
-      <Box sx={{ flexGrow: 1, p: 3 }}>
-        
-        <Card sx={{ backgroundColor: '#1E1E1E', color: 'white', p: 3 }}>
-          <CardMedia
-            component="img"
-            height="250"
-            image="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=170667a&w=0&k=20&c=Q7gLG-xfScdlTlPGFohllqpNqpxsU1jy8feD_fob87U="
-            alt="Project Image"
-          />
-          <CardContent>
-            <Typography variant="h4" color="secondary" sx={{ fontWeight: 700 }}>{project.title}</Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>{project.description}</Typography>
-            <Typography variant="bod</Typography>y2" sx={{ mt: 2, color: 'gray' }}>
-              <strong>Posted At:</strong> {new Date(project.postedAt).toLocaleDateString("en-US", { 
-                year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
-              })} 
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-              <strong>Amount of Bids:</strong> {project.bids.length > 0 ? project.bids.length : 0}
-            </Typography>
-
-            {bid ? (
-                <Box sx={{ mt: 2 }} display="flex" justifyContent="space-evenly" alignItems="center">
-                  
-                  <Box display="flex" alignItems="center" sx={{ ml: 2 }}>
-                    <Typography variant="body1" sx={{ mr: 1, color: "gray" }}>
-                      Bid Status:
+        Back
+      </Button>
+      
+      <Box sx={{ flexGrow: 1, p: 3, mt: 6, mx: { xs: 2, md: 6 } }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Paper 
+              sx={{ 
+                backgroundColor: '#1E1E1E', 
+                backgroundImage: `linear-gradient(to right, ${secondaryColor}05, transparent)`,
+                color: '#E0E0E0', 
+                p: 0, 
+                borderRadius: 2,
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                overflow: 'hidden',
+              }}
+            >
+              <Box 
+                sx={{ 
+                  height: 12, 
+                  background: `linear-gradient(90deg, ${secondaryColor}, ${secondaryLight})`,
+                }}
+              />
+              
+              <Box sx={{ p: 4 }}>
+                <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+                  <FactoryIcon sx={{ fontSize: 28, color: secondaryColor, mr: 2 }} />
+                  <Typography variant="h4" sx={{ fontWeight: 700, letterSpacing: '-0.5px' }}>
+                    {project.title}
+                  </Typography>
+                </Box>
+                
+                <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', my: 3 }} />
+                
+                <Typography variant="body1" sx={{ lineHeight: 1.7, color: '#B8B8B8' }}>
+                  {project.description}
+                </Typography>
+                
+                <Grid container spacing={3} sx={{ mt: 3 }}>
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CalendarTodayIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                      <Typography variant="body2" sx={{ color: '#8C8C8C' }}>
+                        Posted: {new Date(project.postedAt).toLocaleDateString("en-US", { 
+                          year: "numeric", month: "long", day: "numeric"
+                        })}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <GroupsIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                      <Typography variant="body2" sx={{ color: '#8C8C8C' }}>
+                        Proposals: {project.bids.length > 0 ? project.bids.length : 0}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+          </Grid>
+          
+          <Grid item xs={12} md={4}>
+            <Paper 
+              sx={{ 
+                backgroundColor: '#1E1E1E', 
+                color: '#E0E0E0', 
+                p: 3, 
+                borderRadius: 2,
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                <EngineeringIcon sx={{ mr: 1.5, color: secondaryColor }} />
+                Your Proposal
+              </Typography>
+              
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', my: 2 }} />
+              
+              {bid ? (
+                <Box sx={{ mt: 2 }}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      mb: 3,
+                      bgcolor: bidStatusStyles[bid.status]?.backgroundColor || 'rgba(255, 255, 255, 0.05)',
+                      border: `1px solid ${bidStatusStyles[bid.status]?.color || '#666'}30`,
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography 
+                      variant="subtitle2" 
+                      sx={{ 
+                        color: bidStatusStyles[bid.status]?.color || '#8C8C8C',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {bidStatusStyles[bid.status]?.label || "Status Unknown"}
                     </Typography>
-                    <Chip 
-                      label={bidStatusLabels[bid.status]?.label || "Unknown"} 
-                      color={bidStatusLabels[bid.status]?.color || "default"} 
-                    />
-                  </Box>
-
+                  </Paper>
                   
                   {bid.status === "ACCEPTED" && project.finalReport === null ? (
-                    <>
-                      <Button variant="contained" onClick={() => setOpenCompleteModal(true)}>
-                        Complete Project
-                      </Button>
-                      <CompleteProjectModal
-                        open={openCompleteModal}
-                        handleClose={() => setOpenCompleteModal(false)}
-                        handleSubmit={handleProjectCompletion}
-                      />
-                    </>
+                    <Button 
+                      variant="contained" 
+                      color="secondary"
+                      fullWidth
+                      onClick={() => setOpenCompleteModal(true)}
+                      sx={{
+                        fontWeight: 600,
+                        py: 1.5,
+                      }}
+                    >
+                      Complete Project
+                    </Button>
                   ) : bid.status === "ACCEPTED" && project.finalReport ? (
                     projectRating ? (
-                      <>
-                        <Button 
-                          variant="contained" 
-                          color="secondary" 
-                          onClick={() => setOpenReviewModal(true)}
-                        >
-                          View Feedback
-                        </Button>
-                  
-                        <ReviewModal 
-                          open={openReviewModal} 
-                          handleClose={() => setOpenReviewModal(false)} 
-                          feedback={projectRating.feedback} 
-                          rating={projectRating.ratingOutOfFive}
-                        />
-                      </>
+                      <Button 
+                        variant="outlined" 
+                        color="secondary"
+                        fullWidth
+                        onClick={() => setOpenReviewModal(true)}
+                        sx={{
+                          fontWeight: 600,
+                          py: 1.5,
+                        }}
+                      >
+                        View Client Feedback
+                      </Button>
                     ) : (
-                      <Chip label={"Work sent for review"} color="warning" />
+                      <Badge 
+                        
+                        color="warning"
+                        sx={{ 
+                          width: '100%',
+                        }}
+                      >
+                        <Button 
+                          variant="outlined" 
+                          fullWidth
+                     
+                          sx={{
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            color: '#8C8C8C',
+                            py: 1.5,
+                            interaction: 'none',
+                            cursor: 'none',
+                          }}
+                        >
+                          Awaiting Client Review
+                        </Button>
+                      </Badge>
                     )
                   ) : null}
-              </Box>
-            ) : (
-              <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}>
-                Place Bid
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+                </Box>
+              ) : (
+                <Button 
+                  variant="contained" 
+                  color="secondary"
+                  fullWidth
+                  onClick={() => setOpen(true)}
+                  sx={{
+                    fontWeight: 600,
+                    py: 1.5,
+                  }}
+                >
+                  Submit Proposal
+                </Button>
+              )}
+            </Paper>
+          </Grid>
+        </Grid>
       </Box>
+      
       <CreateBidModal 
         open={open} 
         handleClose={() => setOpen(false)} 
         developerId={user.user?.id}  
         projectId={projectId} 
         developerLevel={user.user?.level}
+      />
+      
+      <CompleteProjectModal
+        open={openCompleteModal}
+        handleClose={() => setOpenCompleteModal(false)}
+        handleSubmit={handleProjectCompletion}
+      />
+      
+      <ReviewModal 
+        open={openReviewModal} 
+        handleClose={() => setOpenReviewModal(false)} 
+        feedback={projectRating?.feedback} 
+        rating={projectRating?.ratingOutOfFive}
       />
     </Box>
   );

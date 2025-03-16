@@ -36,7 +36,7 @@ const ClientDashboard = () => {
 
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h4">Welcome to the Client Dashboard</Typography>
+        <Typography variant="h4">Welcome Back {user.user?.firstName}!</Typography>
         {user.user?.id && <ProjectList clientId={user.user?.id} />}
         {user.user?.coins !== null && (
           <Box sx={{
