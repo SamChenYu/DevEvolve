@@ -19,7 +19,7 @@ const BrowseProjectItem = ({ project }) => {
         alt="Project Thumbnail"
       />
       <CardContent>
-        <Typography variant="h6" color="secondary" sx={{ fontWeight: 600 }}>{project.name}</Typography>
+        <Typography variant="h6" color="secondary" sx={{ fontWeight: 600 }}>{project.title}</Typography>
         <Typography variant="body2" sx={{ color: '#ccc' }}>{project.description.substring(0, 100)}...</Typography>
       </CardContent>
     </Card>

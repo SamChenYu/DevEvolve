@@ -38,9 +38,9 @@ const ProjectList = ({ clientId }) => {
   
   return (
     <Box sx={{ mt: 4, px: 3, overflow: "hidden", maxWidth: "85vw" }}>
-      <Typography variant="h5" color="white" gutterBottom>
+      {/* <Typography variant="h5" color="white" gutterBottom>
         Your Projects
-      </Typography>
+      </Typography> */}
       {loading ? (
         <CircularProgress color="secondary" />
       ) : projects.length > 0 ? (
