@@ -1,0 +1,357 @@
+/* Colour Scheme */
+
+
+/* Left side bar */
+
+
+
+.discussions .search, .header-chat, .footer-chat {
+  background-color: #333;
+}
+
+.discussions {
+  background-color: #222;
+}
+
+.discussion {
+  background-color: #444;
+  
+}
+
+.discussion:hover {
+  background-color: #666; /* Change to the color you want on hover */
+}
+
+.discussions .search .searchbar {
+  color: #666;
+}
+
+
+.searchbar, input {
+  background-color: #DDD !important;
+}
+
+/* Right side bar */
+
+.chat .messages-chat .text {
+  margin: 0 35px;
+  background-color: #333;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+
+.response .text {
+  background-color: #444 !important;
+}
+
+
+
+
+
+
+  .container {
+    padding:0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+  }
+  
+  /* === CONVERSATIONS === */
+  
+  .discussions {
+    width: 30%; /* OPPOSITE FROM .chat  */
+    height: 100vh;
+    box-shadow: 0px 8px 10px rgba(0,0,0,0.20);
+    overflow: hidden;
+    display: inline-block;
+    float:left;
+  }
+  
+  .discussions .discussion {
+    width: 100%;
+    height: 90px;
+    border-bottom: solid 1px #000;
+    display:flex;
+    align-items: center;
+    cursor: pointer;
+    border-right: solid 1px #222;
+  }
+
+
+
+  
+  .discussions .search {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .discussions .search .searchbar {
+    height: 40px;
+    width: 70%;
+    padding: 0 20px;
+    border-radius: 50px;
+    border: 1px solid #000;
+    display:flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .discussions .search .searchbar input {
+    margin-left: 15px;
+    height:38px;
+    width:100%;
+    border:none;
+    font-family: 'Montserrat', sans-serif;;
+  }
+
+
+  
+
+  .discussions .message-active {
+    width: 100%; /* was 98.5% previously to have slit at the end */
+    height: 90px;
+    background-color: purple;
+    border-bottom: solid 1px #222;
+    border-right: solid 1px #222;
+  }
+  
+  .discussions .discussion .photo {
+      margin-left:20px;
+      display: block;
+      width: 45px;
+      height: 45px;
+      background: #222;
+      -moz-border-radius: 50px;
+      -webkit-border-radius: 50px;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+  }
+  
+  .online {
+    position: relative;
+    top: 30px;
+    left: 35px;
+    width: 13px;
+    height: 13px;
+    background-color: #8BC34A;
+    border-radius: 13px;
+    border: 3px solid #FAFAFA;
+  }
+  
+  .desc-contact {
+    height: 43px;
+    width:50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .discussions .discussion .name {
+    margin: 0 0 0 20px;
+    text-align: left;
+    font-family:'Montserrat', sans-serif;
+    font-size: 11pt;
+    color:white;
+    
+  }
+
+  
+  .discussions .discussion .message {
+    margin: 6px 0 0 20px;
+    text-align: left;
+    font-family:'Montserrat', sans-serif;
+    font-size: 9pt;
+    color:white;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .timer {
+    margin-left: 15%;
+    font-family:'Open Sans', sans-serif;
+    font-size: 11px;
+    padding: 3px 8px;
+    color: #BBB;
+    background-color: #FFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 15px;
+  }
+  
+  .chat {
+    width: 70%;
+    float:left;
+    height: 100%;
+  }
+  
+  .header-chat {
+    height: 90px;
+    box-shadow: 0px 3px 2px rgba(0,0,0,0.100);
+    display:flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .chat .header-chat .photo {
+      display: block;
+      width: 45px;
+      height: 45px;
+      background: #222;
+      -moz-border-radius: 50px;
+      -webkit-border-radius: 50px;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+  }
+  
+  .chat .header-chat .icon {
+    color:#515151;
+    font-size: 14pt;
+  }
+  
+  .chat .header-chat {
+    align-items: center;
+  }
+
+  .chat .header-chat .name {
+    margin: 0 0 0 20px;
+    text-transform: uppercase;
+    font-family:'Montserrat', sans-serif;
+    font-size: 13pt;
+    color:white;
+  }
+  
+  .chat .header-chat .right {
+    position: absolute;
+    right: 40px;
+  }
+  
+.discussions, .messages-chat {
+    overflow-y: auto;
+}
+
+
+.messages-chat {
+    min-height: 79%;
+    flex-grow: 1;
+}
+
+  .chat .messages-chat {
+    padding: 25px 35px;
+  }
+
+  
+  .chat .messages-chat .message {
+    display:flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .chat .messages-chat .message .photo {
+      display: block;
+      width: 45px;
+      height: 45px;
+      background: #222;
+      -moz-border-radius: 50px;
+      -webkit-border-radius: 50px;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+  }
+  
+  .chat .messages-chat .text {
+    margin: 0 35px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+  
+  .text-only {
+    margin-left: 45px;
+  }
+  
+  .time {
+    font-size: 10px;
+    color:white;
+    margin-bottom:10px;
+    margin-left: 35px;
+    float: left;
+  }
+  
+  .response-time {
+    float: right;
+    margin-right: 40px !important;
+  }
+  
+  .response {
+    float: right;
+    margin-right: 0px !important;
+    margin-left:auto; /* flexbox alignment rule */
+  }
+  
+
+  
+  .footer-chat {
+    width: 100%;
+    height: 80px;
+    display:flex;
+    align-items: center;
+    position:relative;
+    bottom: 0;
+    flex-direction: row;
+  }
+  
+  .chat .footer-chat .icon {
+    margin-left: 30px;
+    color:#222;
+    font-size: 14pt;
+  }
+  
+
+  
+  .chat .footer-chat .name {
+    margin: 0 0 0 20px;
+    text-transform: uppercase;
+    font-family:'Montserrat', sans-serif;
+    font-size: 13pt;
+    color:white;
+  }
+  
+  .chat .footer-chat .right {
+    position: absolute;
+    right: 40px;
+  }
+  
+  .write-message {
+    margin: 0 0 0 0;
+    border-radius: 12px;
+    width:80%;
+    height: 50px;
+    padding: 10px;
+  }
+  
+  .footer-chat *::-webkit-input-placeholder {
+    color: #C0C0C0;
+    font-size: 13pt;
+  }
+  .footer-chat input *:-moz-placeholder {
+    color: #C0C0C0;
+    font-size: 13pt;
+  }
+  .footer-chat input *::-moz-placeholder {
+    color: #C0C0C0;
+    font-size: 13pt;
+    margin-left:5px;
+  }
+  .footer-chat input *:-ms-input-placeholder {
+    color: #C0C0C0;
+    font-size: 13pt;
+  }
+  
+  .clickable {
+    cursor: pointer;
+  }
