@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, CssBaseline, Typography, TextField, InputAdornment, List, ListItem, ListItemAvatar, Avatar, ListItemText, CircularProgress } from '@mui/material';
+import { 
+  Box, CssBaseline, Typography, TextField, InputAdornment, 
+  List, ListItem, ListItemAvatar, Avatar, ListItemText, CircularProgress 
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Sidebar from '../layout/Sidebar';
 import { getAllDevelopers, searchDevelopers } from '../../services/AuthenicationService';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-
-
 
 const BrowseDevelopers = () => {
   const [developers, setDevelopers] = useState([]);
@@ -14,16 +15,21 @@ const BrowseDevelopers = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const { user } = useContext(UserContext);
-  localStorage.setItem("user", JSON.stringify(user));
+  const { user, loading: userLoading } = useContext(UserContext);
 
 
   useEffect(() => {
-    if (!localStorage.getItem("user") || !user) {
+    if (!userLoading && (!user || user.role !== "CLIENT")) {
       navigate("/login");
     }
-    fetchDevelopers();
-  }, [user, navigate]);
+  }, [user, userLoading, navigate]);
+
+
+  useEffect(() => {
+    if (user && user.role === "CLIENT") {
+      fetchDevelopers();
+    }
+  }, [user]);
 
   const fetchDevelopers = async () => {
     setLoading(true);
@@ -52,8 +58,29 @@ const BrowseDevelopers = () => {
     }
   };
 
+  
+  if (userLoading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          bgcolor: 'background.default'
+        }}
+      >
+        <Typography variant="h4" sx={{ color: "white" }}>
+          Loading...
+        </Typography>
+      </Box>
+    );
+  }
 
   
+  if (!user || user.role !== "CLIENT") {
+    return null; 
+  }
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
@@ -85,14 +112,24 @@ const BrowseDevelopers = () => {
           <List sx={{ bgcolor: "#1e1e1e", borderRadius: 2, p: 2 }}>
             {developers.length > 0 ? (
               developers.map((dev) => (
-                <ListItem key={dev.id} sx={{ borderBottom: "1px solid #444" }} onClick={() => navigate(`/developer/${dev.id}`)}>
+                <ListItem 
+                  key={dev.id} 
+                  sx={{ 
+                    borderBottom: "1px solid #444", 
+                    '&:hover': { border: "2px solid #9c27b0", borderRadius: "5px" } 
+                  }} 
+                  onClick={() => navigate(`/dev-profile/${dev.id}`)}
+                >
                   <ListItemAvatar>
-                    <Avatar>{dev.firstName.charAt(0)}</Avatar>
+                    <Avatar sx={{ p:3, mr: 3 }}>
+                      {dev.firstName.charAt(0)}{dev.lastName.charAt(0)}
+                    </Avatar>
                   </ListItemAvatar>
                   <ListItemText 
                     primary={`${dev.firstName} ${dev.lastName}`} 
                     secondary={dev.email} 
-                    sx={{ color: "white" }}
+                    primaryTypographyProps={{ style: { color: "white" } }} 
+                    secondaryTypographyProps={{ style: { color: "rgba(255,255,255,0.7)" } }} 
                   />
                 </ListItem>
               ))

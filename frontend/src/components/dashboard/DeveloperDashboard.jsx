@@ -281,7 +281,7 @@ const DeveloperDashboard = () => {
               </Box>
             ) : (
               <Box sx={{ p: 3, textAlign: 'center', bgcolor: alpha(theme.palette.secondary.main, 0.05), borderRadius: 2 }}>
-                <Typography variant="body1">You haven't completed any projects yet.</Typography>
+                <Typography variant="body1" color="white">You haven't completed any projects yet.</Typography>
               </Box>
             )}
           </Paper>
