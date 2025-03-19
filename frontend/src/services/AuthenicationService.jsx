@@ -33,6 +33,16 @@ export const login = async (credentials) => {
     return response.data;
 }
 
+export const getAdminFromToken = async () => {
+    try{
+        const response = await axiosInstance.get('/auth/admin/profile', { withCredentials: true });
+        return response.data
+    }catch (error){
+        console.error("Error fetching admin:", error.response?.data || error.message);
+        throw new Error("Failed to fetch admin.");
+    }
+}
+
 export const getUserFromToken = async () => {
     try {
         const response = await axiosInstance.get('/auth/users/profile', { withCredentials: true });

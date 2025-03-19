@@ -4,6 +4,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import { useNavigate } from 'react-router-dom';
 import { useContext, useEffect } from 'react';
 import { UserContext } from '../../context/UserContext';
+import { AdminContext } from '../../context/AdminContext';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import CreateIcon from '@mui/icons-material/Create';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -15,18 +16,19 @@ const drawerWidth = 240;
 const Sidebar = () => {
   const navigate = useNavigate();
   const { user, loading } = useContext(UserContext);
+  const { admin, adminLoading } = useContext(AdminContext);
   var menuItems = [];
   useEffect(() => {
-      if (!loading && !user) {
+      if (!loading && !user && !admin && !adminLoading) {
         navigate("/login");
       }
-    }, [navigate, user, loading]);
+    }, [navigate, user, loading, admin, adminLoading]);
   
-    if (loading) {
+    if (loading || adminLoading) {
       return <Typography variant="h4">Loading...</Typography>;
     }
   
-    if (!user) {
+    if (!user && !admin) {
       return null; 
     }
 
@@ -46,11 +48,20 @@ const Sidebar = () => {
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     }
+    else if (admin && !user) {
+        menuItems = [
+            { text: "Browse Users", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-users") },
+            { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
+        ];
+    }
   const homepage = () => {
     if (user.role === "CLIENT") {
       navigate("/client-dashboard");
     } else if (user.role === "DEVELOPER") {
       navigate("/developer-dashboard");
+    }
+    else if (admin && !user) {
+      navigate("/admin-dashboard");
     }
   };
 

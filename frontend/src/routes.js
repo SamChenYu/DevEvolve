@@ -5,6 +5,7 @@ import Login from "./components/auth/Login";
 import LandingPage from "./LandingPage";
 import DeveloperDashboard from "./components/dashboard/DeveloperDashboard";
 import ClientDashboard from "./components/dashboard/ClientDashboard";
+import AdminDashboard from "./components/dashboard/AdminDashboard";
 import CreateProjectForm from "./components/projects/CreateProjectForm";
 import ProjectDetails from "./components/projects/ProjectDetails";
 import BrowseDevelopers from "./components/browse/BrowseDevelopers";
@@ -20,6 +21,7 @@ const AppRoutes = () => {
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/client-registration" element={<ClientRegistration />} />
                 <Route path="/developer-registration" element={<DeveloperRegistration />} />
                 <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
