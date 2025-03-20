@@ -6,17 +6,29 @@ import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import { useTheme } from '@mui/material/styles';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import { Box, Typography, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button } from '@mui/material'; 
+import { Box, Typography, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal } from '@mui/material'; 
 import { ArrowBack, GitHub, LinkedIn, Twitter, Facebook, Edit, Code, Star, Language, Verified } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
+import { fetchProjectsByDeveloper } from '../../services/ProjectService';
+import Slider from 'react-slick';
+import { alpha } from '@mui/material';
+import BrowseProjectItem from '../browse/BrowseProjectItem';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import SearchIcon from '@mui/icons-material/Search';
+
+
 
 const DevProfilePage = () => {
-  const { user, loading } = useContext(UserContext);
-  const { id } = useParams();
-  //console.log(userId);
+    const { user, loading } = useContext(UserContext);
+    const { id } = useParams();
+
     const navigate = useNavigate();
     const [developer, setDeveloper] = useState(null);
     const [userLoading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [projects, setProjects] = useState({ inProgress: [], completed: [] });
     const theme = useTheme();
   
     useEffect(() => {
@@ -38,26 +50,63 @@ const DevProfilePage = () => {
     
         fetchUser();
       }, [user, loading]);
+
+    useEffect(() => {
+        if (user?.user?.id) {
+          fetchProjectsByDeveloper(id)
+            .then((data) => {
+              const inProgress = data.filter((p) => p.status === "IN_PROGRESS");
+              const completed = data.filter((p) => p.status === "COMPLETED");
+              setProjects({ inProgress, completed });
+            })
+            .catch((err) => console.error("Error fetching developer projects:", err));
+        }
+      }, [user]);
   
   
     if (loading) {
 
-    return (
-        <Box 
-            sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100vh',
-                bgcolor: 'background.default'
-            }}
-        >
-            <Typography variant="h4" sx={{ color: theme.palette.secondary.main }}>
-                Loading...
-            </Typography>
-        </Box>
-    );
+      return (
+          <Box 
+              sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  height: '100vh',
+                  bgcolor: 'background.default'
+              }}
+          >
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main }}>
+                  Loading...
+              </Typography>
+          </Box>
+      );
     }
+
+    const settings = {
+      dots: true,
+      infinite: false,
+      speed: 500,
+      slidesToShow: 3,
+      slidesToScroll: 2,
+      focusOnSelect: true,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2,
+          }
+        },
+        {
+          breakpoint: 600,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          }
+        }
+      ]
+    };
 
   
   const skills = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'GraphQL', 'UI/UX'];
@@ -146,7 +195,7 @@ const DevProfilePage = () => {
               </Typography>
               
               <Typography variant="body2" color="white">
-                {developer.email || "email@example.com"}
+                {developer.email || "email</Box>@example.com"}
               </Typography>
               
           
@@ -278,6 +327,7 @@ const DevProfilePage = () => {
                           color: "#9c27b0",
                           '&:hover': { borderColor: "#9c27b0" } 
                         }}
+                        onClick={() => setOpen(true)}
                       >
                         View Portfolio
                       </Button>
@@ -293,7 +343,97 @@ const DevProfilePage = () => {
           </Box>
         )}
       </Box>
+      <Modal open={open} onClose={() => setOpen(false)} width="1000px" height="100%">
+        <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: "80%", bgcolor: '#222', color: 'white', boxShadow: 24, p: 3, borderRadius: 2, border: '1px solid #333', textAlign: 'center'}}>
+          <IconButton onClick={() => setOpen(false)} sx={{ position: 'absolute', top: 10, right: 5, color: 'white' }}>
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h4" fontWeight={600} sx={{mt: 3, mb: 3}}>Developer Portfolio</Typography>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <CheckCircleIcon sx={{ color: theme.palette.secondary.main, mr: 1 }} />
+              <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+                Completed Projects
+              </Typography>
+              
+              <Chip 
+                label={projects.completed.length} 
+                size="small" 
+                sx={{ 
+                  ml: 2, 
+                  bgcolor: theme.palette.secondary.main,
+                  color: 'white'
+                }} 
+              />
+          </Box>
+          <Divider sx={{bgcolor: 'rgba(255,255,255,0.1)', mt: 3, mb: 3}} />
+          {projects.completed.length > 0 ? (
+              <Box sx={{ '& .slick-dots li button:before': { color: theme.palette.secondary.main } }}>
+                <Slider {...settings}>
+                  {projects.completed.map((project) => (
+                    <Box 
+                      key={project.id} 
+                      sx={{ p: 2, display: 'flex', justifyContent: 'center' }} 
+                   
+                    >
+                      <BrowseProjectItem project={project} />
+                    </Box>
+                  ))}
+                </Slider>
+              </Box>
+            ) : (
+              <Box sx={{ p: 3, textAlign: 'center', bgcolor: alpha(theme.palette.secondary.main, 0.05), borderRadius: 2 }}>
+                <Typography variant="body1" color="white">They haven't completed any projects yet.</Typography>
+              </Box>
+            )}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <TerminalIcon sx={{ color: theme.palette.secondary.main, mr: 1 }} />
+                <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+                  In Progress Projects
+                </Typography>
+                <Chip 
+                  label={projects.inProgress.length} 
+                  size="small" 
+                  sx={{ 
+                    ml: 2, 
+                    bgcolor: theme.palette.secondary.main,
+                    color: 'white'
+                  }} 
+                />
+              </Box>
+              
+            </Box>
+            
+            <Divider sx={{ mb: 3, borderColor: alpha(theme.palette.secondary.main, 0.2) }} />
+            
+            {projects.inProgress.length > 0 ? (
+              <Box sx={{ '& .slick-dots li button:before': { color: theme.palette.secondary.main } }}>
+                <Slider {...settings}>
+                  {projects.inProgress.map((project) => (
+                    <Box 
+                      key={project.id} 
+                      sx={{ p: 2, display: 'flex', justifyContent: 'center' }} 
+                      
+                    >
+                      <BrowseProjectItem project={project} />
+                    </Box>
+                  ))}
+                </Slider>
+              </Box>
+            ) : (
+              <Box sx={{ p: 3, textAlign: 'center', bgcolor: alpha(theme.palette.secondary.main, 0.15), borderRadius: 2 }}>
+                <Typography variant="body1" sx={{ mb: 2, color:"white" }}>They are not working on any projects at the moment.</Typography>
+                
+              </Box>
+            )}
+        </Box>
+        
+
+      </Modal>
     </Box>
+
+    
   );
 };
 

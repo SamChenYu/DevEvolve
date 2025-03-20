@@ -362,11 +362,19 @@ const ProjectDetails = () => {
                                 {selectedDeveloper.email}
                             </Typography>
 
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                                <Facebook sx={{ color: '#1877F2', mx: 1 }} />
-                                <Twitter sx={{ color: '#1DA1F2', mx: 1 }} />
-                                <LinkedIn sx={{ color: '#0A66C2', mx: 1 }} />
-                                <GitHub sx={{ color: '#181717', mx: 1 }} />
+                            <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
+                                <IconButton sx={{ color: "#1877F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <Facebook />
+                                </IconButton>
+                                <IconButton sx={{ color: "#1DA1F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <Twitter />
+                                </IconButton>
+                                <IconButton sx={{ color: "#0A66C2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <LinkedIn />
+                                </IconButton>
+                                <IconButton sx={{ color: "#fff", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <GitHub />
+                                </IconButton>
                             </Box>
                         </>
                     ) : (

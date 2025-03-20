@@ -63,11 +63,19 @@ const DevProfile = () => {
             </Typography>
 
             
-            <Box sx={{ mt: 3, display: "flex", justifyContent: "center", gap: 2 }}>
-              <IconButton sx={{ color: "white" }}><Facebook /></IconButton>
-              <IconButton sx={{ color: "white" }}><Twitter /></IconButton>
-              <IconButton sx={{ color: "white" }}><LinkedIn /></IconButton>
-              <IconButton sx={{ color: "white" }}><GitHub /></IconButton>
+            <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
+              <IconButton sx={{ color: "#1877F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                <Facebook />
+              </IconButton>
+              <IconButton sx={{ color: "#1DA1F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                <Twitter />
+              </IconButton>
+              <IconButton sx={{ color: "#0A66C2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                <LinkedIn />
+              </IconButton>
+              <IconButton sx={{ color: "#fff", bgcolor: "rgba(255,255,255,0.05)" }}>
+                <GitHub />
+              </IconButton>
             </Box>
           </>
         ) : (

@@ -35,7 +35,7 @@ const Sidebar = () => {
       menuItems = [
         { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
         { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
-        { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/client-profile/{user?.user?.id}`) },
+        { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/client-profile/${user?.user?.id}`) },
         { text: "Chat", icon: <ChatIcon />, onClick: () => navigate("/chat") },
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
@@ -44,7 +44,7 @@ const Sidebar = () => {
       menuItems = [
         { text: "Browse Projects", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-projects") },
         { text: "Your Bids", icon: <PriceChangeIcon />, onClick: () => navigate("/your-bids") },
-        { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/dev-profile/{user?.user?.id}`) },
+        { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/dev-profile/${user?.user?.id}`) },
         { text: "Chat", icon: <ChatIcon />, onClick: () => navigate("/chat") },
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
