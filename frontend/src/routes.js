@@ -13,6 +13,8 @@ import BrowseProjectItemDetails from "./components/browse/BrowseProjectItemDetai
 import DevProfile from "./components/profile/DevProfile";
 import Logout from "./components/auth/Logout";
 import BidList from "./components/bids/BidList";
+import DevProfilePage from "./components/profile/DevProfilePage";
+import ClientProfilePage from "./components/profile/ClientProfilePage";
 
 const AppRoutes = () => {
     return (
@@ -32,6 +34,8 @@ const AppRoutes = () => {
                 <Route path="/developer/:id" element={<DevProfile />} />
                 <Route path="/your-bids" element={<BidList />} />
                 <Route path="/logout" element={<Logout />} />
+                <Route path="/dev-profile/:id" element={<DevProfilePage />} />
+                <Route path="/client-profile/:id" element={<ClientProfilePage />} />
             </Routes>
         </Router>
     );
