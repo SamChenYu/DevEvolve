@@ -5,12 +5,21 @@
 
 
 
-.discussions .search, .header-chat, .footer-chat {
+.discussions .search, .header-chat{
   background-color: #333;
 }
 
-.discussions {
+.footer-chat {
+  background-color: #333;
+}
+
+.messages-chat {
   background-color: #222;
+}
+
+.discussions {
+  background-color: #333;
+  border-right: solid 1px #000;
 }
 
 .discussion {
@@ -30,6 +39,8 @@
 .searchbar, input {
   background-color: #DDD !important;
 }
+
+
 
 /* Right side bar */
 
@@ -194,6 +205,7 @@
     display:flex;
     align-items: center;
     justify-content: center;
+    border-bottom: solid 1px #000;
   }
 
 
@@ -307,7 +319,6 @@
   
   .chat .footer-chat .icon {
     margin-left: 30px;
-    color:#222;
     font-size: 14pt;
   }
   
