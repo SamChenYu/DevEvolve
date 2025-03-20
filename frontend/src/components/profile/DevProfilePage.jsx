@@ -32,7 +32,7 @@ const DevProfilePage = () => {
     const theme = useTheme();
   
     useEffect(() => {
-      if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT"))) {
+      if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT" && user.role !== "ADMIN"))) {
         navigate("/login");
       }
     }, [navigate, user, loading]);
@@ -154,20 +154,22 @@ const DevProfilePage = () => {
               }}
             >
         
-              <Chip
-                icon={<Edit size="small"/>}
-                label="Edit Profile"
-                sx={{ 
-                  position: "absolute", 
-                  padding: 2,
-                  right: 16, 
-                  top: 64, 
-                  bgcolor: "rgba(0,0,0,0.5)", 
-                  color: "white", 
-                  border: "1px solid rgba(255,255,255,0.2)" 
-                }}
-                onClick={() => navigate("/edit-profile")}
-              />
+              {(user.user?.id === id || user.role === "ADMIN") && (
+                <Chip
+                  icon={<Edit size="small"/>}
+                  label="Edit Profile"
+                  sx={{ 
+                    position: "absolute", 
+                    padding: 2,
+                    right: 16, 
+                    top: 64, 
+                    bgcolor: "rgba(0,0,0,0.5)", 
+                    color: "white", 
+                    border: "1px solid rgba(255,255,255,0.2)" 
+                  }}
+                  onClick={() => navigate("/edit-profile")}
+                />
+              )}
             </Box>
             
        

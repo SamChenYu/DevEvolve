@@ -34,6 +34,9 @@ public class DataSeedConfig {
     private BidRepository bidRepository;
 
     @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -140,6 +143,11 @@ public class DataSeedConfig {
                 chat.setClient(andreas);
                 chat.setDeveloper(wahida);
                 chatRepository.save(chat);
+
+                Admin admin = new Admin();
+                admin.setEmail("admin@gmail.com");
+                admin.setPassword(passwordEncoder.encode("password"));
+                adminRepository.save(admin);
                 
 
             }
