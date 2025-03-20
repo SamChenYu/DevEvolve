@@ -4,24 +4,24 @@ public class ChatRequest {
 
 
     // Used for when frontend passes in clientName and developerName
-    private String clientEmail;
-    private String developerEmail;
+    private String clientID;
+    private String developerID;
 
     public ChatRequest() {
         super();
     }
 
-    public ChatRequest(String clientEmail, String developerEmail) {
+    public ChatRequest(String clientID, String developerID) {
         super();
-        this.clientEmail = clientEmail;
-        this.developerEmail = developerEmail;
+        this.clientID = clientID;
+        this.developerID = developerID;
     }
 
-    public String getClientEmail() {
-        return clientEmail;
+    public String getClientID() {
+        return clientID;
     }
 
-    public String getDeveloperEmail() {
-        return developerEmail;
+    public String getDeveloperID() {
+        return developerID;
     }
 }

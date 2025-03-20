@@ -1,6 +1,5 @@
 
 import React, { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Box, CssBaseline, Paper, Typography } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
@@ -8,16 +7,21 @@ import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SearchIcon from '@mui/icons-material/Search';
 
+import UserContext from '../../context/UserContext';
+import ChatService from '../../services/ChatService';
+
 import './Chat.css';
 
 const Chat = () => {
 
 
     const { user, loading } = useContext(UserContext);
-    const navigate = useNavigate();
+
     if(loading) {
        return <Typography variant="h4">Loading...</Typography>;
    }
+
+   
 
 
     return (
