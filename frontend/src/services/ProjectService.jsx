@@ -155,3 +155,13 @@ export const handleRatingSubmit = async (projectId, rating, feedback, ) => {
       alert("Failed to submit rating. Please try again.");
   }
 };
+
+export const modifyBid = async(bidId, bidData) => {
+  try {
+      const response = await axiosInstance.put(`/auth/admin/modifyBid/${bidId}`, bidData);
+      return response.data;
+  } catch (error) {
+      console.error("Error modifying bid:", error);
+      throw error.response?.data?.message || "Failed to modify bid";
+  }
+}

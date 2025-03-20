@@ -49,11 +49,20 @@ const Sidebar = () => {
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     }
+    else {
+      menuItems = [
+        { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
+        { text: "Browse Projects", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-projects") },
+        { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
+      ];
+    }
   const homepage = () => {
     if (user.role === "CLIENT") {
       navigate("/client-dashboard");
     } else if (user.role === "DEVELOPER") {
       navigate("/developer-dashboard");
+    } else if (user.role === "ADMIN") {
+      navigate("/admin-dashboard");
     }
   };
 

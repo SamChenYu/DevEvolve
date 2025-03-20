@@ -3,20 +3,24 @@ import { Box, Typography, List, ListItem, ListItemText, CircularProgress, Accord
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
-import { developerBids } from '../../services/ProjectService';
+import { developerBids, modifyBid } from '../../services/ProjectService';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import CreateIcon from '@mui/icons-material/Create';
+import EditBidModal from './EditBidModal';
 
 const BidList = () => {
   const { user, loading } = useContext(UserContext);
   const navigate = useNavigate();
   const [bids, setBids] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedBid, setSelectedBid] = useState(null);
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "DEVELOPER")) {
+    if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "ADMIN"))) {
       navigate("/login");
     }
   }, [navigate, user, loading]);
@@ -36,6 +40,22 @@ const BidList = () => {
   if (loading || isLoading) {
     return <Typography variant="h4" sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Typography>;
   }
+
+  const handleEditBid = (bid) => {
+    setSelectedBid(bid);
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateBid = async (updatedBid) => {
+    try {
+      await modifyBid(selectedBid.id, updatedBid);
+     
+      const updatedBids = await developerBids(user.user.id);
+      setBids(updatedBids);
+    } catch (error) {
+      console.error("Error updating bid:", error);
+    }
+  };
 
   const acceptedBids = bids.filter((bid) => bid.status === "ACCEPTED");
   const pendingBids = bids.filter((bid) => bid.status !== "ACCEPTED");
@@ -81,6 +101,7 @@ const BidList = () => {
                                 </Typography>
                               }
                             />
+                            
                             <Chip
                               icon={<CheckCircleIcon />}
                               label="Accepted"
@@ -121,12 +142,37 @@ const BidList = () => {
                                 </Typography>
                               }
                             />
+
                             <Chip
                               icon={bid.status === "PENDING" ? <HourglassEmptyIcon/> : <CancelIcon />}
                               label={bid.status === "PENDING" ? "Pending" : "Rejected"}
                               color={bid.status === "PENDING" ? "warning" : "error"}
-                              sx={{ fontWeight: "bold" }}
+                              sx={{ fontWeight: "bold", mr: 1 }}
                             />
+
+                            {bid.status === "PENDING" && (
+                              <>
+                                <Chip 
+                                  icon={<CreateIcon />}
+                                  label="Edit Bid"
+                                  color="primary"
+                                  sx={{ fontWeight: "bold", mr: 1, '&:hover': {backgroundColor: "blue"}, cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditBid(bid);
+                                  }}
+                                />
+                                <Chip
+                                  icon={<CancelIcon />}
+                                  label="Cancel Bid"
+                                  color="error"
+                                  sx={{ fontWeight: "bold", mr: 1, '&:hover': {backgroundColor: "red"}, cursor: "pointer" }}
+                                />
+                              </>
+                              
+                            )}
+                            
+                            
                           </ListItem>
                         </CardContent>
                       </Card>
@@ -138,6 +184,14 @@ const BidList = () => {
           </>
         )}
       </Box>
+      {selectedBid && (
+        <EditBidModal 
+          open={editModalOpen} 
+          onClose={() => setEditModalOpen(false)} 
+          bid={selectedBid} 
+          onSubmit={handleUpdateBid} 
+        />
+      )}
     </Box>
   );
 };

@@ -42,7 +42,7 @@ const ProjectDetails = () => {
     const { user, loading } = useContext(UserContext);
       
     useEffect(() => {
-    if (!loading && (!user || user.role !== "CLIENT")) {
+    if (!loading && (!user || (user.role !== "CLIENT" && user.role !== "ADMIN"))) {
         navigate("/login");
     }
     }, [navigate, user, loading]);
@@ -296,6 +296,8 @@ const ProjectDetails = () => {
                                     Rate Developer
                                 </Button>
                             )}
+
+
                             
                             {developerHired ? (
                                 <Button 
@@ -326,6 +328,41 @@ const ProjectDetails = () => {
                                     View Bids
                                 </Button>
                             )}
+
+                            {clientId === user.user?.id && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        fullWidth
+                                        onClick={() => navigate(`/projects/${clientId}`)}
+                                        sx={{
+                                            fontWeight: 600,
+                                            py: 1.5,
+                                            mt: 2
+                                        }}
+                                    >
+                                        Delete Project
+                                    </Button>
+                            
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        fullWidth
+                                        onClick={() => navigate(`/projects/${clientId}`)}
+                                        sx={{
+                                            fontWeight: 600,
+                                            py: 1.5,
+                                            mt: 2
+                                        }}
+                                    >
+                                        Modify Project
+                                    </Button>
+                                </>
+                            )}
+
+
+
                         </Paper>
                     </Grid>
                 </Grid>
