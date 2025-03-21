@@ -32,11 +32,11 @@ const newChat = async (user1ID, user2ID) => {
     }
 }
 
-const sendMessage = async (chatID, from, text, timestamp) => {
+const sendMessage = async (chatID, sender, text, timestamp) => {
     try {
         const response = await axiosInstance.post(`/chat/send`, {
             chatID,
-            from,
+            sender,
             text,
             timestamp
         });

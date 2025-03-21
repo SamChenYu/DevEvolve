@@ -17,10 +17,8 @@ const Chat = () => {
   
 
 
-  /// Load every single chat
+  // Handling of loading chats
   const [chats, setChats] = useState([]);
-  const [activeChatID, setActiveChatID] = useState(null); // To store the selected chat ID
-  const [activeChatName, setActiveChatName] = useState(null); // To store the selected chat name
   useEffect(() => {
     if(!user || !user.user.id) {
       return;
@@ -38,10 +36,28 @@ const Chat = () => {
     fetchChats();
   }, [user]);
 
+  // Handling of active chats
+  const [activeChatID, setActiveChatID] = useState(null); // To store the selected chat ID
+  const [activeChatName, setActiveChatName] = useState(null); // To store the selected chat name
   const handleChatClick = (chatID) => {
     console.log("Clicked chat:", chatID);
     setActiveChatID(chatID); // Set the clicked chat as active
   };
+
+  //Sending of messages
+  const [messageText, setMessageText] = useState("");
+  const handleSendMessage = async () => {
+    if (!messageText.trim()) return; // Prevent sending empty messages
+
+    const timestamp = new Date().toISOString(); // Current timestamp
+    try {
+      await ChatService.sendMessage(activeChatID, user.user.id, messageText, timestamp);
+      setMessageText(""); // Clear input after sending
+    } catch (error) {
+      console.error("Failed to send message", error);
+    }
+  }
+
 
 
   if(loading) {
@@ -145,15 +161,16 @@ const Chat = () => {
               <React.Fragment key={message.id}>
                 <div className={`message text-only"`}>
                   {isUserMessage ? (
-                    <p className="text">{message.text}</p>
-                  ) : (
                     <div className="response">
                     <p className="text">{message.text}</p>
                   </div>
+                  ) : (
+                    <p className="text">{message.text}</p>
+
                   )}
                 </div>
                 
-                {isLastInChunk && <p className={isUserMessage ? "time" : "response-time time"}>{formattedDate}</p>}
+                {isLastInChunk && <p className={isUserMessage ? "response-time time" : "time"}>{formattedDate}</p>}
               </React.Fragment>
             );
           })}
@@ -164,7 +181,7 @@ const Chat = () => {
           { /* Write a message */ }
           <div className="footer-chat">
             <AttachFileIcon className="icon attach clickable" style={{ fontSize: '50px', marginRight: '10px', color: 'purple'}} aria-hidden="true"/>
-            <input type="text" className="write-message" placeholder="Type your message here"/>
+            <input type="text" className="write-message" placeholder="Type your message here" value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}/>
             <SendIcon className="icon send clickable" style={{ fontSize: '50px', marginLeft: '10px', color: 'purple'}} aria-hidden="true"/>
           </div>
 
