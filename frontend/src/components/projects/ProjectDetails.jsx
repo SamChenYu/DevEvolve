@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme } from '@mui/material';
@@ -18,13 +18,14 @@ import { Avatar } from '@mui/material';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
+import { UserContext } from '../../context/UserContext';
 
 const ProjectDetails = () => {
     const { clientId, projectId } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
     const [project, setProject] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [projectLoading, setProjectLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [developerHired, setDeveloperHired] = useState(false);
     const [devLoading, setDevLoading] = useState(false);
@@ -34,8 +35,17 @@ const ProjectDetails = () => {
     const [feedback, setFeedback] = useState("");
     const [hasRated, setHasRated] = useState(false);
     
+    
     const secondaryColor = theme.palette.secondary.main;
     const secondaryLight = theme.palette.secondary.light;
+
+    const { user, loading } = useContext(UserContext);
+      
+    useEffect(() => {
+    if (!loading && (!user || user.role !== "CLIENT")) {
+        navigate("/login");
+    }
+    }, [navigate, user, loading]);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -46,15 +56,37 @@ const ProjectDetails = () => {
                 setDeveloperHired(hired);
                 const ratingData = await fetchProjectRating(projectId);
                 setHasRated(ratingData !== null && ratingData !== undefined && ratingData !== "");
-                setLoading(false);
+                setProjectLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
-                setLoading(false);
+                setProjectLoading(false);
             }
         };
 
         fetchDetails();
     }, [clientId, projectId]);
+
+    if (loading) {
+        return (
+            <Box 
+            sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                bgcolor: 'background.default'
+            }}
+            >
+            <Typography variant="h4" sx={{ color: theme.palette.secondary.main }}>
+                Loading...
+            </Typography>
+            </Box>
+        );
+    }
+
+    if (!user || user.role !== "CLIENT") {
+    return null; 
+    }
 
     const handleDeveloperHired = () => {
         setDeveloperHired(true);
@@ -72,7 +104,7 @@ const ProjectDetails = () => {
         setDevLoading(false);
     };
 
-    if (loading) {
+    if (projectLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#121212' }}>
                 <CircularProgress color="secondary" />
@@ -362,11 +394,19 @@ const ProjectDetails = () => {
                                 {selectedDeveloper.email}
                             </Typography>
 
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                                <Facebook sx={{ color: '#1877F2', mx: 1 }} />
-                                <Twitter sx={{ color: '#1DA1F2', mx: 1 }} />
-                                <LinkedIn sx={{ color: '#0A66C2', mx: 1 }} />
-                                <GitHub sx={{ color: '#181717', mx: 1 }} />
+                            <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
+                                <IconButton sx={{ color: "#1877F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <Facebook />
+                                </IconButton>
+                                <IconButton sx={{ color: "#1DA1F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <Twitter />
+                                </IconButton>
+                                <IconButton sx={{ color: "#0A66C2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <LinkedIn />
+                                </IconButton>
+                                <IconButton sx={{ color: "#fff", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <GitHub />
+                                </IconButton>
                             </Box>
                         </>
                     ) : (
