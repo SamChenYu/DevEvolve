@@ -139,8 +139,10 @@ public class DataSeedConfig {
                 Chat chat = new Chat();
                 chat.setClient(andreas);
                 chat.setDeveloper(wahida);
+                chat.setName1(andreas.getFirstName() + " " + andreas.getLastName());
+                chat.setName2(wahida.getFirstName() + " " + wahida.getLastName());
                 chatRepository.save(chat);
-                
+
 
             }
 

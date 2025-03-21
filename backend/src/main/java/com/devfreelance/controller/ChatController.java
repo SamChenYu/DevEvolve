@@ -44,14 +44,14 @@ public class ChatController {
 
     @GetMapping("/get")
     public ResponseEntity<Chat> getChat(@RequestBody ChatRequest chatRequest) {
-        String clientEmail = chatRequest.getClientEmail();
-        String developerEmail = chatRequest.getDeveloperEmail();
+        String clientID = chatRequest.getClientID();
+        String developerID = chatRequest.getDeveloperID();
         // String inputs because the frontend will not know the IDs of both client and developer
-        if(clientEmail == null || developerEmail == null) {
+        if(clientID == null || developerID == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Optional<Client> clientObj = clientRepository.findByEmail(clientEmail);
-        Optional<Developer> developerObj = developerRepository.findByEmail(developerEmail);
+        Optional<Client> clientObj = clientRepository.findById(Integer.parseInt(clientID));
+        Optional<Developer> developerObj = developerRepository.findById(Integer.parseInt(developerID));
         if(clientObj.isEmpty() || developerObj.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -62,16 +62,17 @@ public class ChatController {
     }
 
 
-    @GetMapping("/getall/{email}")
-    public ResponseEntity<List<Chat>> getAllChats(@PathVariable String email) {
-        if(email == null) {
+    @GetMapping("/getall/{userID}")
+    public ResponseEntity<List<Chat>> getAllChats(@PathVariable String userID) {
+        System.out.println("/chat/getall/{userID} UserID: " + userID);
+        if(userID == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         List<Chat> chats = new ArrayList<>();
 
         // Assume name is a developer
-        Optional<Developer> developerObj = developerRepository.findByEmail(email);
+        Optional<Developer> developerObj = developerRepository.findById(Integer.parseInt(userID));
         if(developerObj.isPresent()) {
             List<Client> clients = messagingService.getClientChats(developerObj.get());
             for(Client client : clients) {
@@ -81,7 +82,7 @@ public class ChatController {
         }
 
         // Assume name is a client
-        Optional<Client> clientObj = clientRepository.findByEmail(email);
+        Optional<Client> clientObj = clientRepository.findById(Integer.parseInt(userID));
         if(clientObj.isPresent()) {
             List<Developer> developers = messagingService.getDeveloperChats(clientObj.get());
             for(Developer developer : developers) {
@@ -132,15 +133,15 @@ public class ChatController {
 
     @PostMapping("/new")
     public ResponseEntity<Chat> newChat(@RequestBody ChatRequest chatRequest) {
-        String clientEmail = chatRequest.getClientEmail();
-        String developerEmail = chatRequest.getDeveloperEmail();
+        String clientID = chatRequest.getClientID();
+        String developerID = chatRequest.getDeveloperID();
         // String inputs because the frontend will not know the IDs of both client and developer
-        if(clientEmail == null || developerEmail == null) {
+        if(clientID == null || developerID == null) {
             System.out.println("RequestBody is null");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Optional<Client> clientObj = clientRepository.findByEmail(clientEmail);
-        Optional<Developer> developerObj = developerRepository.findByEmail(developerEmail);
+        Optional<Client> clientObj = clientRepository.findById(Integer.parseInt(clientID));
+        Optional<Developer> developerObj = developerRepository.findById(Integer.parseInt(developerID));
         if(clientObj.isEmpty() || developerObj.isEmpty()) {
             System.out.println("Client or Developer not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
