@@ -64,6 +64,7 @@ public class ChatController {
 
     @GetMapping("/getall/{userID}")
     public ResponseEntity<List<Chat>> getAllChats(@PathVariable String userID) {
+        System.out.println("/chat/getall/{userID} UserID: " + userID);
         if(userID == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

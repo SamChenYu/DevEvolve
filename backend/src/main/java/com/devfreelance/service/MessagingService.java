@@ -41,6 +41,8 @@ public class MessagingService {
             return chat;
         } else {
             Chat newChat = new Chat(client, developer);
+            newChat.setName1(client.getFirstName() + " " + client.getLastName());
+            newChat.setName2(developer.getFirstName() + " " + developer.getLastName());
             chatRepository.save(newChat);
             return newChat;
         }

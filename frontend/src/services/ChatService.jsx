@@ -8,9 +8,9 @@ const axiosInstance = axios.create({
 });
 
 
-export const fetchAllChats = async (userEmail) => {
+const fetchAllChats = async (userID) => {
     try {
-        const response = await axiosInstance.get(`/chat/getall/${userEmail}`);
+        const response = await axiosInstance.get(`/chat/getall/${userID}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching chats:", error);
@@ -18,11 +18,11 @@ export const fetchAllChats = async (userEmail) => {
     }
 }
 
-export const newChat = async (user1Email, user2Email) => {
+const newChat = async (user1ID, user2ID) => {
     try {
         const response = await axiosInstance.post(`/chat/new`, {
-            user1Email,
-            user2Email
+            user1ID,
+            user2ID
         });
         return response.data;
     }
@@ -32,7 +32,7 @@ export const newChat = async (user1Email, user2Email) => {
     }
 }
 
-export const sendMessage = async (chatID, from, text, timestamp) => {
+const sendMessage = async (chatID, from, text, timestamp) => {
     try {
         const response = await axiosInstance.post(`/chat/send`, {
             chatID,
@@ -48,7 +48,7 @@ export const sendMessage = async (chatID, from, text, timestamp) => {
     }
 }
 
-export const messageUpdate = async (chatID, messageID) => {
+const messageUpdate = async (chatID, messageID) => {
     try {
         const response = await axiosInstance.post(`/chat/messageUpdate`, {
             chatID,
@@ -60,3 +60,6 @@ export const messageUpdate = async (chatID, messageID) => {
         throw error;
     }
 }
+
+const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate };
+export default ChatService;
