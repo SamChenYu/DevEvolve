@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Card, CardContent, Chip } from '@mui/material';
+import { Box, Button, Typography, List, ListItem, ListItemText, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Card, CardContent, Chip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
-import { developerBids, modifyBid } from '../../services/ProjectService';
+import { developerBids, modifyBid, cancelBid } from '../../services/ProjectService';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -18,6 +18,7 @@ const BidList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedBid, setSelectedBid] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "ADMIN"))) {
@@ -52,8 +53,20 @@ const BidList = () => {
      
       const updatedBids = await developerBids(user.user.id);
       setBids(updatedBids);
+      setEditModalOpen(false);
     } catch (error) {
       console.error("Error updating bid:", error);
+    }
+  };
+
+  const handleCancelBid = async (bidId) => {
+    try {
+      await cancelBid(bidId);
+      const updatedBids = await developerBids(user.user.id);
+      setBids(updatedBids);
+      setDeleteModalOpen(false);
+    } catch (error) {
+      console.error("Error canceling bid:", error);
     }
   };
 
@@ -67,7 +80,7 @@ const BidList = () => {
 
      
       <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" fontWeight={600} gutterBottom>
           Your Bids
         </Typography>
 
@@ -167,6 +180,11 @@ const BidList = () => {
                                   label="Cancel Bid"
                                   color="error"
                                   sx={{ fontWeight: "bold", mr: 1, '&:hover': {backgroundColor: "red"}, cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedBid(bid);
+                                    setDeleteModalOpen(true);
+                                  }}
                                 />
                               </>
                               
@@ -192,6 +210,23 @@ const BidList = () => {
           onSubmit={handleUpdateBid} 
         />
       )}
+      <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+        <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+                {user.role !== "ADMIN" ? (<Typography>Are you sure you want to cancel your bid? This action cannot be undone.</Typography>) : (<Typography>Are you sure you want to cancel this developer's bid? This action cannot be undone.</Typography>)}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={() => handleCancelBid(selectedBid?.id)} color="error">
+                    Delete
+                </Button>
+            </DialogActions>
+        </Box>
+      </Dialog>
     </Box>
   );
 };

@@ -165,3 +165,33 @@ export const modifyBid = async(bidId, bidData) => {
       throw error.response?.data?.message || "Failed to modify bid";
   }
 }
+
+export const cancelBid = async (bidId) => {
+  try {
+    const response = await axiosInstance.delete(`/auth/admin/deleteBid/${bidId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error canceling bid:", error);
+    throw error.response?.data?.message || "Failed to cancel bid";
+  }
+};
+
+export const modifyProject = async (projectId, updatedProjectData) => {
+  try {
+    const response = await axiosInstance.put(`/auth/admin/modifyProject/${projectId}`, updatedProjectData);
+    return response.data;
+  } catch (error) {
+    console.error("Error modifying project:", error);
+    throw error.response?.data?.message || "Failed to modify project";
+  }
+};
+
+export const deleteProject = async (projectId) => {
+  try {
+    const response = await axiosInstance.delete(`/auth/admin/deleteProject/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw error.response?.data?.message || "Failed to delete project";
+  }
+};

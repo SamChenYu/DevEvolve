@@ -83,3 +83,46 @@ export const logout = async () => {
         throw new Error("Logout failed.");
     }
 };
+
+export const updateClientProfile = async (clientId, updatedData) => {
+    try {
+      const response = await axiosInstance.put(`/auth/admin/modifyClient/${clientId}`, updatedData);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating client profile:", error);
+      throw error.response?.data?.message || "Failed to update client profile";
+    }
+  };
+  
+export const deleteClientProfile = async (clientId) => {
+    try {
+        const response = await axiosInstance.delete(`/auth/admin/deleteClient/${clientId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting client profile:", error);
+        throw error.response?.data?.message || "Failed to delete client profile";
+    }
+};
+
+export const updateDeveloperProfile = async (developerId, updatedData) => {
+
+    try {
+        const response = await axiosInstance.put(`/auth/admin/modifyDeveloper/${developerId}`, updatedData);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating developer profile:", error);
+        throw error.response?.data?.message || "Failed to update developer profile";
+    }
+};
+
+export const deleteDeveloperProfile = async (developerId) => {
+
+    try {
+        const response = await axiosInstance.delete(`/auth/admin/deleteDeveloper/${developerId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting developer profile:", error);
+        throw error.response?.data?.message || "Failed to delete developer profile";
+    }
+};
+  
