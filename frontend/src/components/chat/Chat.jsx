@@ -58,6 +58,33 @@ const Chat = () => {
     }
   }
 
+  // New chat creation
+  const [searchUserText, setSearchUserText] = useState("");
+  const handleSearchUser = async () => {
+    if (!searchUserText.trim()) return; // Prevent searching for empty users
+    
+    const isClient = user.user.role === "client"; // Check if the user is a client
+    try {
+      const searchResults = await ChatService.searchUser(searchUserText, isClient);
+      console.log("Search results:", searchResults);
+      setSearchUserText(""); // Clear input after searching
+      // If there is a result, create a new chat
+      if (searchResults.length > 0) {
+
+        const clientID = isClient ? user.user.id : searchResults[0].id;
+        const developerID = isClient ? searchResults[0].id : user.user.id;
+        const chat = await ChatService.newChat(clientID, developerID);
+        setChats([...chats, chat]); // Add the new chat to the list
+        setActiveChatID(chat.chatID); // Set the new chat as active
+        setActiveChatName(searchResults[0].firstName + " " + searchResults[0].lastName); // Set the new chat's name
+      }
+
+    }
+    catch (error) {
+      console.error("Failed to search for user", error);
+    }
+  }
+
 
 
   if(loading) {
@@ -75,8 +102,8 @@ const Chat = () => {
         <section className="discussions">
           <div className="discussion search">
             <div className="searchbar">
-              <input type="text" placeholder="Search..."/>
-              <SearchIcon className="icon" style={{ fontSize: '30px', color: 'black'}} aria-hidden="true"/>
+              <input type="text" placeholder="Search..." value={searchUserText} onChange={(e) => setSearchUserText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearchUser()}/>
+              <SearchIcon className="icon" style={{ fontSize: '30px', color: 'black'}} aria-hidden="true" onClick={handleSearchUser}/>
             </div>
           </div>
 

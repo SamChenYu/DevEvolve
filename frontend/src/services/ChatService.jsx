@@ -18,11 +18,11 @@ const fetchAllChats = async (userID) => {
     }
 }
 
-const newChat = async (user1ID, user2ID) => {
+const newChat = async (clientID, developerID) => {
     try {
         const response = await axiosInstance.post(`/chat/new`, {
-            user1ID,
-            user2ID
+            clientID,
+            developerID
         });
         return response.data;
     }
@@ -61,5 +61,18 @@ const messageUpdate = async (chatID, messageID) => {
     }
 }
 
-const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate };
+const searchUser = async (searchRequest, isClient) => {
+    try {
+        const response = await axiosInstance.post(`/chat/search`, {
+            searchRequest,
+            isClient
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error searching user:", error);
+        throw error;
+    }
+}
+
+const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate, searchUser };
 export default ChatService;

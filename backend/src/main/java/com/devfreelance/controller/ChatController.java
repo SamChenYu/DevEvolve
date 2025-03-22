@@ -133,6 +133,7 @@ public class ChatController {
 
     @PostMapping("/new")
     public ResponseEntity<Chat> newChat(@RequestBody ChatRequest chatRequest) {
+        // Used for when auto generated after project match
         String clientID = chatRequest.getClientID();
         String developerID = chatRequest.getDeveloperID();
         // String inputs because the frontend will not know the IDs of both client and developer
@@ -152,6 +153,22 @@ public class ChatController {
         Chat chat = messagingService.getChat(clientObj.get(), developerObj.get());
         return ResponseEntity.ok(chat);
     }
+
+    @PostMapping("/search")
+    public List<Object> searchUser(@RequestBody ChatRequest chatRequest) {
+        String query = chatRequest.getSearchRequest();
+        boolean isClient = chatRequest.getIsClient();
+        System.out.println("Search query: " + query);
+        List<Object> users = new ArrayList<>();
+        if(isClient) {
+            users.addAll(developerRepository.searchUser(query));
+        } else {
+            users.addAll(clientRepository.searchUser(query));
+        }
+        return users;
+    }
+
+
 
 
 
