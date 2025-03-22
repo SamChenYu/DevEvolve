@@ -1,29 +1,79 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, Typography, Container, Box, Paper } from '@mui/material';
+import { Button, TextField, Typography, Container, Box, Paper, Snackbar, Alert } from '@mui/material';
 import { clientRegistration } from '../../services/AuthenicationService';
 
 const ClientRegistration = () => {
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", password: "" });
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error")
   const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const {firstName, lastName, email, password} = formData;
+    console.log('formdata', formData);
+
+    if (!firstName || !lastName || !email || !password) {
+        setSnackbarMessage('All fields are required');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        return false;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        console.log('Invalid Email:', email);
+        setSnackbarMessage('Please enter a valid email address');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        return false;
+    }
+
+    if (password.length < 6) {
+        console.log('Password Length:', password.length);
+        setSnackbarMessage('Password must be at least 6 characters long');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        return false;
+    }
+
+    return true;
+  };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
         try {
             const response = await clientRegistration(formData);
             console.log(response);
-            alert('Client registered successfully');
-            navigate('/login');
+            setSnackbarMessage('Client registered successfully!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (error) {
             console.error(error);
-            alert('An error occurred. Please try again.');
+            setSnackbarMessage(error.message || 'An error occurred. Please try again.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     }
 
-  return (
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
+
+    return (
     <Container 
       maxWidth="lg"
       sx={{ 
@@ -123,6 +173,20 @@ const ClientRegistration = () => {
           </Button>
         </Box>
       </Paper>
+        <Snackbar
+            open={openSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+        >
+            <Alert
+                onClose={handleCloseSnackbar}
+                severity={snackbarSeverity}
+                sx={{ width: '100%' }}
+            >
+                {snackbarMessage}
+            </Alert>
+        </Snackbar>
     </Container>
   );
 }
