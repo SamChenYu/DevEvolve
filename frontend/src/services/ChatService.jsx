@@ -30,7 +30,7 @@ const newChat = async (clientID, developerID) => {
         console.error("Error creating chat:", error);
         throw error;
     }
-}
+}   
 
 const sendMessage = async (chatID, sender, text, timestamp) => {
     try {

@@ -39,32 +39,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("http://localhost:3000", "http://localhost:8080")
                 .withSockJS()
                 .setInterceptors(new HandshakeInterceptor() {
-
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-//                        if (request instanceof ServletServerHttpRequest) {
-//                            HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
-//                            String query = servletRequest.getQueryString();
-//                            Map<String, String> params = splitQuery(query);
-//
-//                            String username = params.get("username");
-//                            String authToken = params.get("authToken");
-//
-//                            // Validate the username and token
-//                            if (messagingService.checkAuthToken(username, authToken)) {
-//                                System.out.println("Handshake successful");
-//                                return true;
-//                            }
-//                        }
-//                        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-//                        System.out.println("Handshake failed");
-//                        return false;
 
                         return true; // Todo: properly implement authentication
                     }
-
-
-
                     @Override
                     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
                         // Do nothing
@@ -72,15 +51,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 });
     }
 
-    private Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
-        Map<String, String> query_pairs = new LinkedHashMap<>();
-        String[] pairs = query.split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-        }
-        return query_pairs;
-    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {

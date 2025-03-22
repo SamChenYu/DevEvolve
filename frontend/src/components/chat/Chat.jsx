@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Box, CssBaseline, Paper, Typography } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import SendIcon from '@mui/icons-material/Send';
@@ -8,6 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import { UserContext } from '../../context/UserContext';
 import ChatService from '../../services/ChatService';
+import useWebSocket from '../../services/WebSocketService';
 
 import './Chat.css';
 
@@ -39,10 +40,27 @@ const Chat = () => {
   // Handling of active chats
   const [activeChatID, setActiveChatID] = useState(null); // To store the selected chat ID
   const [activeChatName, setActiveChatName] = useState(null); // To store the selected chat name
+  const [lastMessageID, setLastMessageID] = useState(0); // To store the last message ID
   const handleChatClick = (chatID) => {
-    console.log("Clicked chat:", chatID);
-    setActiveChatID(chatID); // Set the clicked chat as active
+    if (chatID !== activeChatID) { // Avoid setting activeChatID to the same value
+      //setLastMessageID(0); // Reset the last message ID
+      setActiveChatID(chatID); // Set the clicked chat as active
+      console.log("Clicked chat:", chatID);
+    }
+    
   };
+
+  // Effect to set the lastMessageID based on the active chat
+  useEffect(() => {
+    if (activeChatID) {
+      const activeChat = chats.find(chat => chat.chatID === activeChatID);
+      if (activeChat && activeChat.messages && activeChat.messages.length > 0) {
+        setLastMessageID(activeChat.messages[activeChat.messages.length - 1].id); // Set last message ID when activeChat changes
+      }
+    }
+  }, [activeChatID, chats]); // Only re-run this effect when activeChatID or chats change
+
+
 
   //Sending of messages
   const [messageText, setMessageText] = useState("");
@@ -85,6 +103,32 @@ const Chat = () => {
     }
   }
 
+  const { connected } = useWebSocket(activeChatID || null, (messageOutput) => {
+    console.log("New message received for active chat:", messageOutput);
+
+    // Now need to fetch new messages for the active chat
+    const fetchNewMessages = async () => {
+      try {
+        const chatData = await ChatService.fetchAllChats(user.user.id);
+        setChats(chatData);
+        console.log("User Data:", user);
+        console.log("Chats:", chatData);
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    }
+    fetchNewMessages();
+  });
+
+  // Reference to scroll to the bottom of the chat
+  const messagesEndRef = useRef(null);
+
+  // Scroll to the bottom whenever new messages are added
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chats, activeChatID]);
 
 
   if(loading) {
@@ -164,7 +208,6 @@ const Chat = () => {
           {chats.find(chat => chat.chatID === activeChatID)?.messages.map((message, index, arr) => {
             const isUserMessage = message.sender === String(user.user.id);
             const isLastInChunk = index === arr.length - 1 || arr[index + 1].sender !== message.sender;
-            console.log(isUserMessage, message.sender, user.user.id);
 
             // Timestamp functions -> if it is today then only display time
             const messageDate = new Date(message.timestamp);
@@ -202,7 +245,7 @@ const Chat = () => {
             );
           })}
 
-            
+              <div ref={messagesEndRef} />
           </div>
 
           { /* Write a message */ }
@@ -210,6 +253,7 @@ const Chat = () => {
             <AttachFileIcon className="icon attach clickable" style={{ fontSize: '50px', marginRight: '10px', color: 'purple'}} aria-hidden="true"/>
             <input type="text" className="write-message" placeholder="Type your message here" value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}/>
             <SendIcon className="icon send clickable" style={{ fontSize: '50px', marginLeft: '10px', color: 'purple'}} aria-hidden="true"/>
+          
           </div>
 
         </section>
