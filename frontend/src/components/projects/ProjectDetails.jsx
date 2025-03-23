@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject } from '../../services/ProjectService';
+import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -36,6 +36,7 @@ const ProjectDetails = () => {
     const [feedback, setFeedback] = useState("");
     const [hasRated, setHasRated] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [minBid, setMinBid] = useState(0);
 
     const [modifyModalOpen, setModifyModalOpen] = useState(false);  
     const [formData, setFormData] = useState({
@@ -80,6 +81,14 @@ const ProjectDetails = () => {
         fetchDetails();
     }, [clientId, projectId]);
 
+    useEffect(() => {
+        if (user?.user?.level) {
+          minBidLevel(user.user.level)
+            .then((minAmount) => setMinBid(minAmount))
+            .catch((error) => console.error('Error fetching min bid:', error));
+        }
+      }, [user]);
+
     if (loading) {
         return (
             <Box 
@@ -98,7 +107,7 @@ const ProjectDetails = () => {
         );
     }
 
-    if (!user || user.role !== "CLIENT") {
+    if (!user || (user.role !== "CLIENT" && user.role !== "ADMIN")) {
     return null; 
     }
 
@@ -418,6 +427,8 @@ const ProjectDetails = () => {
                 projectId={projectId} 
                 clientId={clientId} 
                 onDeveloperHired={handleDeveloperHired} 
+                user={user}
+                minBid={minBid}
             />
             
             <Modal open={!!selectedDeveloper} onClose={() => setSelectedDeveloper(null)}>

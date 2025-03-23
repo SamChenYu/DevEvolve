@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, use } from 'react';
 import { Box, Button, Typography, List, ListItem, ListItemText, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Card, CardContent, Chip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
-import { developerBids, modifyBid, cancelBid } from '../../services/ProjectService';
+import { developerBids, modifyBid, cancelBid, minBidLevel } from '../../services/ProjectService';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -19,6 +19,7 @@ const BidList = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedBid, setSelectedBid] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [minBid, setMinBid] = useState(0);
 
   useEffect(() => {
     if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "ADMIN"))) {
@@ -35,6 +36,14 @@ const BidList = () => {
           console.log(data);
         })
         .catch((error) => console.error('Error fetching bids:', error));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.user?.level) {
+      minBidLevel(user.user.level)
+        .then((minAmount) => setMinBid(minAmount))
+        .catch((error) => console.error('Error fetching min bid:', error));
     }
   }, [user]);
 
@@ -208,6 +217,7 @@ const BidList = () => {
           onClose={() => setEditModalOpen(false)} 
           bid={selectedBid} 
           onSubmit={handleUpdateBid} 
+          minBid={minBid}
         />
       )}
       <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >

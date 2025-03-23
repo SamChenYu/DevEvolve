@@ -19,14 +19,14 @@ const BrowseDevelopers = () => {
 
 
   useEffect(() => {
-    if (!userLoading && (!user || user.role !== "CLIENT")) {
+    if (!userLoading && (!user || (user.role !== "CLIENT" && user.role !== "ADMIN"))) {
       navigate("/login");
     }
   }, [user, userLoading, navigate]);
 
 
   useEffect(() => {
-    if (user && user.role === "CLIENT") {
+    if (user && (user.role === "CLIENT" || user.role === "ADMIN")) {
       fetchDevelopers();
     }
   }, [user]);
@@ -78,7 +78,7 @@ const BrowseDevelopers = () => {
   }
 
   
-  if (!user || user.role !== "CLIENT") {
+  if (!user || (user.role !== "CLIENT" && user.role !== "ADMIN")) {
     return null; 
   }
 

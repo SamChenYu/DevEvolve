@@ -15,6 +15,7 @@ import Logout from "./components/auth/Logout";
 import BidList from "./components/bids/BidList";
 import DevProfilePage from "./components/profile/DevProfilePage";
 import ClientProfilePage from "./components/profile/ClientProfilePage";
+import AdminDashboard from "./components/dashboard/AdminDashboard";
 
 const AppRoutes = () => {
     return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
                 <Route path="/client-registration" element={<ClientRegistration />} />
                 <Route path="/developer-registration" element={<DeveloperRegistration />} />
                 <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/client-dashboard" element={<ClientDashboard />} />
                 <Route path="/create-project" element={<CreateProjectForm />} />
                 <Route path="/projects/:clientId/:projectId" element={<ProjectDetails />} />

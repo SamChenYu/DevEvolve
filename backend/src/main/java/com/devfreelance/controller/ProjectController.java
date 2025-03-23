@@ -93,8 +93,10 @@ public class ProjectController {
     }
     
     @GetMapping("/all")
-    public List<Projects> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectResponse> getAllProjects() {
+        return projectRepository.findAll().stream()
+                .map(ProjectResponse::new)
+                .toList();
     }
 
     @PostMapping("/create/{clientId}")

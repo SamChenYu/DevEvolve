@@ -1,28 +1,57 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, Paper, IconButton } from '@mui/material';
-import { useState } from 'react';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const EditBidModal = ({ open, onClose, bid, onSubmit}) => {
-    const [amount, setAmount] = useState(bid.amount);
-    const [proposal, setProposal] = useState(bid.proposal);
+const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
+    const [formData, setFormData] = useState({
+        amount: bid.amount,
+        proposal: bid.proposal,
+    });
+
+    useEffect(() => {
+        setFormData({
+            amount: bid.amount,
+            proposal: bid.proposal,
+        });
+    }, [bid, open]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name === "amount") {
+            const numericValue = parseFloat(value);
+            console.log(numericValue, minBid);
+            // Block any value less than the minBid
+            if (numericValue >= minBid || value === "") {
+                setFormData({
+                    ...formData,
+                    [name]: value,
+                });
+            }
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
+    };
 
     const handleSubmit = () => {
-        onSubmit({amount, proposal});
+        onSubmit(formData);
         onClose();
     };
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box 
-                sx={{ 
-                    display: "flex", 
-                    justifyContent: "center", 
-                    alignItems: "center", 
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                     minHeight: "100vh",
                 }}
             >
-                <Paper 
+                <Paper
                     elevation={6}
                     sx={{
                         padding: 4,
@@ -35,8 +64,8 @@ const EditBidModal = ({ open, onClose, bid, onSubmit}) => {
                         position: "relative",
                     }}
                 >
-                    <IconButton 
-                        onClick={onClose} 
+                    <IconButton
+                        onClick={onClose}
                         sx={{ position: "absolute", top: 10, left: 10, color: "white" }}
                     >
                         <ArrowBackIcon />
@@ -46,42 +75,48 @@ const EditBidModal = ({ open, onClose, bid, onSubmit}) => {
                         Edit Bid
                     </Typography>
 
-                    <Box 
-                        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                    >
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        {/* Amount Field */}
                         <TextField
                             label="Amount"
                             type="number"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
+                            name="amount"
+                            value={formData.amount}
+                            onChange={handleChange}
                             fullWidth
                             variant="outlined"
-                            InputProps={{ 
-                                style: { color: "white", backgroundColor: "#333", borderRadius: "8px" } 
+                            InputProps={{
+                                style: { color: "white", backgroundColor: "#333", borderRadius: "8px" },
+                                inputProps: { min: minBid || 0 }, // Ensures the user can't input values below the minBid
                             }}
                             InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
                         />
+
+                        {/* Proposal Field */}
                         <TextField
                             label="Proposal"
-                            value={proposal}
-                            onChange={(e) => setProposal(e.target.value)}
+                            name="proposal"
+                            value={formData.proposal}
+                            onChange={handleChange}
                             fullWidth
                             variant="outlined"
                             multiline
                             rows={4}
-                            InputProps={{ 
-                                style: { color: "white", backgroundColor: "#333", borderRadius: "8px" } 
+                            InputProps={{
+                                style: { color: "white", backgroundColor: "#333", borderRadius: "8px" },
                             }}
                             InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
                         />
-                        <Button 
-                            variant="contained" 
+
+                        {/* Submit Button */}
+                        <Button
+                            variant="contained"
                             color="secondary"
                             onClick={handleSubmit}
                             fullWidth
-                            sx={{ 
-                                borderRadius: "8px", 
-                                fontWeight: "bold", 
+                            sx={{
+                                borderRadius: "8px",
+                                fontWeight: "bold",
                                 py: 1.2,
                                 fontSize: "1rem",
                                 mt: 2
@@ -94,6 +129,6 @@ const EditBidModal = ({ open, onClose, bid, onSubmit}) => {
             </Box>
         </Modal>
     );
-}
+};
 
-export default EditBidModal
+export default EditBidModal;

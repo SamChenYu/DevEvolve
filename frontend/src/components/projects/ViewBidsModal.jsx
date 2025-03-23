@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { fetchBidsForProject, hireDeveloper } from '../../services/ProjectService';
+import { fetchBidsForProject, hireDeveloper, modifyBid, developerBids } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, Modal, IconButton, Divider, CircularProgress, Button, Avatar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
+import EditBidModal from '../bids/EditBidModal';
 
-const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
+const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired, minBid }) => {
     const [bids, setBids] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedProposal, setSelectedProposal] = useState(null); 
     const [selectedDeveloper, setSelectedDeveloper] = useState(null);
     const [devLoading, setDevLoading] = useState(false);
     const [hiredDeveloperId, setHiredDeveloperId] = useState(null);
+    const [editBidModal, setEditBidModal] = useState(false);
+    const [selectedBid, setSelectedBid] = useState(null);
 
     useEffect(() => {
         if (!open) return; 
@@ -19,6 +22,7 @@ const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
             try {
                 const data = await fetchBidsForProject(projectId);
                 setBids(data);
+                console.log(data);
             } catch (error) {
                 console.error("Error fetching bids:", error);
             }
@@ -27,6 +31,23 @@ const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
 
         fetchBids();
     }, [open, projectId]);
+
+    const handleEditBid = (bid) => {
+        setSelectedBid(bid);
+        setEditBidModal(true);
+    };
+
+    const handleUpdateBid = async (updatedBid) => {
+        try {
+          await modifyBid(selectedBid.id, updatedBid);
+         
+          const updatedBids = await fetchBidsForProject(projectId);
+          setBids(updatedBids);
+          setEditBidModal(false);
+        } catch (error) {
+          console.error("Error updating bid:", error);
+        }
+    };
 
     const handleViewDeveloper = async (developerId) => {
         setDevLoading(true);
@@ -98,14 +119,23 @@ const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
                                         👨‍💻 View Developer Profile
                                     </Typography>
 
-                                    <Button 
+                                    {user.role === "CLIENT" && (<Button 
                                         variant="contained" 
                                         color="secondary" 
-                                        sx={{ mt: 2, mx: 'auto', display: 'block' }} 
+                                        sx={{ mt: 2 }} 
                                         onClick={() => handleHireDeveloper(bid.id)}
                                         disabled={!!hiredDeveloperId}
                                     >
                                         {hiredDeveloperId === bid.developerId ? "Developer Hired" : "Select Developer"}
+                                    </Button>)}
+
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        sx={{ mt: 2 }}
+                                        onClick={() => handleEditBid(bid)}
+                                    >
+                                        Edit Bid
                                     </Button>
 
                                     {index < bids.length - 1 && <Divider sx={{ my: 2, bgcolor: "gray" }} />}
@@ -179,6 +209,15 @@ const ViewBidsModal = ({ open, onClose, projectId, onDeveloperHired }) => {
                     )}
                 </Box>
             </Modal>
+            {selectedBid && (
+                <EditBidModal 
+                    open={editBidModal} 
+                    onClose={() => setEditBidModal(false)} 
+                    bid={selectedBid}
+                    onSubmit={handleUpdateBid}
+                    minBid={minBid}
+                />
+            )}
         </>
     );
 };
