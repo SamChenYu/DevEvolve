@@ -251,7 +251,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
 
                     <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogContent>
-                        <Typography>Are you sure you want to delete this project? This action cannot be undone.</Typography>
+                        <Typography>Are you sure you want to delete this bid? This action cannot be undone.</Typography>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setDeleteModalOpen(false)} color="primary">

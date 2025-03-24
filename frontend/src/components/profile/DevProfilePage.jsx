@@ -17,6 +17,7 @@ import BrowseProjectItem from '../browse/BrowseProjectItem';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import SearchIcon from '@mui/icons-material/Search';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 
@@ -201,7 +202,7 @@ const DevProfilePage = () => {
               }}
             >
         
-              {(user.user?.id === id || user.role === "ADMIN") && (
+              {(user.user?.id == id || user.role === "ADMIN") && (
                 <>
                   <Chip
                     icon={<Edit size="small"/>}
@@ -218,6 +219,7 @@ const DevProfilePage = () => {
                     onClick={handleOpenEditModal}
                   />
                   <Chip
+                    icon={<DeleteIcon size="small"/>}
                     label="Delete Profile"
                     sx={{ 
                       position: "absolute", 
@@ -498,11 +500,11 @@ const DevProfilePage = () => {
       </Modal>
 
       <Modal open={openEditModal} onClose={handleCloseEditModal}>
-                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#222', color: 'white', p: 3, borderRadius: 2, border: '1px solid #333', width: '80%' }}>
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#222', color: 'white', p: 3, borderRadius: 2, border: '1px solid #333', width: '50%' }}>
                     <IconButton onClick={handleCloseEditModal} sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}>
                         <CloseIcon />
                     </IconButton>
-                    <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 3 }}>Edit Profile</Typography>
+                    <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 3, textAlign: "center" }}>Edit Profile</Typography>
 
                     <TextField
                         label="First Name"
@@ -511,6 +513,12 @@ const DevProfilePage = () => {
                         onChange={handleInputChange}
                         fullWidth
                         sx={{ mb: 2 }}
+                        InputLabelProps={{
+                          style: { color: 'white' },
+                        }}
+                        InputProps={{
+                          style: { color: 'white' },
+                        }}
                     />
                     <TextField
                         label="Last Name"
@@ -519,6 +527,12 @@ const DevProfilePage = () => {
                         onChange={handleInputChange}
                         fullWidth
                         sx={{ mb: 2 }}
+                        InputLabelProps={{
+                          style: { color: 'white' },
+                        }}
+                        InputProps={{
+                          style: { color: 'white' },
+                        }}
                     />
                     <TextField
                         label="Email"
@@ -527,6 +541,12 @@ const DevProfilePage = () => {
                         onChange={handleInputChange}
                         fullWidth
                         sx={{ mb: 2 }}
+                        InputLabelProps={{
+                          style: { color: 'white' },
+                        }}
+                        InputProps={{
+                          style: { color: 'white' },
+                        }}
                     />
 
                     <Button variant="contained" sx={{ bgcolor: '#9c27b0', '&:hover': { bgcolor: '#7b1fa2' } }} onClick={handleUpdateProfile}>

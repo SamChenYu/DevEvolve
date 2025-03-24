@@ -195,3 +195,13 @@ export const deleteProject = async (projectId) => {
     throw error.response?.data?.message || "Failed to delete project";
   }
 };
+
+export const searchProjects = async (query) => {
+  try {
+    const response = await axiosInstance.get(`/auth/projects/search?query=${query}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error searching projects:", error);
+    throw error;
+  }
+}

@@ -25,6 +25,8 @@ import com.devfreelance.repository.ProjectRepository;
 import com.devfreelance.repository.RatingRepository;
 import com.devfreelance.response.BidResponse;
 import com.devfreelance.response.ProjectResponse;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -98,6 +100,16 @@ public class ProjectController {
                 .map(ProjectResponse::new)
                 .toList();
     }
+
+    @GetMapping("/search")
+    public List<ProjectResponse> searchProjects(@RequestParam String query) {
+
+        return projectRepository.searchProject(query).stream()
+                .map(ProjectResponse::new)
+                .toList();
+        
+    }
+    
 
     @PostMapping("/create/{clientId}")
     public Projects createProject(@PathVariable("clientId") Integer clientId, @RequestBody Projects project) throws Exception {
