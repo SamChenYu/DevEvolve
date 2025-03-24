@@ -12,7 +12,7 @@ const useWebSocket = (chatID, onNewMessage) => {
   const connect = () => {
     const socket = new SockJS(`${API_URL}/message`); // WebSocket endpoint
     stompClient.current = Stomp.over(socket);
-
+    
     stompClient.current.connect({}, () => {
       setConnected(true);
       console.log('Connected to WebSocket');

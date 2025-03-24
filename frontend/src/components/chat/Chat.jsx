@@ -105,6 +105,13 @@ const Chat = () => {
 
   const { connected } = useWebSocket(activeChatID || null, (messageOutput) => {
     console.log("New message received for active chat:", messageOutput);
+    
+    if(messageOutput.body === "Deleted") {
+      // Clear the chat
+      setLastMessageID(0);
+      setActiveChatID(null);
+      
+    }
 
     // Now need to fetch new messages for the active chat
     const fetchNewMessages = async () => {
