@@ -1,12 +1,15 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, TextField, Typography, Container, Box, Paper } from "@mui/material";
+import { Button, TextField, Typography, Container, Box, Paper, Snackbar, Alert } from "@mui/material";
 import { login } from "../../services/AuthenicationService";
 import { UserContext } from "../../context/UserContext";
 import { getUserFromToken } from "../../services/AuthenicationService";
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("error")
     const navigate = useNavigate();
     const { setUser } = useContext(UserContext);
     const handleChange = (e) => {
@@ -37,9 +40,19 @@ const Login = () => {
                 navigate("/client-dashboard");
             }
         } catch (error) {
-            alert("Invalid credentials or session expired. Please try again.");
+            console.error("Login error:", error);
+            setSnackbarMessage("Invalid credentials or session expired. Please try again.");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
         }
     };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenSnackbar(false);
+    }
 
     return (
         <Container 
@@ -116,6 +129,20 @@ const Login = () => {
                     </Button>
                 </Box>
             </Paper>
+            <Snackbar
+                open = {openSnackbar}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+            >
+                <Alert
+                    onClose = {handleCloseSnackbar}
+                    severity={snackbarSeverity}
+                    sx={{width: "100%"}}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 
