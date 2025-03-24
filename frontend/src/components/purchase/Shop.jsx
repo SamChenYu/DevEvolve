@@ -43,17 +43,17 @@ const Shop = () => {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3}}>
                 <Container>
-                    <Typography variant="h4" gutterBottom>Purchase Coins</Typography>
+                    <Typography variant="h4" gutterBottom sx={{fontWeight: 600}}>Purchase Coins</Typography>
                 </Container>
                 <Grid container spacing={3} justifyContent="center" sx={{mt: 20}}>
                     {purchaseOptions.map((prch) => (
                         <Grid item key={prch.amount} xs={12} sm={6} md={4} sx={{mb: 10}}>
-                            <Paper elevation={5} sx={{ padding: 3, textAlign: "center", maxWidth: 300, mx: "auto"}}>
-                                <Typography variant="h4" sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                            <Paper elevation={5} sx={{ padding: 3, textAlign: "center", maxWidth: 300, mx: "auto", bgcolor: "#222", borderRadius: 6, '&:hover': { transform: 'scale(1.05)', boxShadow: '0px 4px 20px rgba(156, 39, 176, 0.5)'}}}>
+                                <Typography variant="h4" sx={{display: "flex", alignItems: "center", justifyContent: "center", color: "white"}}>
+                                    <PaidIcon sx={{ color: '#FFD700', mr: 1, fontSize: 36}}/>
                                     {prch.amount}
-                                    <PaidIcon sx={{ color: '#FFD700', ml: 1, fontSize: 36}}/>
                                 </Typography>
-                                <Typography variant="h6">{prch.price}</Typography>
+                                <Typography variant="h6" sx={{color: "white"}}>{prch.price}</Typography>
                                 <Button
                                     variant="contained"
                                     onClick={() => handleBuyNow(prch.amount)}
