@@ -14,6 +14,7 @@ import com.devfreelance.service.MessagingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/chat") // no auth for now Todo: update this
+@RequestMapping("/chat")
 public class ChatController {
 
     @Autowired
@@ -148,10 +149,12 @@ public class ChatController {
             System.out.println("Client or Developer not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        //Todo: web socket updates
-
         Chat chat = messagingService.getChat(clientObj.get(), developerObj.get());
+        // Notify both client and developer
+        String clientDestination = "/topic/user/" + clientID;
+        String developerDestination = "/topic/user/" + developerID;
+        simpMessagingTemplate.convertAndSend(clientDestination, "New Chat"); // Sends a notification to the socket
+        simpMessagingTemplate.convertAndSend(developerDestination, "New Chat"); // Sends a notification to the socket
         return ResponseEntity.ok(chat);
     }
 
@@ -169,6 +172,17 @@ public class ChatController {
         return users;
     }
 
+    @DeleteMapping("/delete/{chatID}")
+    public ResponseEntity<Void> deleteChat(@PathVariable String chatID) {
+        boolean status = messagingService.clearAllMessages(chatID);
+        if(!status) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        String destination = "/topic/chat/" + chatID;
+        simpMessagingTemplate.convertAndSend(destination, "Deleted"); // Sends a notification to the socket
+        System.out.println("Chat logs cleared for " + chatID + " at " + destination);
+        return ResponseEntity.ok().build();
+    }
 
 
 

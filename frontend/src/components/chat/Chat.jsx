@@ -81,7 +81,7 @@ const Chat = () => {
   const handleSearchUser = async () => {
     if (!searchUserText.trim()) return; // Prevent searching for empty users
     
-    const isClient = user.user.role === "client"; // Check if the user is a client
+    const isClient = user.role === "CLIENT"; // Check if the user is a client
     try {
       const searchResults = await ChatService.searchUser(searchUserText, isClient);
       console.log("Search results:", searchResults);
@@ -103,8 +103,42 @@ const Chat = () => {
     }
   }
 
-  const { connected } = useWebSocket(activeChatID || null, (messageOutput) => {
+
+  /*
+    TWO WEB SOCKET CONNECTIONS ARE REQUIRED:
+    - Connection ot active chat [activeChatID] -> listens for new messages sent to the active chat
+    - Connection to user. If a new chat is created, the user will receive a message to update the chat list
+  */
+
+  const { userConnection } = useWebSocket(user?.user?.id ?? null, "user", (messageOutput) => {
+    console.log("Websocket message to update chatlist");
+    // Fetch chat again
+    const fetchNewMessages = async () => {
+      try {
+        const chatData = await ChatService.fetchAllChats(user.user.id);
+        setChats(chatData);
+        console.log("User Data:", user);
+        console.log("Chats:", chatData);
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    }
+    fetchNewMessages();
+  });
+
+
+
+
+
+  const { chatConnection } = useWebSocket(activeChatID || null, "chat", (messageOutput) => {
     console.log("New message received for active chat:", messageOutput);
+    
+    if(messageOutput.body === "Deleted") {
+      // Clear the chat
+      setLastMessageID(0);
+      setActiveChatID(null);
+
+    }
 
     // Now need to fetch new messages for the active chat
     const fetchNewMessages = async () => {
