@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Card, CardContent, Chip } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Card, CardContent, Chip, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
@@ -14,6 +14,9 @@ const BidList = () => {
   const navigate = useNavigate();
   const [bids, setBids] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "DEVELOPER")) {
@@ -29,9 +32,22 @@ const BidList = () => {
           setIsLoading(false);
           console.log(data);
         })
-        .catch((error) => console.error('Error fetching bids:', error));
+        .catch((error) => {
+            console.error('Error fetching bids:', error);
+            setSnackbarMessage("Failed to fetch bids. Please try again.");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+            setIsLoading(false);
+        });
     }
   }, [user]);
+
+  const handleCloseSnackbar = (event, reason) => {
+      if (reason === "clickaway") {
+          return;
+      }
+      setOpenSnackbar(false);
+  }
 
   if (loading || isLoading) {
     return <Typography variant="h4" sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Typography>;
@@ -138,6 +154,20 @@ const BidList = () => {
           </>
         )}
       </Box>
+        <Snackbar
+            open={openSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+        >
+            <Alert
+                onClose={handleCloseSnackbar}
+                severity={snackbarSeverity}
+                sx={{ width: "100%" }}
+            >
+                {snackbarMessage}
+            </Alert>
+        </Snackbar>
     </Box>
   );
 };
