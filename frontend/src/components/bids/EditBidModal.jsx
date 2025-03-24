@@ -21,7 +21,7 @@ const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
         if (name === "amount") {
             const numericValue = parseFloat(value);
             console.log(numericValue, minBid);
-            // Block any value less than the minBid
+     
             if (numericValue >= minBid || value === "") {
                 setFormData({
                     ...formData,
@@ -76,7 +76,7 @@ const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
                     </Typography>
 
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        {/* Amount Field */}
+            
                         <TextField
                             label="Amount"
                             type="number"
@@ -87,12 +87,12 @@ const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
                             variant="outlined"
                             InputProps={{
                                 style: { color: "white", backgroundColor: "#333", borderRadius: "8px" },
-                                inputProps: { min: minBid || 0 }, // Ensures the user can't input values below the minBid
+                                inputProps: { min: minBid || 0 }, 
                             }}
                             InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
                         />
 
-                        {/* Proposal Field */}
+                       
                         <TextField
                             label="Proposal"
                             name="proposal"
@@ -108,7 +108,6 @@ const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
                             InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
                         />
 
-                        {/* Submit Button */}
                         <Button
                             variant="contained"
                             color="secondary"

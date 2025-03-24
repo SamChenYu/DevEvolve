@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { fetchBidsForProject, hireDeveloper, modifyBid, developerBids } from '../../services/ProjectService';
+import { fetchBidsForProject, hireDeveloper, modifyBid, minBidLevel, cancelBid } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
-import { Box, Typography, Modal, IconButton, Divider, CircularProgress, Button, Avatar } from '@mui/material';
+import { Box, Typography, Modal, IconButton, Divider, CircularProgress, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import EditBidModal from '../bids/EditBidModal';
 
-const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired, minBid }) => {
+const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => {
     const [bids, setBids] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedProposal, setSelectedProposal] = useState(null); 
@@ -15,6 +15,8 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired, minBi
     const [hiredDeveloperId, setHiredDeveloperId] = useState(null);
     const [editBidModal, setEditBidModal] = useState(false);
     const [selectedBid, setSelectedBid] = useState(null);
+    const [minBid, setMinBid] = useState(0);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         if (!open) return; 
@@ -32,9 +34,23 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired, minBi
         fetchBids();
     }, [open, projectId]);
 
-    const handleEditBid = (bid) => {
+    const handleEditBid = async(bid) => {
         setSelectedBid(bid);
+        const developer = await getDeveloperById(bid.developerId);
+        const minLevelBid = await minBidLevel(developer.level);
+        setMinBid(minLevelBid);
         setEditBidModal(true);
+    };
+
+    const handleDeleteBid = async (bidId) => {
+        try {
+            await cancelBid(bidId);
+            const updatedBids = await fetchBidsForProject(projectId);
+            setBids(updatedBids);
+            setDeleteModalOpen(false);
+        } catch (error) {
+            console.error("Error deleting bid:", error);
+        }
     };
 
     const handleUpdateBid = async (updatedBid) => {
@@ -130,12 +146,24 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired, minBi
                                     </Button>)}
 
                                     <Button
-                                        variant="outlined"
-                                        color="secondary"
+                                        variant="contained"
+                                        color="primary"
                                         sx={{ mt: 2 }}
                                         onClick={() => handleEditBid(bid)}
                                     >
                                         Edit Bid
+                                    </Button>
+
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        sx={{ mt: 2, ml: 0.75 }}
+                                        onClick={() => {
+                                            setSelectedBid(bid);
+                                            setDeleteModalOpen(true);
+                                        }}
+                                    >
+                                        Delete Bid
                                     </Button>
 
                                     {index < bids.length - 1 && <Divider sx={{ my: 2, bgcolor: "gray" }} />}
@@ -218,6 +246,23 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired, minBi
                     minBid={minBid}
                 />
             )}
+            <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+                <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogContent>
+                        <Typography>Are you sure you want to delete this project? This action cannot be undone.</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={() => handleDeleteBid(selectedBid.id)} color="error">
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
         </>
     );
 };

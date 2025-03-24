@@ -36,7 +36,6 @@ const ProjectDetails = () => {
     const [feedback, setFeedback] = useState("");
     const [hasRated, setHasRated] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [minBid, setMinBid] = useState(0);
 
     const [modifyModalOpen, setModifyModalOpen] = useState(false);  
     const [formData, setFormData] = useState({
@@ -81,13 +80,7 @@ const ProjectDetails = () => {
         fetchDetails();
     }, [clientId, projectId]);
 
-    useEffect(() => {
-        if (user?.user?.level) {
-          minBidLevel(user.user.level)
-            .then((minAmount) => setMinBid(minAmount))
-            .catch((error) => console.error('Error fetching min bid:', error));
-        }
-      }, [user]);
+   
 
     if (loading) {
         return (
@@ -428,7 +421,6 @@ const ProjectDetails = () => {
                 clientId={clientId} 
                 onDeveloperHired={handleDeveloperHired} 
                 user={user}
-                minBid={minBid}
             />
             
             <Modal open={!!selectedDeveloper} onClose={() => setSelectedDeveloper(null)}>
