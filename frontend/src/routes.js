@@ -16,6 +16,7 @@ import BidList from "./components/bids/BidList";
 import DevProfilePage from "./components/profile/DevProfilePage";
 import ClientProfilePage from "./components/profile/ClientProfilePage";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
+import CreateIssueForm from "./components/Issues/CreateIssueForm";
 
 const AppRoutes = () => {
     return (
@@ -38,6 +39,7 @@ const AppRoutes = () => {
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/dev-profile/:id" element={<DevProfilePage />} />
                 <Route path="/client-profile/:id" element={<ClientProfilePage />} />
+                <Route path="/report-issue" element={<CreateIssueForm />} />
             </Routes>
         </Router>
     );

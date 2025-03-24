@@ -205,3 +205,33 @@ export const searchProjects = async (query) => {
     throw error;
   }
 }
+
+export const createIssue = async (issueData) => {
+  try {
+    const response = await axiosInstance.post("/auth/issues/create", issueData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating issue:", error);
+    throw error.response?.data?.message || "Failed to create issue";
+  }
+};
+
+export const getIssueById = async (issueId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/issues/getIssue/${issueId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching issue:", error);
+    throw error;
+  }
+};
+
+export const deleteIssue = async (issueId) => {
+  try {
+    const response = await axiosInstance.delete(`/auth/issues/deleteIssue/${issueId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting issue:", error);
+    throw error.response?.data?.message || "Failed to delete issue";
+  }
+};
