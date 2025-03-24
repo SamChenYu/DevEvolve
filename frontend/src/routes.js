@@ -16,6 +16,7 @@ import BidList from "./components/bids/BidList";
 import Chat from "./components/chat/Chat";
 import DevProfilePage from "./components/profile/DevProfilePage";
 import ClientProfilePage from "./components/profile/ClientProfilePage";
+import Shop from "./components/purchase/Shop";
 
 const AppRoutes = () => {
     return (
@@ -38,6 +39,7 @@ const AppRoutes = () => {
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/dev-profile/:id" element={<DevProfilePage />} />
                 <Route path="/client-profile/:id" element={<ClientProfilePage />} />
+                <Route path="/shop" element={<Shop />} />
             </Routes>
         </Router>
     );
