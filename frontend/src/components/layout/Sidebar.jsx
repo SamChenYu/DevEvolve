@@ -10,6 +10,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import ChatIcon from '@mui/icons-material/Chat';
+import ShopIcon from '@mui/icons-material/Shop';
 
 
 const drawerWidth = 240;
@@ -37,6 +38,7 @@ const Sidebar = () => {
         { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
         { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/client-profile/${user?.user?.id}`) },
         { text: "Chat", icon: <ChatIcon />, onClick: () => navigate("/chat") },
+        {text: "Purchase Coins", icon: <ShopIcon />, onClick: () => navigate("/shop")},
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     }
@@ -46,6 +48,7 @@ const Sidebar = () => {
         { text: "Your Bids", icon: <PriceChangeIcon />, onClick: () => navigate("/your-bids") },
         { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/dev-profile/${user?.user?.id}`) },
         { text: "Chat", icon: <ChatIcon />, onClick: () => navigate("/chat") },
+        {text: "Purchase Coins", icon: <ShopIcon />, onClick: () => navigate("/Shop")},
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     }
