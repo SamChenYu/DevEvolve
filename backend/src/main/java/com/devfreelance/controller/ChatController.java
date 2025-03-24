@@ -149,9 +149,12 @@ public class ChatController {
             System.out.println("Client or Developer not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        //Todo: web socket updates
         Chat chat = messagingService.getChat(clientObj.get(), developerObj.get());
+        // Notify both client and developer
+        String clientDestination = "/topic/user/" + clientID;
+        String developerDestination = "/topic/user/" + developerID;
+        simpMessagingTemplate.convertAndSend(clientDestination, "New Chat"); // Sends a notification to the socket
+        simpMessagingTemplate.convertAndSend(developerDestination, "New Chat"); // Sends a notification to the socket
         return ResponseEntity.ok(chat);
     }
 
