@@ -226,6 +226,16 @@ export const getIssueById = async (issueId) => {
   }
 };
 
+export const getAllIssues = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/issues/all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
+    throw error;
+  }
+}
+
 export const deleteIssue = async (issueId) => {
   try {
     const response = await axiosInstance.delete(`/auth/issues/deleteIssue/${issueId}`);

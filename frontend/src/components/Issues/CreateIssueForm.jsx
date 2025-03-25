@@ -1,17 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  CssBaseline,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-} from '@mui/material';
+import { Box, CssBaseline, Paper, Typography, TextField, Button, MenuItem, Select, InputLabel, FormControl, useTheme } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { createIssue } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
@@ -23,23 +12,40 @@ const issueTypes = [
 ];
 
 const CreateIssueForm = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    type: '', 
-  });
-  
-  const { user, loading } = useContext(UserContext);
-  const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        type: '', 
+    });
+    
+    const { user, loading } = useContext(UserContext);
+    const navigate = useNavigate();
+    const theme = useTheme();
 
-  useEffect(() => {
-   
-    if (loading) return;
+    useEffect(() => {
+        if (!loading && (!user)) {
+            navigate("/login");
+        }
+    }, [navigate, user, loading]);
 
-    if (!user) {
-      navigate('/login');
+    if (loading) {
+
+        return (
+            <Box 
+                sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '100vh',
+                    bgcolor: 'background.default'
+                }}
+            >
+                <Typography variant="h4" sx={{ color: theme.palette.secondary.main }}>
+                    Loading...
+                </Typography>
+            </Box>
+        );
     }
-  }, [user, loading, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

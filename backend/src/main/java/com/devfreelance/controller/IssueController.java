@@ -13,6 +13,7 @@ import com.devfreelance.repository.IssueRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -38,13 +39,18 @@ public class IssueController {
     }
 
     @GetMapping("/getIssue/{issueId}")
-    public Issues getIssue(@RequestParam("issueId") Integer issueId) {
+    public Issues getIssue(@PathVariable("issueId") Integer issueId) {
         Issues issue = issueRepository.findById(issueId).orElse(null);
         return issue;
     }
 
+    @GetMapping("/all")
+    public Iterable<Issues> getAllIssues() {
+        return issueRepository.findAll();
+    }
+
     @DeleteMapping("/deleteIssue/{issueId}")
-    public ResponseEntity<?> deleteIssue(@RequestParam("issueId") Integer issueId) {
+    public ResponseEntity<?> deleteIssue(@PathVariable("issueId") Integer issueId) {
         issueRepository.deleteById(issueId);
         return ResponseEntity.ok("Issue deleted successfully");
     }
