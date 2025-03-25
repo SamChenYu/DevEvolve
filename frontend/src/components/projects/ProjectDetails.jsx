@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
-import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Snackbar, Alert } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -33,6 +33,9 @@ const ProjectDetails = () => {
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState("");
     const [hasRated, setHasRated] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("error");
     
     const secondaryColor = theme.palette.secondary.main;
     const secondaryLight = theme.palette.secondary.light;
@@ -49,6 +52,9 @@ const ProjectDetails = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching project details:", error);
+                setSnackbarMessage("Failed to load project details");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
                 setLoading(false);
             }
         };
@@ -56,9 +62,19 @@ const ProjectDetails = () => {
         fetchDetails();
     }, [clientId, projectId]);
 
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    }
+
     const handleDeveloperHired = () => {
         setDeveloperHired(true);
         setProject(prev => ({ ...prev, status: "IN_PROGRESS" }));
+        setSnackbarMessage("Developer hired successfully!");
+        setSnackbarSeverity("success");
+        setOpenSnackbar(true);
     };
 
     const handleViewDeveloper = async (developerId) => {
@@ -68,6 +84,9 @@ const ProjectDetails = () => {
             setSelectedDeveloper(devData);
         } catch (error) {
             console.error("Error fetching developer details:", error);
+            setSnackbarMessage("Failed to load developer details");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
         }
         setDevLoading(false);
     };
@@ -119,20 +138,40 @@ const ProjectDetails = () => {
     const handleRatingSubmitClick = () => {
         handleRatingSubmit(projectId, rating, feedback)
             .then(() => {
-                alert("Rating submitted successfully!");
-                setRatingModalOpen(false); 
+                setSnackbarMessage("Rating submitted successfully!");
+                setSnackbarSeverity("success");
+                setOpenSnackbar(true);
+                setRatingModalOpen(false);
+                setHasRated(true);
                 window.location.reload(); 
             })
             .catch((error) => {
-                alert("Failed to submit rating. Please try again.");
                 console.error("Rating submission failed:", error);
-            });
+                setSnackbarMessage("Failed to submit rating. Please try again.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            })
     };
 
     return (
         <Box sx={{ display: 'flex', backgroundColor: '#121212', minHeight: '100vh', color: '#E0E0E0' }}>
             <CssBaseline />
             <Sidebar />
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center"}}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbarSeverity}
+                    sx={{ width: '100% '}}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
             
             <Button
                 onClick={() => navigate(-1)}

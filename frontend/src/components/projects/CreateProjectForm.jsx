@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Box, CssBaseline, Paper, Typography, TextField, Button } from '@mui/material';
+import { Box, CssBaseline, Paper, Typography, TextField, Button, Snackbar, Alert } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
@@ -14,6 +14,9 @@ const CreateProjectForm = () => {
         repoLink: "",
       });
       const { user, loading } = useContext(UserContext);
+      const [openSnackbar, setOpenSnackbar] = useState(false);
+      const [snackbarMessage, setSnackbarMessage] = useState("");
+      const [snackbarSeverity, setSnackbarSeverity] = useState("error");
       const navigate = useNavigate();
       
       
@@ -32,16 +35,44 @@ const CreateProjectForm = () => {
     
       const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.title.trim()) {
+            setSnackbarMessage("Project title is required");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+            return;
+        }
+
+        if (!formData.description.trim()) {
+            setSnackbarMessage("Project description is required");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+            return;
+        }
+
         try {
           await createProject(user.user.id, formData);
-          alert("Project Created Successfully!");
-          navigate("/client-dashboard");
-          window.location.reload();
+          setSnackbarMessage("Project Created Successfully!");
+          setSnackbarSeverity("success");
+          setOpenSnackbar(true);
+          setTimeout(() => {
+              navigate("/client-dashboard");
+              window.location.reload();
+          }, 1500);
         } catch (error) {
-          alert("An error occurred. Please try again.");
+            console.error("Project creation error:", error);
+            setSnackbarMessage(error.message || "Failed to create project. Please try again.");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
         }
       };
-    
+
+      const handleCloseSnackbar = (event, reason) => {
+          if (reason === 'clickaway') {
+              return;
+          }
+          setOpenSnackbar(false);
+      };
     
       return (
         <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "black", color: "white" }}>
@@ -109,6 +140,20 @@ const CreateProjectForm = () => {
               </Box>
             </Paper>
           </Box>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbarSeverity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
       );
 }
