@@ -17,6 +17,9 @@ import Chat from "./components/chat/Chat";
 import DevProfilePage from "./components/profile/DevProfilePage";
 import ClientProfilePage from "./components/profile/ClientProfilePage";
 import Shop from "./components/purchase/Shop";
+import AdminDashboard from "./components/dashboard/AdminDashboard";
+import CreateIssueForm from "./components/Issues/CreateIssueForm";
+
 
 const AppRoutes = () => {
     return (
@@ -27,6 +30,7 @@ const AppRoutes = () => {
                 <Route path="/client-registration" element={<ClientRegistration />} />
                 <Route path="/developer-registration" element={<DeveloperRegistration />} />
                 <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/client-dashboard" element={<ClientDashboard />} />
                 <Route path="/create-project" element={<CreateProjectForm />} />
                 <Route path="/projects/:clientId/:projectId" element={<ProjectDetails />} />
@@ -40,6 +44,7 @@ const AppRoutes = () => {
                 <Route path="/dev-profile/:id" element={<DevProfilePage />} />
                 <Route path="/client-profile/:id" element={<ClientProfilePage />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/report-issue" element={<CreateIssueForm />} />
             </Routes>
         </Router>
     );

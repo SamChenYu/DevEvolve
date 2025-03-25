@@ -1,16 +1,19 @@
 import React from 'react';
 import { useEffect, useState, useContext } from 'react';
-import { getDeveloperById as getUser } from '../../services/AuthenicationService';
+import { getDeveloperById as getUser, updateClientProfile, deleteClientProfile } from '../../services/AuthenicationService';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import { useTheme } from '@mui/material/styles';
-import { Box, Typography, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress } from '@mui/material'; 
+import { Box, Typography, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'; 
 import { ArrowBack, GitHub, LinkedIn, Twitter, Facebook, Edit } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import ProjectList from '../projects/ProjectList';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { alpha } from '@mui/material/styles';
+import EditClientProfileModal from './EditClientProfileModal';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const ClientProfilePage = () => {
     const { user, loading } = useContext(UserContext);
@@ -20,9 +23,11 @@ const ClientProfilePage = () => {
     const [Client, setClient] = useState(null);
     const [userLoading, setLoading] = useState(true);
     const theme = useTheme();
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   
     useEffect(() => {
-      if (!loading && (!user || (user.role !== "CLIENT"))) {
+      if (!loading && (!user || (user.role !== "CLIENT" && user.role !== "ADMIN"))) {
         navigate("/login");
       }
     }, [navigate, user, loading]);
@@ -60,6 +65,29 @@ const ClientProfilePage = () => {
           </Box>
       );
     }
+
+    const handleEditProfile = () => {
+      setEditModalOpen(true);
+    };
+
+    const handleUpdateProfile = async (updatedData) => {
+      try {
+        await updateClientProfile(Client.id, updatedData);
+        setClient({ ...Client, ...updatedData });
+        setEditModalOpen(false);
+      } catch (error) {
+        console.error("Error updating client profile:", error);
+      }
+    };
+  
+    const handleDeleteProfile = async () => {
+      try {
+        await deleteClientProfile(Client.id);
+        navigate("/logout");
+      } catch (error) {
+        console.error("Error deleting client profile:", error);
+      }
+    };
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#121212", color: "white" }}>
@@ -103,22 +131,42 @@ const ClientProfilePage = () => {
                 position: "relative",
               }}
             >
-        
-              <Chip
-                icon={<Edit size="small"/>}
-                label="Edit Profile"
-                sx={{ 
-                  position: "absolute", 
-                  padding: 2,
-                  right: 16, 
-                  top: 64, 
-                  bgcolor: "rgba(0,0,0,0.5)", 
-                  color: "white", 
-                  border: "1px solid rgba(255,255,255,0.2)" 
-                }}
-                onClick={() => navigate("/edit-profile")}
-              />
+              
+              {(user.user?.id == id || user.role === "ADMIN") && (
+                <>
+                  <Chip
+                    icon={<Edit size="small"/>}
+                    label="Edit Profile"
+                    sx={{ 
+                      position: "absolute", 
+                      padding: 2,
+                      right: 16, 
+                      top: 64, 
+                      bgcolor: "rgba(0,0,0,0.5)", 
+                      color: "white", 
+                      border: "1px solid rgba(255,255,255,0.2)" 
+                    }}
+                    onClick={handleEditProfile}
+                  />
+                  <Chip
+                    icon={<DeleteIcon size="small"/>}
+                    label="Delete Profile"
+                    sx={{ 
+                      position: "absolute", 
+                      padding: 2,
+                      right: 16, 
+                      top: 120, 
+                      bgcolor: "rgba(0,0,0,0.5)", 
+                      color: "white", 
+                      border: "1px solid rgba(255,255,255,0.2)" 
+                    }}
+                    onClick={() => setDeleteModalOpen(true)}
+
+                  />
+                </>
+              )}
             </Box>
+              
             
        
             <Box sx={{ display: "flex", justifyContent: "center", mt: "-80px" }}>
@@ -202,6 +250,29 @@ const ClientProfilePage = () => {
           </Box>
         )}
       </Box>
+      <EditClientProfileModal 
+        open={editModalOpen} 
+        onClose={() => setEditModalOpen(false)} 
+        onSubmit={handleUpdateProfile} 
+        client={Client}
+      />
+      <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+        <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+                {user.user.id == id ? (<Typography>Are you sure you want to delete your account? This action cannot be undone.</Typography>) : (<Typography>Are you sure you want to delete this client's account? This action cannot be undone.</Typography>)}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={() => handleDeleteProfile} color="error">
+                    Delete
+                </Button>
+            </DialogActions>
+        </Box>
+      </Dialog>
     </Box>
   );
 };

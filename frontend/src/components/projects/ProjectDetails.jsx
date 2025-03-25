@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating } from '../../services/ProjectService';
+import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
-import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -20,6 +20,7 @@ import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { UserContext } from '../../context/UserContext';
 
+
 const ProjectDetails = () => {
     const { clientId, projectId } = useParams();
     const navigate = useNavigate();
@@ -34,6 +35,14 @@ const ProjectDetails = () => {
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState("");
     const [hasRated, setHasRated] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+    const [modifyModalOpen, setModifyModalOpen] = useState(false);  
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        repoLink: ''
+    });
     
     
     const secondaryColor = theme.palette.secondary.main;
@@ -42,7 +51,7 @@ const ProjectDetails = () => {
     const { user, loading } = useContext(UserContext);
       
     useEffect(() => {
-    if (!loading && (!user || user.role !== "CLIENT")) {
+    if (!loading && (!user || (user.role !== "CLIENT" && user.role !== "ADMIN"))) {
         navigate("/login");
     }
     }, [navigate, user, loading]);
@@ -52,6 +61,11 @@ const ProjectDetails = () => {
             try {
                 const response = await fetchProjectDetails(clientId, projectId);
                 setProject(response);
+                setFormData({
+                    title: response.title,
+                    description: response.description,
+                    repoLink: response.repoLink
+                });
                 const hired = response.status !== "FINDING_DEVELOPER";
                 setDeveloperHired(hired);
                 const ratingData = await fetchProjectRating(projectId);
@@ -65,6 +79,8 @@ const ProjectDetails = () => {
 
         fetchDetails();
     }, [clientId, projectId]);
+
+   
 
     if (loading) {
         return (
@@ -84,7 +100,7 @@ const ProjectDetails = () => {
         );
     }
 
-    if (!user || user.role !== "CLIENT") {
+    if (!user || (user.role !== "CLIENT" && user.role !== "ADMIN")) {
     return null; 
     }
 
@@ -159,6 +175,40 @@ const ProjectDetails = () => {
                 alert("Failed to submit rating. Please try again.");
                 console.error("Rating submission failed:", error);
             });
+    };
+
+    const handleModifyClick = () => {
+        setModifyModalOpen(true);
+    };
+
+    const handleModifySubmit = async () => {
+        try {
+            await modifyProject(projectId, formData);
+            alert("Project modified successfully!");
+            setModifyModalOpen(false);
+            window.location.reload(); 
+        } catch (error) {
+            alert("Failed to modify project. Please try again.");
+            console.error("Error modifying project:", error);
+        }
+    };
+
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleDeleteProject = async () => {
+        try {
+            await deleteProject(projectId);
+            navigate(`/client-dashboard`);
+        } catch (error) {
+            console.error("Error deleting project:", error);
+            alert("Failed to delete project. Please try again.");
+        }
     };
 
     return (
@@ -281,6 +331,8 @@ const ProjectDetails = () => {
                                     {statusStyles[project.status]?.label || project.status.replace("_", " ")}
                                 </Typography>
                             </Paper>
+
+                            <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', my: 2 }} />
                             
                             {project.status === "COMPLETED" && !hasRated && (
                                 <Button 
@@ -296,7 +348,7 @@ const ProjectDetails = () => {
                                     Rate Developer
                                 </Button>
                             )}
-                            
+
                             {developerHired ? (
                                 <Button 
                                     variant="contained" 
@@ -326,6 +378,37 @@ const ProjectDetails = () => {
                                     View Bids
                                 </Button>
                             )}
+
+                            {(clientId == user.user?.id || user.role === "ADMIN") && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={handleModifyClick}
+                                        sx={{
+                                            fontWeight: 600,
+                                            py: 1.5,
+                                            mt: 2
+                                        }}
+                                    >
+                                        Modify Project
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        fullWidth
+                                        onClick={() => setDeleteModalOpen(true)}
+                                        sx={{
+                                            fontWeight: 600,
+                                            py: 1.5,
+                                            mt: 2
+                                        }}
+                                    >
+                                        Delete Project
+                                    </Button>
+                                </>
+                            )}
                         </Paper>
                     </Grid>
                 </Grid>
@@ -337,6 +420,7 @@ const ProjectDetails = () => {
                 projectId={projectId} 
                 clientId={clientId} 
                 onDeveloperHired={handleDeveloperHired} 
+                user={user}
             />
             
             <Modal open={!!selectedDeveloper} onClose={() => setSelectedDeveloper(null)}>
@@ -459,7 +543,72 @@ const ProjectDetails = () => {
                         Submit Rating
                     </Button>
                 </Box>
-            </Modal>   
+            </Modal> 
+
+            <Modal open={modifyModalOpen} onClose={() => setModifyModalOpen(false)}>
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#222', p: 3, borderRadius: 2, color: 'white', width: 350 }}>
+                    <Typography variant="h5" sx={{ mb: 2 }}>Modify Project</Typography>
+                    
+                    <TextField
+                        label="Title"
+                        fullWidth
+                        variant="outlined"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleFormChange}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                    />
+                    <TextField
+                        label="Description"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleFormChange}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                    />
+                
+                    <TextField
+                        label="RepoLink"
+                        fullWidth
+                        variant="outlined"
+                        name="repoLink"
+                        value={formData.cost}
+                        onChange={handleFormChange}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                    />
+
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        fullWidth
+                        onClick={handleModifySubmit}
+                        sx={{ mt: 2 }}
+                    >
+                        Save Changes
+                    </Button>
+                </Box>
+            </Modal>  
+
+            <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+                <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogContent>
+                        <Typography>Are you sure you want to delete this project? This action cannot be undone.</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={() => handleDeleteProject} color="error">
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
         </Box>
     );
 }

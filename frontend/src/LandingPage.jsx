@@ -106,7 +106,7 @@ const LandingPage = () => {
   useEffect(() => {
     AOS.init({
       duration: 800,
-      once: false,
+      once: true,
       mirror: true,
     });
   }, []);
