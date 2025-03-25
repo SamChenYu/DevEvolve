@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devfreelance.config.JwtProvider;
+import com.devfreelance.models.Admin;
 import com.devfreelance.models.Client;
 import com.devfreelance.models.Developer;
+import com.devfreelance.repository.AdminRepository;
 import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.request.LoginRequest;
@@ -45,6 +47,9 @@ public class AuthController {
 
     @Autowired
     private DeveloperRepository developerRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -134,6 +139,11 @@ public class AuthController {
         Optional<Client> client = clientRepository.findByEmail(loginRequest.getEmail());
         if (client.isPresent()) {
             return new AuthResponse(token, "User successfully logged in.", "CLIENT", client.get().getId());
+        }
+
+        Optional<Admin> admin = adminRepository.findByEmail(loginRequest.getEmail());
+        if (admin.isPresent()) {
+            return new AuthResponse(token, "User successfully logged in.", "ADMIN", admin.get().getId());
         }
 
         throw new RuntimeException("User not found.");

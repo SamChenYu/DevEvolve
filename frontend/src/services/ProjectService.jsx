@@ -40,7 +40,7 @@ export const browseProjectDetails = async (projectId) => {
 export const fetchProjectRating = async (projectId) => {
   try {
       const response = await axiosInstance.get(`/auth/projects/rating/${projectId}`);
-      console.log("Rating fetched successfully:", response.data);
+      //console.log("Rating fetched successfully:", response.data);
       return response.data; 
   } catch (error) {
       console.error("Error fetching project rating:", error);
@@ -153,5 +153,95 @@ export const handleRatingSubmit = async (projectId, rating, feedback, ) => {
   } catch (error) {
       console.error("Error submitting rating:", error);
       alert("Failed to submit rating. Please try again.");
+  }
+};
+
+export const modifyBid = async(bidId, bidData) => {
+  try {
+      const response = await axiosInstance.put(`/auth/admin/modifyBid/${bidId}`, bidData);
+      return response.data;
+  } catch (error) {
+      console.error("Error modifying bid:", error);
+      throw error.response?.data?.message || "Failed to modify bid";
+  }
+}
+
+export const cancelBid = async (bidId) => {
+  try {
+    const response = await axiosInstance.delete(`/auth/admin/deleteBid/${bidId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error canceling bid:", error);
+    throw error.response?.data?.message || "Failed to cancel bid";
+  }
+};
+
+export const modifyProject = async (projectId, updatedProjectData) => {
+  try {
+    const response = await axiosInstance.put(`/auth/admin/modifyProject/${projectId}`, updatedProjectData);
+    return response.data;
+  } catch (error) {
+    console.error("Error modifying project:", error);
+    throw error.response?.data?.message || "Failed to modify project";
+  }
+};
+
+export const deleteProject = async (projectId) => {
+  try {
+    const response = await axiosInstance.delete(`/auth/admin/deleteProject/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw error.response?.data?.message || "Failed to delete project";
+  }
+};
+
+export const searchProjects = async (query) => {
+  try {
+    const response = await axiosInstance.get(`/auth/projects/search?query=${query}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error searching projects:", error);
+    throw error;
+  }
+}
+
+export const createIssue = async (issueData) => {
+  try {
+    const response = await axiosInstance.post("/auth/issues/create", issueData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating issue:", error);
+    throw error.response?.data?.message || "Failed to create issue";
+  }
+};
+
+export const getIssueById = async (issueId) => {
+  try {
+    const response = await axiosInstance.get(`/auth/issues/getIssue/${issueId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching issue:", error);
+    throw error;
+  }
+};
+
+export const getAllIssues = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/issues/all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
+    throw error;
+  }
+}
+
+export const deleteIssue = async (issueId) => {
+  try {
+    const response = await axiosInstance.delete(`/auth/issues/deleteIssue/${issueId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting issue:", error);
+    throw error.response?.data?.message || "Failed to delete issue";
   }
 };
