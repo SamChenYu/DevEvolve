@@ -14,6 +14,7 @@ import com.devfreelance.request.MessageSendRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MessagingService {
@@ -41,6 +42,8 @@ public class MessagingService {
             return chat;
         } else {
             Chat newChat = new Chat(client, developer);
+            newChat.setName1(client.getFirstName() + " " + client.getLastName());
+            newChat.setName2(developer.getFirstName() + " " + developer.getLastName());
             chatRepository.save(newChat);
             return newChat;
         }
@@ -110,7 +113,16 @@ public class MessagingService {
 
 
 
-
-
-
+    public boolean clearAllMessages(String chatID) {
+        Optional<Chat> chat = chatRepository.findById(chatID);
+        if(chat.isPresent()) {
+            chat.get().getMessages().clear();
+            messageRepository.deleteByChatId(chatID);
+            chatRepository.save(chat.get());
+            return true;
+        } else {
+            System.out.println("MessagingService: clearAllMessages: Chat not found");
+            return false;
+        }
+    }
 }

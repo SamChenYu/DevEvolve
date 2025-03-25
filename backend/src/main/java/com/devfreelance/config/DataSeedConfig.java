@@ -142,13 +142,16 @@ public class DataSeedConfig {
                 Chat chat = new Chat();
                 chat.setClient(andreas);
                 chat.setDeveloper(wahida);
+                chat.setName1(andreas.getFirstName() + " " + andreas.getLastName());
+                chat.setName2(wahida.getFirstName() + " " + wahida.getLastName());
                 chatRepository.save(chat);
+
 
                 Admin admin = new Admin();
                 admin.setEmail("admin@gmail.com");
                 admin.setPassword(passwordEncoder.encode("password"));
                 adminRepository.save(admin);
-                
+
 
             }
 

@@ -8,14 +8,14 @@ public class MessageSendRequest {
     private String chatID;
     private int message_ID;
 
-    private String from;
+    private String sender;
     private String text;
     private String timestamp;
 
-    public MessageSendRequest(String chatID, int message_ID, String from, String text, String timestamp) {
+    public MessageSendRequest(String chatID, int message_ID, String sender, String text, String timestamp) {
         this.chatID = chatID;
         this.message_ID = message_ID;
-        this.from = from;
+        this.sender = sender;
         this.text = text;
         this.timestamp = timestamp;
     }
@@ -28,8 +28,8 @@ public class MessageSendRequest {
         return message_ID;
     }
 
-    public String getFrom() {
-        return from;
+    public String getSender() {
+        return sender;
     }
 
     public String getText() {
@@ -44,8 +44,8 @@ public class MessageSendRequest {
         this.message_ID = message_ID;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     public void setText(String text) {
@@ -57,8 +57,8 @@ public class MessageSendRequest {
     }
 
     public Message toMessage() {
-        System.out.println("Converting MessageSendRequest to Message with variables " + message_ID + " " + chatID + " " + from + " " + text + " " + timestamp);
-        return new Message(message_ID, chatID, from, text, timestamp);
+        System.out.println("Converting MessageSendRequest to Message with variables " + message_ID + " " + chatID + " " + sender + " " + text + " " + timestamp);
+        return new Message(message_ID, chatID, sender, text, timestamp);
     }
 
 }
