@@ -100,6 +100,7 @@ public class DataSeedConfig {
                 Developer sam = developerRepository.findByEmail("Sam@gmail.com").get();
                 project = projectRepository.findById(1).get();
                 project.setDeveloper(sam);
+                project.setStatus(ProjectStatus.IN_PROGRESS);
                 projectRepository.save(project);
 
                 developer = new Developer();
