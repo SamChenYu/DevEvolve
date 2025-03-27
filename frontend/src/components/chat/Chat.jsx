@@ -1,6 +1,6 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Box, CssBaseline, Paper, Typography } from '@mui/material';
+import { Box, CssBaseline, Paper, Typography, TextField, IconButton } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -179,10 +179,36 @@ const Chat = () => {
         { /* Discussions (Chats)*/ }
         <section className="discussions">
           <div className="discussion search">
-            <div className="searchbar">
-              <input type="text" placeholder="Search..." value={searchUserText} onChange={(e) => setSearchUserText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearchUser()}/>
-              <SearchIcon className="icon" style={{ fontSize: '30px', color: 'black'}} aria-hidden="true" onClick={handleSearchUser}/>
-            </div>
+          <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search..."
+                value={searchUserText}
+                onChange={(e) => setSearchUserText(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchUser()}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={handleSearchUser}>
+                      <SearchIcon style={{ fontSize: '30px'}} color='secondary'/>
+                    </IconButton>
+                  ),
+                }}
+          
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '50px',
+                    backgroundColor: '#444', 
+                    
+                  },
+                  '& .MuiInputBase-input': {
+                    color: 'white', 
+                  },
+                  '& .MuiInputBase-input::placeholder': {
+                    color: 'white', 
+                  },
+                  m: 1,
+                }}
+              />
           </div>
 
             {chats.map((chat) => { 

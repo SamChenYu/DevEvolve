@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel } from '../../services/ProjectService';
+import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel, archiveProject } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -406,6 +406,19 @@ const ProjectDetails = () => {
                                         }}
                                     >
                                         Delete Project
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        fullWidth
+                                        sx={{
+                                            fontWeight: 600,
+                                            py: 1.5,
+                                            mt: 2
+                                        }}
+                                        onClick={() => archiveProject(projectId)}
+                                    >
+                                        Archive Project
                                     </Button>
                                 </>
                             )}

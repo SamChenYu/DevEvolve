@@ -196,6 +196,16 @@ export const deleteProject = async (projectId) => {
   }
 };
 
+export const archiveProject = async (projectId) => {
+  try {
+    const response = await axiosInstance.put(`/auth/projects/archive/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error archiving project:", error);
+    throw error.response?.data?.message || "Failed to archive project";
+  }
+}
+
 export const searchProjects = async (query) => {
   try {
     const response = await axiosInstance.get(`/auth/projects/search?query=${query}`);

@@ -14,7 +14,7 @@ const statusLabels = {
   FINDING_DEVELOPER: { label: "Finding a Developer", icon: <HourglassBottomIcon />, color: "warning" },
   IN_PROGRESS: { label: "In Progress", icon: <RocketLaunchIcon />, color: "info" },
   COMPLETED: { label: "Completed", icon: <CheckCircleIcon />, color: "success" },
-  ARCHIVED: { label: "Archived", icon: <ArchiveIcon />, color: "default" },
+  ARCHIVED: { label: "Archived", icon: <ArchiveIcon />, color: "secondary" },
   LATE: { label: "Late", icon: <WarningIcon />, color: "error" }
 };
 
