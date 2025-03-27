@@ -59,6 +59,7 @@ const CreateProjectForm = () => {
                 width: "50%",
                 textAlign: "center",
                 border: "1px solid rgba(255,255,255,0.3)",
+               
               }}
             >
               <Typography variant="h4" fontWeight={700} sx={{ mb: 2, color: "white" }}>

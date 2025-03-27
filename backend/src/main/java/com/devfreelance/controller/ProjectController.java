@@ -186,6 +186,17 @@ public class ProjectController {
         return project;
     }
 
+    @PutMapping("/archive/{projectId}")
+    public Projects archiveProject(@PathVariable Integer projectId) throws Exception {
+        Projects project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new Exception("Project not found."));
+
+        project.setStatus(ProjectStatus.ARCHIVED);
+        projectRepository.save(project);
+
+        return project;
+    }
+
     @PutMapping("/rate/{projectId}")
     public String rateDeveloper(@PathVariable Integer projectId, @RequestBody Ratings ratings) throws Exception {
         Projects project = projectRepository.findById(projectId)
