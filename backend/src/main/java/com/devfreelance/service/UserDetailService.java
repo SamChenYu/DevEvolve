@@ -11,8 +11,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.devfreelance.models.Admin;
 import com.devfreelance.models.Client;
 import com.devfreelance.models.Developer;
+import com.devfreelance.repository.AdminRepository;
 import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 
@@ -26,6 +28,9 @@ public class UserDetailService implements UserDetailsService {
     @Autowired
     private DeveloperRepository developerRepository;
 
+    @Autowired
+    private AdminRepository adminRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Client> client = clientRepository.findByEmail(username);
@@ -36,6 +41,11 @@ public class UserDetailService implements UserDetailsService {
         Optional<Developer> developer = developerRepository.findByEmail(username);
         if (developer.isPresent()) {
             return new org.springframework.security.core.userdetails.User(developer.get().getEmail(), developer.get().getPassword(), new ArrayList<>());
+        }
+
+        Optional<Admin> admin = adminRepository.findByEmail(username);
+        if (admin.isPresent()) {
+            return new org.springframework.security.core.userdetails.User(admin.get().getEmail(), admin.get().getPassword(), new ArrayList<>());
         }
 
         throw new UsernameNotFoundException("User not found with email: " + username);

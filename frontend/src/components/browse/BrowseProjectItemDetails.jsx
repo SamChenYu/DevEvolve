@@ -50,7 +50,7 @@ const BrowseProjectItemDetails = () => {
   };
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "DEVELOPER")) {
+    if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "ADMIN"))) {
       navigate("/login");
     }
   }, [navigate, user, loading]);

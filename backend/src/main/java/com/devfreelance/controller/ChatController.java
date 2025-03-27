@@ -14,6 +14,7 @@ import com.devfreelance.service.MessagingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/chat") // no auth for now Todo: update this
+@RequestMapping("/chat")
 public class ChatController {
 
     @Autowired
@@ -112,7 +113,7 @@ public class ChatController {
         List<Message> newMessages = new ArrayList<>();
         for(Message message : messages) {
             System.out.println("MessageID: " + message.getMessageID() + " MessageIDRequest: " + messageIDRequest);
-            if(message.getMessageID() > messageIDRequest) {
+            if(message.getMessageID() >= messageIDRequest) {
                 newMessages.add(message);
             }
         }
@@ -126,13 +127,15 @@ public class ChatController {
         if(!success) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        //messagingService.sendWebSocketUpdate(); // Todo
-        //simpMessagingTemplate.convertAndSend("/topic/" + message.getMessageID(), "Incoming Message"); // Sends a notification to the socket
+        String destination = "/topic/chat/" + messageSendRequest.getChatID();
+        simpMessagingTemplate.convertAndSend(destination, "Incoming Message"); // Sends a notification to the socket
+        System.out.println("Message send for chatID: " + messageSendRequest.getChatID() + " messageID: " + messageSendRequest.getMessageID() + " at " + destination);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/new")
     public ResponseEntity<Chat> newChat(@RequestBody ChatRequest chatRequest) {
+        // Used for when auto generated after project match
         String clientID = chatRequest.getClientID();
         String developerID = chatRequest.getDeveloperID();
         // String inputs because the frontend will not know the IDs of both client and developer
@@ -146,12 +149,41 @@ public class ChatController {
             System.out.println("Client or Developer not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        //Todo: web socket updates
-
         Chat chat = messagingService.getChat(clientObj.get(), developerObj.get());
+        // Notify both client and developer
+        String clientDestination = "/topic/user/" + clientID;
+        String developerDestination = "/topic/user/" + developerID;
+        simpMessagingTemplate.convertAndSend(clientDestination, "New Chat"); // Sends a notification to the socket
+        simpMessagingTemplate.convertAndSend(developerDestination, "New Chat"); // Sends a notification to the socket
         return ResponseEntity.ok(chat);
     }
+
+    @PostMapping("/search")
+    public List<Object> searchUser(@RequestBody ChatRequest chatRequest) {
+        String query = chatRequest.getSearchRequest();
+        boolean isClient = chatRequest.getIsClient();
+        System.out.println("Search query: " + query);
+        List<Object> users = new ArrayList<>();
+        if(isClient) {
+            users.addAll(developerRepository.searchUser(query));
+        } else {
+            users.addAll(clientRepository.searchUser(query));
+        }
+        return users;
+    }
+
+    @DeleteMapping("/delete/{chatID}")
+    public ResponseEntity<Void> deleteChat(@PathVariable String chatID) {
+        boolean status = messagingService.clearAllMessages(chatID);
+        if(!status) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        String destination = "/topic/chat/" + chatID;
+        simpMessagingTemplate.convertAndSend(destination, "Deleted"); // Sends a notification to the socket
+        System.out.println("Chat logs cleared for " + chatID + " at " + destination);
+        return ResponseEntity.ok().build();
+    }
+
 
 
 

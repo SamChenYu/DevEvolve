@@ -1,12 +1,12 @@
 import React from 'react';
 import { useEffect, useState, useContext } from 'react';
-import { getDeveloperById as getUser } from '../../services/AuthenicationService';
+import { getDeveloperById as getUser, updateDeveloperProfile, deleteDeveloperProfile } from '../../services/AuthenicationService';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import { useTheme } from '@mui/material/styles';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import { Box, Typography, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal } from '@mui/material'; 
+import { Box, Typography, TextField, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'; 
 import { ArrowBack, GitHub, LinkedIn, Twitter, Facebook, Edit, Code, Star, Language, Verified } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
@@ -17,6 +17,8 @@ import BrowseProjectItem from '../browse/BrowseProjectItem';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import SearchIcon from '@mui/icons-material/Search';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 
 
@@ -29,10 +31,18 @@ const DevProfilePage = () => {
     const [userLoading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [projects, setProjects] = useState({ inProgress: [], completed: [] });
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const theme = useTheme();
-  
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+    });
+
+    const [openEditModal, setOpenEditModal] = useState(false);
+
     useEffect(() => {
-      if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT"))) {
+      if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT" && user.role !== "ADMIN"))) {
         navigate("/login");
       }
     }, [navigate, user, loading]);
@@ -42,6 +52,11 @@ const DevProfilePage = () => {
           try {
             const data = await getUser(id);
             setDeveloper(data);
+            setFormData({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+            });
           } catch (error) {
             console.error("Error fetching developer profile:", error);
           }
@@ -62,6 +77,9 @@ const DevProfilePage = () => {
             .catch((err) => console.error("Error fetching developer projects:", err));
         }
       }, [user]);
+  
+    const handleOpenEditModal = () => setOpenEditModal(true);
+    const handleCloseEditModal = () => setOpenEditModal(false);
   
   
     if (loading) {
@@ -107,6 +125,36 @@ const DevProfilePage = () => {
         }
       ]
     };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
+  };
+
+  const handleUpdateProfile = async () => {
+      try {
+          await updateDeveloperProfile(id, formData);
+          setDeveloper(prevState => ({
+              ...prevState,
+              ...formData
+          }));
+          handleCloseEditModal();  
+      } catch (error) {
+          console.error("Error updating profile:", error);
+      }
+  };
+
+  const handleDeleteProfile = async () => {
+      try {
+          await deleteDeveloperProfile(id);
+          navigate('/logout');  
+      } catch (error) {
+          console.error("Error deleting profile:", error);
+      }
+  };
 
   
   const skills = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'GraphQL', 'UI/UX'];
@@ -154,20 +202,39 @@ const DevProfilePage = () => {
               }}
             >
         
-              <Chip
-                icon={<Edit size="small"/>}
-                label="Edit Profile"
-                sx={{ 
-                  position: "absolute", 
-                  padding: 2,
-                  right: 16, 
-                  top: 64, 
-                  bgcolor: "rgba(0,0,0,0.5)", 
-                  color: "white", 
-                  border: "1px solid rgba(255,255,255,0.2)" 
-                }}
-                onClick={() => navigate("/edit-profile")}
-              />
+              {(user.user?.id == id || user.role === "ADMIN") && (
+                <>
+                  <Chip
+                    icon={<Edit size="small"/>}
+                    label="Edit Profile"
+                    sx={{ 
+                      position: "absolute", 
+                      padding: 2,
+                      right: 16, 
+                      top: 64, 
+                      bgcolor: "rgba(0,0,0,0.5)", 
+                      color: "white", 
+                      border: "1px solid rgba(255,255,255,0.2)" 
+                    }}
+                    onClick={handleOpenEditModal}
+                  />
+                  <Chip
+                    icon={<DeleteIcon size="small"/>}
+                    label="Delete Profile"
+                    sx={{ 
+                      position: "absolute", 
+                      padding: 2,
+                      right: 16, 
+                      top: 120, 
+                      bgcolor: "rgba(0,0,0,0.5)", 
+                      color: "white", 
+                      border: "1px solid rgba(255,255,255,0.2)" 
+                    }}
+                    onClick={() => setDeleteModalOpen(true)}
+                    
+                  />
+                </>
+              )}
             </Box>
             
        
@@ -431,6 +498,80 @@ const DevProfilePage = () => {
         
 
       </Modal>
+
+      <Modal open={openEditModal} onClose={handleCloseEditModal}>
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#222', color: 'white', p: 3, borderRadius: 2, border: '1px solid #333', width: '50%' }}>
+                    <IconButton onClick={handleCloseEditModal} sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}>
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 3, textAlign: "center" }}>Edit Profile</Typography>
+
+                    <TextField
+                        label="First Name"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        fullWidth
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{
+                          style: { color: 'white' },
+                        }}
+                        InputProps={{
+                          style: { color: 'white' },
+                        }}
+                    />
+                    <TextField
+                        label="Last Name"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        fullWidth
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{
+                          style: { color: 'white' },
+                        }}
+                        InputProps={{
+                          style: { color: 'white' },
+                        }}
+                    />
+                    <TextField
+                        label="Email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        fullWidth
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{
+                          style: { color: 'white' },
+                        }}
+                        InputProps={{
+                          style: { color: 'white' },
+                        }}
+                    />
+
+                    <Button variant="contained" sx={{ bgcolor: '#9c27b0', '&:hover': { bgcolor: '#7b1fa2' } }} onClick={handleUpdateProfile}>
+                        Save Changes
+                    </Button>
+                </Box>
+            </Modal>
+
+            <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+                <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogContent>
+                        {user.user.id == id ? (<Typography>Are you sure you want to delete your account? This action cannot be undone.</Typography>) : (<Typography>Are you sure you want to delete this developer's account? This action cannot be undone.</Typography>)}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={() => handleDeleteProfile} color="error">
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
     </Box>
 
     

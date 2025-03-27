@@ -34,6 +34,9 @@ public class DataSeedConfig {
     private BidRepository bidRepository;
 
     @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -97,6 +100,7 @@ public class DataSeedConfig {
                 Developer sam = developerRepository.findByEmail("Sam@gmail.com").get();
                 project = projectRepository.findById(1).get();
                 project.setDeveloper(sam);
+                project.setStatus(ProjectStatus.IN_PROGRESS);
                 projectRepository.save(project);
 
                 developer = new Developer();
@@ -142,6 +146,12 @@ public class DataSeedConfig {
                 chat.setName1(andreas.getFirstName() + " " + andreas.getLastName());
                 chat.setName2(wahida.getFirstName() + " " + wahida.getLastName());
                 chatRepository.save(chat);
+
+
+                Admin admin = new Admin();
+                admin.setEmail("admin@gmail.com");
+                admin.setPassword(passwordEncoder.encode("password"));
+                adminRepository.save(admin);
 
 
             }

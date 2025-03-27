@@ -10,6 +10,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import ChatIcon from '@mui/icons-material/Chat';
+import PaidIcon from '@mui/icons-material/Paid';
+import ReportIcon from '@mui/icons-material/Report';
 
 
 const drawerWidth = 240;
@@ -37,6 +39,8 @@ const Sidebar = () => {
         { text: "Create Project", icon: <CreateIcon />, onClick: () => navigate("/create-project") },
         { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/client-profile/${user?.user?.id}`) },
         { text: "Chat", icon: <ChatIcon />, onClick: () => navigate("/chat") },
+        {text: "Purchase Coins", icon: <PaidIcon />, onClick: () => navigate("/shop")},
+        { text: "Report Issue", icon: <ReportIcon />, onClick: () => navigate("/report-issue") },
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     }
@@ -46,6 +50,15 @@ const Sidebar = () => {
         { text: "Your Bids", icon: <PriceChangeIcon />, onClick: () => navigate("/your-bids") },
         { text: "Profile", icon: <AccountCircleIcon />, onClick: () => navigate(`/dev-profile/${user?.user?.id}`) },
         { text: "Chat", icon: <ChatIcon />, onClick: () => navigate("/chat") },
+        { text: "Purchase Coins", icon: <PaidIcon />, onClick: () => navigate("/shop") },
+        { text: "Report Issue", icon: <ReportIcon />, onClick: () => navigate("/report-issue") },
+        { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
+      ];
+    }
+    else {
+      menuItems = [
+        { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
+        { text: "Browse Projects", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-projects") },
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];
     }
@@ -54,6 +67,8 @@ const Sidebar = () => {
       navigate("/client-dashboard");
     } else if (user.role === "DEVELOPER") {
       navigate("/developer-dashboard");
+    } else if (user.role === "ADMIN") {
+      navigate("/admin-dashboard");
     }
   };
 

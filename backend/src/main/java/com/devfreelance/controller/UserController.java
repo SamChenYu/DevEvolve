@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.devfreelance.config.JwtProvider;
+import com.devfreelance.models.Admin;
 import com.devfreelance.models.Bids;
 import com.devfreelance.models.Client;
 import com.devfreelance.models.Developer;
+import com.devfreelance.repository.AdminRepository;
 import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.response.UserRoleResponse;
@@ -39,6 +41,9 @@ public class UserController {
 
     @Autowired
     private DeveloperRepository developerRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -127,6 +132,9 @@ public class UserController {
 
         Optional<Developer> developer = developerRepository.findByEmail(extractedEmail);
         if (developer.isPresent()) return ResponseEntity.ok(new UserRoleResponse(developer.get(), "DEVELOPER"));
+
+        Optional<Admin> admin = adminRepository.findByEmail(extractedEmail);
+        if (admin.isPresent()) return ResponseEntity.ok(new UserRoleResponse(admin.get(), "ADMIN"));
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
     }

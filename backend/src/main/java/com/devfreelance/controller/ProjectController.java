@@ -25,6 +25,8 @@ import com.devfreelance.repository.ProjectRepository;
 import com.devfreelance.repository.RatingRepository;
 import com.devfreelance.response.BidResponse;
 import com.devfreelance.response.ProjectResponse;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -93,9 +95,21 @@ public class ProjectController {
     }
     
     @GetMapping("/all")
-    public List<Projects> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectResponse> getAllProjects() {
+        return projectRepository.findAll().stream()
+                .map(ProjectResponse::new)
+                .toList();
     }
+
+    @GetMapping("/search")
+    public List<ProjectResponse> searchProjects(@RequestParam String query) {
+
+        return projectRepository.searchProject(query).stream()
+                .map(ProjectResponse::new)
+                .toList();
+        
+    }
+    
 
     @PostMapping("/create/{clientId}")
     public Projects createProject(@PathVariable("clientId") Integer clientId, @RequestBody Projects project) throws Exception {
@@ -167,6 +181,17 @@ public class ProjectController {
 
         project.setStatus(ProjectStatus.COMPLETED);
         project.setFinalReport(report);
+        projectRepository.save(project);
+
+        return project;
+    }
+
+    @PutMapping("/archive/{projectId}")
+    public Projects archiveProject(@PathVariable Integer projectId) throws Exception {
+        Projects project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new Exception("Project not found."));
+
+        project.setStatus(ProjectStatus.ARCHIVED);
         projectRepository.save(project);
 
         return project;

@@ -36,6 +36,8 @@ const Login = () => {
                 navigate("/developer-dashboard");
             } else if (fullUser.role === "CLIENT") {
                 navigate("/client-dashboard");
+            } else if (fullUser.role === "ADMIN") {
+                navigate("/admin-dashboard");
             }
         } catch (error) {
             alert("Invalid credentials or session expired. Please try again.");

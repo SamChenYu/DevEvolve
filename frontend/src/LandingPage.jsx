@@ -106,7 +106,7 @@ const LandingPage = () => {
   useEffect(() => {
     AOS.init({
       duration: 800,
-      once: false,
+      once: true,
       mirror: true,
     });
   }, []);
@@ -425,6 +425,7 @@ const LandingPage = () => {
             sx={{ mb: 8, maxWidth: '700px', mx: 'auto' }}
             data-aos="fade-up"
             data-aos-delay="100"
+            fontSize={20}
           >
             Our streamlined process makes it easy for clients to find talent and for developers to build their portfolio.
           </Typography>
@@ -476,7 +477,7 @@ const LandingPage = () => {
                       <Typography variant="h6" fontWeight="700" sx={{ mb: 2 }}>
                         {item.step}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" fontSize={20}>
                         {item.description}
                       </Typography>
                     </CardContent>
@@ -524,6 +525,7 @@ const LandingPage = () => {
             sx={{ mb: 8, color: 'rgba(255,255,255,0.7)', maxWidth: '700px', mx: 'auto' }}
             data-aos="fade-up"
             data-aos-delay="100"
+            fontSize={20}
           >
             Hear from developers and clients who have transformed their careers and businesses with DevEvolve.
           </Typography>
@@ -536,16 +538,16 @@ const LandingPage = () => {
                   data-aos-delay={index * 150}
                 >
                   <TestimonialCard sx={{ height: '350px' }}>
-                    <Typography variant="body1" sx={{ mb: 4, fontStyle: 'italic' }}>
+                    <Typography variant="body1" sx={{ mb: 4, fontStyle: 'italic', fontSize: '1.3rem' }}>
                       "{testimonial.quote}"
                     </Typography>
                     <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center' }}>
                       <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>{testimonial.avatar}</Avatar>
                       <Box>
-                        <Typography variant="subtitle2" fontWeight={600}>
+                        <Typography variant="subtitle2" fontWeight={600} fontSize={16}>
                           {testimonial.name}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }} fontSize={14}>
                           {testimonial.role}
                         </Typography>
                       </Box>
