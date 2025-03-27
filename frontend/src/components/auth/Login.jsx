@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import {Button, TextField, Typography, Container, Box, Paper, Toolbar, AppBar, Fade} from "@mui/material";
+import {Button, TextField, Typography, Container, Box, Paper, Toolbar, AppBar, Fade, Snackbar, Alert} from "@mui/material";
 import { login } from "../../services/AuthenicationService";
 import { UserContext } from "../../context/UserContext";
 import { getUserFromToken } from "../../services/AuthenicationService";
@@ -9,29 +9,47 @@ import CodeIcon from "@mui/icons-material/Code";
 const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const { setUser } = useContext(UserContext);
+  
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleSnackbarClose = () => {
+      setSnackbarOpen(false);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.email || !formData.password) {
+          setErrorMessage("Invalid credentials.");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
+          return;
+        }
         try {
             
-            const user = await login(formData);
-            const { token } = user; 
-            console.log("User in login:", user);
+          const user = await login(formData);
+          const { token } = user; 
+          console.log("User in login:", user);
 
-            
-            document.cookie = `access_token=${token}; path=/; Secure`;
-            console.log(document.cookie);
+          
+          document.cookie = `access_token=${token}; path=/; Secure`;
+          console.log(document.cookie);
 
-            
-            const fullUser = await getUserFromToken();
-            setUser(fullUser);
-            console.log("User in login:", fullUser);
+          
+          const fullUser = await getUserFromToken();
+          setUser(fullUser);
+          console.log("User in login:", fullUser);
 
-            
+          setSuccessMessage("Login successful. Redirecting...");
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+          setTimeout(() => {
             if (fullUser.role === "DEVELOPER") {
                 navigate("/developer-dashboard");
             } else if (fullUser.role === "CLIENT") {
@@ -39,10 +57,17 @@ const Login = () => {
             } else if (fullUser.role === "ADMIN") {
                 navigate("/admin-dashboard");
             }
-        } catch (error) {
-            alert("Invalid credentials or session expired. Please try again.");
+          }, 2000);
+      } catch (error) {
+        if (error.response && error.response.data) {
+          setErrorMessage(error.response.data.message || "Registration failed.");
+        } else {
+          setErrorMessage("An unexpected error occurred. Please try again.");
         }
-    };
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+  };
 
     return (
         <Container 
@@ -104,7 +129,7 @@ const Login = () => {
                     padding: 4,
                     borderRadius: 3,
                     backgroundColor: "#222",
-                    width: "50%",
+                    width: "37%",
                     textAlign: "center",
                     border: "1px solid rgba(255,255,255,0.3)"
                 }}
@@ -123,7 +148,20 @@ const Login = () => {
                         value={formData.email}
                         onChange={handleChange}
                         fullWidth
-                        variant="filled"
+                        variant="outlined"
+                        color="white"
+                        InputProps={{ sx: { borderRadius: 5, } }}
+                        sx={{
+                          borderRadius: 5,
+                          backgroundColor: '#333',
+                          '& label': { color: 'white' },
+                          '& input': { color: 'white' },
+                          '& .MuiOutlinedInput-root': {
+                            '& fieldset': { borderColor: 'white' },
+                            '&:hover fieldset': { borderColor: 'white' },
+                            '&.Mui-focused fieldset': { borderColor: 'white' },
+                          },
+                        }}
                     />
                     <TextField
                         name="password"
@@ -132,7 +170,20 @@ const Login = () => {
                         value={formData.password}
                         onChange={handleChange}
                         fullWidth
-                        variant="filled"
+                        variant="outlined"
+                        color="white"
+                        InputProps={{ sx: { borderRadius: 5, } }}
+                        sx={{
+                          borderRadius: 5,
+                          backgroundColor: '#333',
+                          '& label': { color: 'white' },
+                          '& input': { color: 'white' },
+                          '& .MuiOutlinedInput-root': {
+                            '& fieldset': { borderColor: 'white' },
+                            '&:hover fieldset': { borderColor: 'white' },
+                            '&.Mui-focused fieldset': { borderColor: 'white' },
+                          },
+                        }}
                     />
                     <Button
                         type="submit"
@@ -152,6 +203,17 @@ const Login = () => {
                 </Box>
             </Paper>
           </Fade>
+          {/* Snackbar */}
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+              {snackbarSeverity === "success" ? successMessage : errorMessage}
+            </Alert>
+          </Snackbar>
         </Container>
     );
 

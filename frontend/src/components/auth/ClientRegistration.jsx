@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import {Button, TextField, Fade, Typography, Container, Box, Paper, Toolbar, AppBar, Switch, Stack} from '@mui/material';
+import {Button, TextField, Fade, Typography, Container, Box, Paper, Toolbar, AppBar, Switch, Stack, Snackbar, Alert} from '@mui/material';
 import { clientRegistration } from '../../services/AuthenicationService';
 import CodeIcon from "@mui/icons-material/Code";
 
 const ClientRegistration = () => {
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", password: "" });
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -17,6 +22,49 @@ const ClientRegistration = () => {
       navigate('/developer-registration');
     }
   }
+
+  const handleSnackbarClose = () => {
+      setSnackbarOpen(false);
+    };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      setErrorMessage("All fields are required.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setErrorMessage("Please enter a valid email address.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    try {
+      const response = await clientRegistration(formData);
+      console.log(response);
+      setSuccessMessage("Registration successful. Redirecting to login page...");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        setErrorMessage(error.response.data.message || "Registration failed.");
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
   const IOSSwitch = styled((props) => (
     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
   ))(({ theme }) => ({
@@ -77,18 +125,7 @@ const ClientRegistration = () => {
     },
   }));
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await clientRegistration(formData);
-            console.log(response);
-            alert('Client registered successfully');
-            navigate('/login');
-        } catch (error) {
-            console.error(error);
-            alert('An error occurred. Please try again.');
-        }
-    }
+    
 
   return (
     <Container
@@ -150,9 +187,9 @@ const ClientRegistration = () => {
             padding: 4,
             borderRadius: 3,
             backgroundColor: "#222",
-            width: "50%",
+            width: "37%",
             textAlign: "center",
-            border: "1px solid rgba(255,255,255,0.3)"
+            border: "1px solid black"
           }}
         >
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2, color: 'white' }}>
@@ -163,7 +200,7 @@ const ClientRegistration = () => {
             onSubmit={handleSubmit}
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <Stack direction="row" spacing={1} sx={{justifyContent: 'end', pb: 3 }}>
+            <Stack direction="row" spacing={1} sx={{justifyContent: 'center', pb: 3 }}>
               <Typography sx = {{color: 'white'}}>Developer</Typography>
               {<IOSSwitch sx={{ m: 1 }} defaultChecked onChange={changePage} />}
               <Typography sx = {{color: 'white'}}>Client</Typography>
@@ -173,8 +210,21 @@ const ClientRegistration = () => {
               label = "First Name"
               value={formData.firstName || ""}
               onChange={handleChange}
-              variant="filled"
-              sx={{ borderRadius: '8px' }}
+              fullWidth
+              variant="outlined"
+              color="white"
+              InputProps={{ sx: { borderRadius: 5, } }}
+              sx={{
+                borderRadius: 5,
+                backgroundColor: '#333',
+                '& label': { color: 'white' },
+                '& input': { color: 'white' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: 'white' },
+                  '&:hover fieldset': { borderColor: 'white' },
+                  '&.Mui-focused fieldset': { borderColor: 'white' },
+                },
+              }}
             />
             <TextField
               name="lastName"
@@ -182,17 +232,41 @@ const ClientRegistration = () => {
               value={formData.lastName || ""}
               onChange={handleChange}
               fullWidth
-              variant="filled"
+              variant="outlined"
+              color="white"
+              InputProps={{ sx: { borderRadius: 5 } }}
+              sx={{
+                borderRadius: 5,
+                backgroundColor: '#333',
+                '& label': { color: 'white' },
+                '& input': { color: 'white' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: 'white' },
+                  '&:hover fieldset': { borderColor: 'white' },
+                  '&.Mui-focused fieldset': { borderColor: 'white' },
+                },
+              }}
             />
             <TextField
               name="email"
               label="Email"
-              type="email"
               value={formData.email || ""}
               onChange={handleChange}
               fullWidth
-              variant="filled"
-              borderRadius="8px"
+              variant="outlined"
+              color="white"
+              InputProps={{ sx: { borderRadius: 5 } }}
+              sx={{
+                borderRadius: 5,
+                backgroundColor: '#333',
+                '& label': { color: 'white' },
+                '& input': { color: 'white' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: 'white' },
+                  '&:hover fieldset': { borderColor: 'white' },
+                  '&.Mui-focused fieldset': { borderColor: 'white' },
+                },
+              }}
             />
             <TextField
               name="password"
@@ -201,7 +275,20 @@ const ClientRegistration = () => {
               value={formData.password || ""}
               onChange={handleChange}
               fullWidth
-              variant="filled"
+              variant="outlined"
+              color="white"
+              InputProps={{ sx: { borderRadius: 5 } }}
+              sx={{
+                borderRadius: 5,
+                backgroundColor: '#333',
+                '& label': { color: 'white' },
+                '& input': { color: 'white' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: 'white' },
+                  '&:hover fieldset': { borderColor: 'white' },
+                  '&.Mui-focused fieldset': { borderColor: 'white' },
+                },
+              }}
             />
             <Button
               type="submit"
@@ -220,6 +307,17 @@ const ClientRegistration = () => {
           </Box>
         </Paper>
       </Fade>
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarSeverity === "success" ? successMessage : errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
