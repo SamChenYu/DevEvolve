@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, TextField, Typography, Container, Box, Paper } from "@mui/material";
+import {Button, TextField, Typography, Container, Box, Paper, Toolbar, AppBar, Fade} from "@mui/material";
 import { login } from "../../services/AuthenicationService";
 import { UserContext } from "../../context/UserContext";
 import { getUserFromToken } from "../../services/AuthenicationService";
+import CodeIcon from "@mui/icons-material/Code";
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -55,7 +56,47 @@ const Login = () => {
                 minInlineSize: "100vw"
             }}
         >
-            <Paper 
+          <AppBar
+            position="fixed"
+            sx={{
+              background: "transparent",
+              transition: "all 0.4s ease",
+            }}>
+            <Toolbar sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  color: "white",
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}
+              >
+                <CodeIcon /> DevEvolve
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => navigate("/")}
+                  sx={{ borderRadius: '8px' }}
+                >
+                  Back to HomePage
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => navigate("/client-registration")}
+                  sx={{ borderRadius: '8px' }}
+                >
+                  Register
+                </Button>
+              </Box>
+            </Toolbar>
+          </AppBar>
+          <Fade in timeout={2000}>
+            <Paper
                 elevation={6}
                 sx={{
                     padding: 4,
@@ -66,47 +107,39 @@ const Login = () => {
                     border: "1px solid rgba(255,255,255,0.3)"
                 }}
             >
-                <Typography variant="h4" fontWeight={700} sx={{ mb: 2, color: 'white' }}>
-                    Login
+                <Typography variant="h4" fontWeight={700} sx={{ mb: 2, color: 'white', pb: 2 }}>
+                  Sign in
                 </Typography>
-                <Box 
-                    component="form" 
-                    onSubmit={handleSubmit} 
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
                     sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                 >
-                    <TextField 
-                        name="email" 
-                        label="Email" 
-                        value={formData.email} 
-                        onChange={handleChange} 
-                        fullWidth 
-                        variant="outlined"
-                        InputProps={{ 
-                            style: { color: "white", backgroundColor: "#333", borderRadius: "8px" } 
-                        }}
-                        InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
-                    />
-                    <TextField 
-                        name="password" 
-                        label="Password" 
-                        type="password" 
-                        value={formData.password} 
-                        onChange={handleChange} 
-                        fullWidth 
-                        variant="outlined"
-                        InputProps={{ 
-                            style: { color: "white", backgroundColor: "#333", borderRadius: "8px" } 
-                        }}
-                        InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
-                    />
-                    <Button 
-                        type="submit" 
-                        variant="contained" 
-                        color="secondary" 
+                    <TextField
+                        name="email"
+                        label="Email"
+                        value={formData.email}
+                        onChange={handleChange}
                         fullWidth
-                        sx={{ 
-                            borderRadius: "8px", 
-                            fontWeight: "bold", 
+                        variant="filled"
+                    />
+                    <TextField
+                        name="password"
+                        label="Password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="filled"
+                    />
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="secondary"
+                        fullWidth
+                        sx={{
+                            borderRadius: "8px",
+                            fontWeight: "bold",
                             py: 1.2,
                             fontSize: "1rem",
                             mt: 2
@@ -116,6 +149,7 @@ const Login = () => {
                     </Button>
                 </Box>
             </Paper>
+          </Fade>
         </Container>
     );
 

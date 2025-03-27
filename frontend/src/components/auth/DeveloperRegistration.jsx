@@ -20,6 +20,7 @@ import CodeIcon from "@mui/icons-material/Code";
 const DeveloperRegistration = () => {
     const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", password: "" });
     const navigate = useNavigate();
+    let errorStatus = false;
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -98,7 +99,15 @@ const DeveloperRegistration = () => {
             navigate('/login');
         } catch (error) {
             console.error(error);
-            alert('An error occurred. Please try again.');
+            errorStatus = true;
+        }
+    }
+
+    function displayError(errorStatus) {
+        if (errorStatus) {
+            return (
+                <Typography sx = {{color: 'red' }}> hello </Typography>
+            );
         }
     }
 
@@ -215,6 +224,7 @@ const DeveloperRegistration = () => {
               fullWidth
               variant="filled"
             />
+            {displayError(errorStatus)}
             <Button
               type="submit"
               variant="contained"
