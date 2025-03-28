@@ -86,8 +86,9 @@ const Sidebar = () => {
           },
         }}
       >
-        <Box sx={{ textAlign: "center", py: 3 }}>
-          <Typography sx={{display: "flex", alignItems: "center", paddingLeft: 4, cursor:'pointer'}} variant="h6" fontWeight={700} color="white" onClick={homepage}> <CodeIcon /> DevEvolve</Typography>
+        <Box sx={{ textAlign: "center", py: 3, display:"flex", alignItems: "center", justifyContent: "center" }}>
+          <CodeIcon />
+          <Typography sx={{display: "flex", alignItems: "center", paddingLeft: 1, cursor:'pointer'}} variant="h6" fontWeight={700} color="white" onClick={homepage}>  DevEvolve</Typography>
         </Box>
         <List>
           {menuItems.map((item, index) => (
