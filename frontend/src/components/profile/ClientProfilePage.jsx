@@ -267,7 +267,7 @@ const ClientProfilePage = () => {
                 <Button onClick={() => setDeleteModalOpen(false)} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={() => handleDeleteProfile} color="error">
+                <Button onClick={() => handleDeleteProfile()} color="error">
                     Delete
                 </Button>
             </DialogActions>
