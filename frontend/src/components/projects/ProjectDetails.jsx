@@ -202,8 +202,10 @@ const ProjectDetails = () => {
     };
 
     const handleDeleteProject = async () => {
+        console.log("Here.")
         try {
             await deleteProject(projectId);
+            console.log("Here.")
             navigate(`/client-dashboard`);
         } catch (error) {
             console.error("Error deleting project:", error);
@@ -616,7 +618,7 @@ const ProjectDetails = () => {
                         <Button onClick={() => setDeleteModalOpen(false)} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={() => handleDeleteProject} color="error">
+                        <Button onClick={() => handleDeleteProject()} color="error">
                             Delete
                         </Button>
                     </DialogActions>
