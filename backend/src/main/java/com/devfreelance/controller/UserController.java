@@ -69,35 +69,6 @@ public class UserController {
     	
     }
 
-    @PutMapping("/update")
-    public Object updateUser(@RequestBody Object user, @RequestHeader("Authorization") String jwt) throws Exception {
-        String extractedEmail = JwtProvider.extractEmail(jwt);
-
-        Optional<Client> existingClient = clientRepository.findByEmail(extractedEmail);
-        if (existingClient.isPresent()) return updateClient(existingClient.get(), (Client) user);
-
-        Optional<Developer> existingDeveloper = developerRepository.findByEmail(extractedEmail);
-        if (existingDeveloper.isPresent()) return updateDeveloper(existingDeveloper.get(), (Developer) user);
-
-        throw new Exception("User not found.");
-    }
-
-    private Client updateClient(Client existingClient, Client user) {
-        if (user.getFirstName() != null) existingClient.setFirstName(user.getFirstName());
-        if (user.getLastName() != null) existingClient.setLastName(user.getLastName());
-        if (user.getPassword() != null) existingClient.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return clientRepository.save(existingClient);
-    }
-
-    private Developer updateDeveloper(Developer existingDeveloper, Developer user) {
-        if (user.getFirstName() != null) existingDeveloper.setFirstName(user.getFirstName());
-        if (user.getLastName() != null) existingDeveloper.setLastName(user.getLastName());
-        if (user.getPassword() != null) existingDeveloper.setPassword(user.getPassword());
-
-        return developerRepository.save(existingDeveloper);
-    }
-
     @DeleteMapping("/{userId}")
     public String deleteUser(@PathVariable Integer userId) throws Exception {
         if (clientRepository.existsById(userId)) {

@@ -55,6 +55,9 @@ public class AdminController {
             entity.setEmail(client.getEmail());
         }
 
+        if (client.getImageUrl() != null) {
+            entity.setImageUrl(client.getImageUrl());
+        }
         
         clientRepository.save(entity);
         return ResponseEntity.ok(entity);
@@ -88,6 +91,10 @@ public class AdminController {
 
         if (developer.getEmail() != null) {
             entity.setEmail(developer.getEmail());
+        }
+
+        if (developer.getImageUrl() != null) {
+            entity.setImageUrl(developer.getImageUrl());
         }
 
 

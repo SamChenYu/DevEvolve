@@ -71,8 +71,8 @@ const Shop = () => {
                         <Typography>Are you sure you want to purchase {selectedAmount} Coins?</Typography>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseDialog} color="secondary">Confirm</Button>
                         <Button onClick={handleCloseDialog}>Cancel</Button>
+                        <Button onClick={handleCloseDialog} color="secondary">Confirm</Button>
                     </DialogActions>
                 </Dialog>
             </Box>

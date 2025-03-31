@@ -571,7 +571,7 @@ const ProjectDetails = () => {
                         name="title"
                         value={formData.title}
                         onChange={handleFormChange}
-                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' }}}
                     />
                     <TextField
                         label="Description"
@@ -582,7 +582,7 @@ const ProjectDetails = () => {
                         name="description"
                         value={formData.description}
                         onChange={handleFormChange}
-                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
                     />
                 
                     <TextField
@@ -590,9 +590,9 @@ const ProjectDetails = () => {
                         fullWidth
                         variant="outlined"
                         name="repoLink"
-                        value={formData.cost}
+                        value={formData.repoLink}
                         onChange={handleFormChange}
-                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
                     />
 
                     <Button 

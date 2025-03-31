@@ -37,6 +37,7 @@ public class Projects {
     private String repoLink;
     private String finalReport;
     private LocalDateTime postedAt = LocalDateTime.now();
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     private ProjectStatus status = ProjectStatus.FINDING_DEVELOPER;
@@ -173,5 +174,13 @@ public class Projects {
 
     public void setRating(Ratings rating) {
         this.rating = rating;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

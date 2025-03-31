@@ -1,10 +1,14 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Box, CssBaseline, Paper, Typography, TextField, Button } from '@mui/material';
+import { Box, CssBaseline, Paper, Typography, TextField, Button, CircularProgress } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
+import axios from 'axios';
+
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 
 const CreateProjectForm = () => {
@@ -12,7 +16,10 @@ const CreateProjectForm = () => {
         title: "",
         description: "",
         repoLink: "",
+        imageUrl: "",
       });
+      const [image, setImage] = useState(null);
+      const [uploading, setUploading] = useState(false);
       const { user, loading } = useContext(UserContext);
       const navigate = useNavigate();
       
@@ -29,6 +36,29 @@ const CreateProjectForm = () => {
       const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
       };
+
+      const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+      };
+
+      const handleImageUpload = async () => {
+        if (!image) return;
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        
+        try {
+            const response = await axios.post(CLOUDINARY_URL, formData);
+            setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
+            alert('Image uploaded successfully!');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Image upload failed. Try again.');
+        }
+        setUploading(false);
+    };
+
     
       const handleSubmit = async (e) => {
         e.preventDefault();
@@ -98,6 +128,12 @@ const CreateProjectForm = () => {
                   InputProps={{ style: { color: "white", backgroundColor: "#333", borderRadius: "8px" } }}
                   InputLabelProps={{ style: { color: "rgba(255,255,255,0.7)" } }}
                 />
+
+                <input type="file" accept="image/*" onChange={handleImageChange} style={{ color: 'white' }} />
+                <Button onClick={handleImageUpload} variant="contained" color="primary" sx={{ mt: 1 }}>
+                    {uploading ? <CircularProgress size={24} color="inherit" /> : 'Upload Image'}
+                </Button>
+
                 <Button
                   type="submit"
                   variant="contained"

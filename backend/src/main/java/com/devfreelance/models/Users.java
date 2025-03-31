@@ -19,7 +19,7 @@ public abstract class Users {
 	private String firstName;
 	private String lastName;
 	private String email;
-	
+	private String imageUrl;
     private String password;
 
     private Integer coins = 1000;
@@ -85,6 +85,14 @@ public abstract class Users {
 
 	public void setCoins(Integer coins) {
 		this.coins = coins;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
     
 }
