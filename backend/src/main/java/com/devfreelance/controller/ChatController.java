@@ -5,6 +5,7 @@ import com.devfreelance.models.Chat;
 import com.devfreelance.models.Client;
 import com.devfreelance.models.Developer;
 import com.devfreelance.models.Message;
+import com.devfreelance.repository.AdminRepository;
 import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.request.ChatRequest;
@@ -31,6 +32,8 @@ public class ChatController {
     private ClientRepository clientRepository;
     @Autowired
     private DeveloperRepository developerRepository;
+    @Autowired
+    private AdminRepository adminRepository;
     private SimpMessagingTemplate simpMessagingTemplate;
 
     public ChatController(SimpMessagingTemplate simpMessagingTemplate) {
@@ -172,10 +175,16 @@ public class ChatController {
         return users;
     }
 
-    @DeleteMapping("/delete/{chatID}")
-    public ResponseEntity<Void> deleteChat(@PathVariable String chatID) {
+    @DeleteMapping("/delete/{chatID}/{userID}")
+    public ResponseEntity<Void> deleteChat(@PathVariable String chatID, @PathVariable String userID) {
+        // Check that userID is an admin
+        if(!adminRepository.existsById(Integer.parseInt(userID))) {
+            System.out.println("ChatController /delete: Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         boolean status = messagingService.clearAllMessages(chatID);
         if(!status) {
+            System.out.println("ChatController /delete: Chat not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         String destination = "/topic/chat/" + chatID;
