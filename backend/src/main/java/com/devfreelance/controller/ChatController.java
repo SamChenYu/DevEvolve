@@ -187,6 +187,8 @@ public class ChatController {
             System.out.println("ChatController /delete: Chat not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        
+        messagingService.sendMessage(new MessageSendRequest(chatID, 0, "System", "Chat has been deleted by admin",  java.time.Instant.now().toString()));
         String destination = "/topic/chat/" + chatID;
         simpMessagingTemplate.convertAndSend(destination, "Deleted"); // Sends a notification to the socket
         System.out.println("Chat logs cleared for " + chatID + " at " + destination);
