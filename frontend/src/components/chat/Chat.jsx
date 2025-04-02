@@ -10,13 +10,12 @@ import { UserContext } from '../../context/UserContext';
 import ChatService from '../../services/ChatService';
 import useWebSocket from '../../services/WebSocketService';
 
+import ChooseUserModal from './ChooseUserModal';
 import './Chat.css';
 
 const Chat = () => {
 
   const { user, loading } = useContext(UserContext);
-  
-
 
   // Handling of loading chats
   const [chats, setChats] = useState([]);
@@ -78,6 +77,8 @@ const Chat = () => {
 
   // New chat creation
   const [searchUserText, setSearchUserText] = useState("");
+  const [searchResults, setSearchResults] = useState([]); // State to store search results
+  const [openModal, setOpenModal] = useState(false); // State to control modal visibility
   const handleSearchUser = async () => {
     if (!searchUserText.trim()) return; // Prevent searching for empty users
     
@@ -85,17 +86,24 @@ const Chat = () => {
     try {
       const searchResults = await ChatService.searchUser(searchUserText, isClient);
       console.log("Search results:", searchResults);
+      setSearchResults(searchResults); // Update search results state
       setSearchUserText(""); // Clear input after searching
       // If there is a result, create a new chat
-      if (searchResults.length > 0) {
 
-        const clientID = isClient ? user.user.id : searchResults[0].id;
-        const developerID = isClient ? searchResults[0].id : user.user.id;
-        const chat = await ChatService.newChat(clientID, developerID);
-        setChats([...chats, chat]); // Add the new chat to the list
-        setActiveChatID(chat.chatID); // Set the new chat as active
-        setActiveChatName(searchResults[0].firstName + " " + searchResults[0].lastName); // Set the new chat's name
-      }
+      setOpenModal(true); // Todo: Open modal to show search results
+
+
+      // Uncomment code if you want automatic chat creation when only one result is found
+      // if (searchResults.length === 1) {
+      //   const clientID = isClient ? user.user.id : searchResults[0].id;
+      //   const developerID = isClient ? searchResults[0].id : user.user.id;
+      //   const chat = await ChatService.newChat(clientID, developerID);
+      //   setChats([...chats, chat]); // Add the new chat to the list
+      //   setActiveChatID(chat.chatID); // Set the new chat as active
+      //   setActiveChatName(searchResults[0].firstName + " " + searchResults[0].lastName); // Set the new chat's name
+      // } else {
+      //   // Open Modal to show search results
+      // }
 
     }
     catch (error) {
@@ -136,8 +144,9 @@ const Chat = () => {
     if(messageOutput.body === "Deleted") {
       // Clear the chat
       setLastMessageID(0);
+      const tempChatID = activeChatID;
       setActiveChatID(null);
-
+      setActiveChatID(tempChatID);
     }
 
     // Now need to fetch new messages for the active chat
@@ -287,6 +296,15 @@ const Chat = () => {
                   hour12: true, timeZone: 'UTC'
                 }).format(messageDate); // Otherwise, show full date + time
 
+
+                if(message.text === "Chat has been deleted by admin") {
+                  return (
+                    <div key={message.id} className="message" style={{color: "red", justifyContent: "center", alignItems: "center"}}>
+                      <p className="text">Chat has been deleted by admin</p>
+                    </div>
+                  );
+                }
+
             return (
               <React.Fragment key={message.id}>
                 <div className={`message text-only"`}>
@@ -323,6 +341,27 @@ const Chat = () => {
 
 
       </div>
+      <ChooseUserModal
+        open={openModal}
+        onUserSelect={ async (userID) => {
+          setOpenModal(false);
+          const isClient = user.role === "CLIENT";
+          const clientID = isClient ? user.user.id : searchResults[0].id;
+          const developerID = isClient ? searchResults[0].id : user.user.id;
+          try {
+            const chat = await ChatService.newChat(clientID, developerID);
+            setChats((prevChats) => [...prevChats, chat]); // Use functional update to avoid stale state issues
+            setActiveChatID(chat.chatID);
+            setActiveChatName(`${searchResults[0].firstName} ${searchResults[0].lastName}`);
+          } catch (error) {
+            console.error("Failed to create a new chat:", error);
+          }
+        }}
+        handleClose={() => {setOpenModal(false);}}
+        chats = {chats}
+        users={searchResults}
+        setUsers = {setSearchResults}
+      />
     </Box>
       );
     }
