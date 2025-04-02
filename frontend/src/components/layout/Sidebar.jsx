@@ -58,6 +58,7 @@ const Sidebar = () => {
     else {
       menuItems = [
         { text: "Browse Developers", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-developers") },
+        {text: "Browse Clients", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-clients")},
         { text: "Browse Projects", icon: <PersonSearchIcon />, onClick: () => navigate("/browse-projects") },
         { text: "Logout", icon: <ExitToAppIcon />, onClick: () => navigate("/logout") },
       ];

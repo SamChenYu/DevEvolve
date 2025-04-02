@@ -8,6 +8,7 @@ import ClientDashboard from "./components/dashboard/ClientDashboard";
 import CreateProjectForm from "./components/projects/CreateProjectForm";
 import ProjectDetails from "./components/projects/ProjectDetails";
 import BrowseDevelopers from "./components/browse/BrowseDevelopers";
+import BrowseClients from "./components/browse/BrowseClients";
 import BrowseProjects from "./components/browse/BrowseProjects";
 import BrowseProjectItemDetails from "./components/browse/BrowseProjectItemDetails";
 import DevProfile from "./components/profile/DevProfile";
@@ -35,6 +36,7 @@ const AppRoutes = () => {
                 <Route path="/create-project" element={<CreateProjectForm />} />
                 <Route path="/projects/:clientId/:projectId" element={<ProjectDetails />} />
                 <Route path="/browse-developers" element={<BrowseDevelopers />} />
+                <Route path="/browse-clients" element={<BrowseClients/>} />
                 <Route path="/browse-projects" element={<BrowseProjects />} />
                 <Route path="/project-details/:projectId" element={<BrowseProjectItemDetails />} />
                 <Route path="/developer/:id" element={<DevProfile />} />

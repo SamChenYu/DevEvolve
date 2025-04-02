@@ -74,6 +74,27 @@ export const searchDevelopers = async (query) => {
     }
 }
 
+export const getAllClients = async () => {
+    try{
+        const response= await axiosInstance.get('/auth/users/allClients');
+        return response.data
+    }catch(error){
+        console.error("Error fetching clients:", error.response?.data || error.message);
+        throw new Error("Failed to fetch clients.");
+
+    }
+}
+
+export const searchClients = async (query) => {
+    try {
+        const response = await axiosInstance.get(`/auth/users/searchClients?query=${query}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error searching clients:", error.response?.data || error.message);
+        throw new Error("Failed to search clients.");
+    }
+}
+
 export const logout = async () => {
     try {
         await axiosInstance.post('/api/logout'); 
