@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Box, CssBaseline, Paper, Typography,
      TextField, IconButton, Grid, alpha, useTheme,
-    Container, Avatar, Button} from '@mui/material';
+    Container, Avatar, Button, Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,6 +14,7 @@ const AdminChat = () => {
 
     const { user, loading } = useContext(UserContext);
     const theme = useTheme();
+
 
 
 
@@ -54,6 +55,33 @@ const AdminChat = () => {
     }
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteChatID, setDeleteChatID] = useState(null); // State to store the selected chat to delete 
+
+
+    // After deleting the chat, give the user a message - either success or failure
+    const [messageModalOpen, setMessageModalOpen] = useState(false);
+    const [messageModalFeedback, setMessageFeedback] = useState(""); // State to store the message
+    
+    const handleDeleteChat = async () => {
+        console.log(deleteChatID);
+        try {
+            const response = await ChatService.deleteChat(deleteChatID, user.user.id);
+            console.log("Chat deleted:", response);
+            setMessageFeedback("Chat messages deleted successfully");
+            setMessageModalOpen(true);
+        } catch (error) {
+            console.error("Failed to delete chat", error);
+            setMessageFeedback("Failed to delete chat messages");
+            setMessageModalOpen(true);
+        }
+
+    }
+
+    useEffect(() => {
+      console.log("DeleteChatID changed:", deleteChatID);
+    }, [deleteChatID]);
+
+
 
 
 
@@ -129,7 +157,7 @@ const AdminChat = () => {
 
                         {chats.map((chat) => (
                             <Box 
-                                key={user.id} 
+                                key={chat.id} 
                                 display="flex" 
                                 alignItems="center" 
                                 mb={2} 
@@ -151,7 +179,10 @@ const AdminChat = () => {
                                 <Button
                                   variant="contained"
                                   color="error"
-                                  onClick={() => setDeleteModalOpen(true, chat.id)}
+                                  onClick={() => {
+                                    setDeleteModalOpen(true)
+                                    setDeleteChatID(chat.chatID)
+                                  }}
                                   sx={{
                                       fontWeight: 100,
                                       marginRight: 0,
@@ -164,6 +195,46 @@ const AdminChat = () => {
                               </div>
                             </Box>
                         ))}
+
+
+
+                      <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+                          <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+                              <DialogTitle>Confirm Deletion</DialogTitle>
+                              <DialogContent>
+                                  <Typography>Are you sure you want to delete chat messages? This action cannot be undone.</Typography>
+                              </DialogContent>
+                              <DialogActions>
+                                  <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                                      Cancel
+                                  </Button>
+                                  <Button onClick={() => { 
+                                      handleDeleteChat()
+                                      setDeleteModalOpen(false);
+                                      setDeleteChatID(null);
+                                       } } color="error">
+                                      Delete
+                                  </Button>
+                              </DialogActions>
+                          </Box>
+                      </Dialog>
+
+
+                      <Dialog open={messageModalOpen} onClose={() => setMessageModalOpen(false)} >
+                          <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+                              <DialogTitle>Action</DialogTitle>
+                              <DialogContent>
+                                  <Typography>{messageModalFeedback}</Typography>
+                              </DialogContent>
+                              <DialogActions>
+                                  <Button onClick={() => setMessageModalOpen(false)} color="primary">
+                                      Ok
+                                  </Button>
+                              </DialogActions>
+                          </Box>
+                      </Dialog>
 
 
 

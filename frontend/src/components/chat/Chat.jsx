@@ -398,7 +398,7 @@ const Chat = () => {
                 }).format(messageDate); // Otherwise, show full date + time
 
 
-                if(message.from === "System") {
+                if(message.sender === "System") {
                   return (
                     <div key={message.id} className="message" style={{color: "red", justifyContent: "center", alignItems: "center"}}>
                       <p className="text">Chat has been deleted by admin</p>

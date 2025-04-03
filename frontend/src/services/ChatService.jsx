@@ -87,6 +87,16 @@ const getProfilePicture = async (userID) => {
     }
 }
 
+const deleteChat = async (chatID, adminID) => {
+    try {
+        const response = await axiosInstance.delete(`/chat/delete/${chatID}/${adminID}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting chat:", error);
+        throw error;
+    }
+}
 
-const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate, searchUser, getProfilePicture };
+
+const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate, searchUser, getProfilePicture, deleteChat };
 export default ChatService;

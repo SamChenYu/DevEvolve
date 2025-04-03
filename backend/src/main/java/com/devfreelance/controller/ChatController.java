@@ -177,6 +177,16 @@ public class ChatController {
 
     @DeleteMapping("/delete/{chatID}/{userID}")
     public ResponseEntity<Void> deleteChat(@PathVariable String chatID, @PathVariable String userID) {
+
+        if(chatID == null || chatID.isEmpty()) {
+            System.out.println("ChatID is null");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(userID == null || userID.isEmpty()) {
+            System.out.println("UserID is null");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        System.out.println("Chat Controller: /delete " + chatID + " " + userID);
         // Check that userID is an admin
         if(!adminRepository.existsById(Integer.parseInt(userID))) {
             System.out.println("ChatController /delete: Unauthorized access");
