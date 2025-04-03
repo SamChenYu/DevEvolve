@@ -17,6 +17,7 @@ const DevProfile = () => {
       try {
         const data = await getDeveloperById(id);
         setDeveloper(data);
+        console.log("Developer data:", data);
       } catch (error) {
         console.error("Error fetching developer profile:", error);
       }
@@ -49,7 +50,7 @@ const DevProfile = () => {
             
             <Avatar 
               sx={{ width: 120, height: 120, margin: "auto", bgcolor: "gray" }} 
-              src="/placeholder-profile.png" 
+              src={developer.imageUrl || "/placeholder-profile.png" }
               alt={`${developer.firstName} ${developer.lastName}`} 
             />
 

@@ -131,6 +131,10 @@ public class AdminController {
             entity.setRepoLink(project.getRepoLink());
         }
 
+        if (project.getImageUrl() != null) {
+            entity.setImageUrl(project.getImageUrl());
+        }
+
         projectsRepository.save(entity);
         return ResponseEntity.ok(entity);
     }

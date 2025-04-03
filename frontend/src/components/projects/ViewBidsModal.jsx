@@ -145,6 +145,9 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                                         {hiredDeveloperId === bid.developerId ? "Developer Hired" : "Select Developer"}
                                     </Button>)}
 
+                                    {user.role === "ADMIN" && (
+                                    <>
+
                                     <Button
                                         variant="contained"
                                         color="primary"
@@ -165,6 +168,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                                     >
                                         Delete Bid
                                     </Button>
+                                    </>)}
 
                                     {index < bids.length - 1 && <Divider sx={{ my: 2, bgcolor: "gray" }} />}
                                 </Box>
@@ -218,7 +222,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                         <>
                             <Avatar 
                                 sx={{ width: 80, height: 80, margin: "auto", bgcolor: "gray" }} 
-                                src="/placeholder-profile.png" 
+                                src={ selectedDeveloper.imageUrl || "/placeholder-profile.png" }
                                 alt={`${selectedDeveloper.firstName} ${selectedDeveloper.lastName}`} 
                             />
 

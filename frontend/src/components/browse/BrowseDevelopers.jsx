@@ -121,9 +121,10 @@ const BrowseDevelopers = () => {
                   onClick={() => navigate(`/dev-profile/${dev.id}`)}
                 >
                   <ListItemAvatar>
-                    <Avatar sx={{ p:3, mr: 3 }}>
+                    <Avatar sx={{ width: 40, height: 40, mr: 3 }} src={dev.imageUrl}>
                       {dev.firstName.charAt(0)}{dev.lastName.charAt(0)}
                     </Avatar>
+
                   </ListItemAvatar>
                   <ListItemText 
                     primary={`${dev.firstName} ${dev.lastName}`} 

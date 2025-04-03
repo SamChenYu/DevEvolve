@@ -18,9 +18,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
 
 
-
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const DevProfilePage = () => {
     const { user, loading } = useContext(UserContext);
@@ -37,9 +39,12 @@ const DevProfilePage = () => {
         firstName: "",
         lastName: "",
         email: "",
+        imageUrl: "",
     });
 
     const [openEditModal, setOpenEditModal] = useState(false);
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
       if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT" && user.role !== "ADMIN"))) {
@@ -56,6 +61,7 @@ const DevProfilePage = () => {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 email: data.email,
+                imageUrl: data.imageUrl,
             });
           } catch (error) {
             console.error("Error fetching developer profile:", error);
@@ -156,6 +162,28 @@ const DevProfilePage = () => {
       }
   };
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleImageUpload = async () => {
+    if (!image) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', image);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    
+    try {
+        const response = await axios.post(CLOUDINARY_URL, formData);
+        setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
+        alert('Image uploaded successfully!');
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('Image upload failed. Try again.');
+    }
+    setUploading(false);
+  };
+
   
   const skills = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'GraphQL', 'UI/UX'];
 
@@ -246,7 +274,7 @@ const DevProfilePage = () => {
                   border: "4px solid #121212",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
                 }} 
-                src="/api/placeholder/400/400" 
+                src={ developer.imageUrl || "/api/placeholder/400/400" }
                 alt={developer.firstName ? `${developer.firstName} ${developer.lastName}` : "Developer"}
               />
             </Box>
@@ -558,6 +586,11 @@ const DevProfilePage = () => {
           InputProps={{ style: { color: 'white' } }}
           
         />
+
+        <input type="file" accept="image/*" onChange={handleImageChange} style={{ color: 'white' }} />
+        <Button onClick={handleImageUpload} variant="contained" color="primary" sx={{ mt: 1, mb: 1 }}>
+            {uploading ? <CircularProgress size={24} color="inherit" /> : 'Upload Image'}
+        </Button>
 
         <Button 
           variant="contained" 
