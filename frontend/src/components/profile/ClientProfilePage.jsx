@@ -177,7 +177,7 @@ const ClientProfilePage = () => {
                   border: "4px solid #121212",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
                 }} 
-                src="/api/placeholder/400/400" 
+                src={ Client?.imageUrl || "/api/placeholder/400/400" }
                 alt={Client.firstName ? `${Client.firstName} ${Client.lastName}` : "Client"}
               />
             </Box>

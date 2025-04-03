@@ -55,6 +55,9 @@ public class AdminController {
             entity.setEmail(client.getEmail());
         }
 
+        if (client.getImageUrl() != null) {
+            entity.setImageUrl(client.getImageUrl());
+        }
         
         clientRepository.save(entity);
         return ResponseEntity.ok(entity);
@@ -90,6 +93,10 @@ public class AdminController {
             entity.setEmail(developer.getEmail());
         }
 
+        if (developer.getImageUrl() != null) {
+            entity.setImageUrl(developer.getImageUrl());
+        }
+
 
         developerRepository.save(entity);
         return ResponseEntity.ok(entity);
@@ -122,6 +129,10 @@ public class AdminController {
 
         if (project.getRepoLink() != null) {
             entity.setRepoLink(project.getRepoLink());
+        }
+
+        if (project.getImageUrl() != null) {
+            entity.setImageUrl(project.getImageUrl());
         }
 
         projectsRepository.save(entity);

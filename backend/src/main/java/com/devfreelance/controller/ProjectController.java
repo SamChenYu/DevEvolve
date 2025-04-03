@@ -128,6 +128,10 @@ public class ProjectController {
         newProject.setRepoLink(project.getRepoLink());
         newProject.setCost(project.getCost());
         newProject.setClient(client);
+        
+        if (project.getImageUrl() != null) {
+            newProject.setImageUrl(project.getImageUrl());
+        }
 
         client.setCoins(client.getCoins() - project.getCost());
        

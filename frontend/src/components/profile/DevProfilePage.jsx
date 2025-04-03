@@ -18,9 +18,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
 
 
-
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const DevProfilePage = () => {
     const { user, loading } = useContext(UserContext);
@@ -37,9 +39,12 @@ const DevProfilePage = () => {
         firstName: "",
         lastName: "",
         email: "",
+        imageUrl: "",
     });
 
     const [openEditModal, setOpenEditModal] = useState(false);
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
       if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT" && user.role !== "ADMIN"))) {
@@ -56,6 +61,7 @@ const DevProfilePage = () => {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 email: data.email,
+                imageUrl: data.imageUrl,
             });
           } catch (error) {
             console.error("Error fetching developer profile:", error);
@@ -156,6 +162,28 @@ const DevProfilePage = () => {
       }
   };
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleImageUpload = async () => {
+    if (!image) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', image);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    
+    try {
+        const response = await axios.post(CLOUDINARY_URL, formData);
+        setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
+        alert('Image uploaded successfully!');
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('Image upload failed. Try again.');
+    }
+    setUploading(false);
+  };
+
   
   const skills = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'GraphQL', 'UI/UX'];
 
@@ -246,7 +274,7 @@ const DevProfilePage = () => {
                   border: "4px solid #121212",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
                 }} 
-                src="/api/placeholder/400/400" 
+                src={ developer.imageUrl || "/api/placeholder/400/400" }
                 alt={developer.firstName ? `${developer.firstName} ${developer.lastName}` : "Developer"}
               />
             </Box>
@@ -500,78 +528,98 @@ const DevProfilePage = () => {
       </Modal>
 
       <Modal open={openEditModal} onClose={handleCloseEditModal}>
-                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#222', color: 'white', p: 3, borderRadius: 2, border: '1px solid #333', width: '50%' }}>
-                    <IconButton onClick={handleCloseEditModal} sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}>
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 3, textAlign: "center" }}>Edit Profile</Typography>
+      <Box 
+        sx={{ 
+          position: 'absolute', 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)', 
+          bgcolor: '#222', 
+          color: 'white', 
+          p: 3, 
+          borderRadius: 2, 
+          border: '1px solid #333', 
+          width: '50%' 
+        }}
+      >
+        <IconButton 
+          onClick={handleCloseEditModal} 
+          sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}
+        >
+          <CloseIcon />
+        </IconButton>
+        
+        <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 3, textAlign: "center" }}>
+          Edit Profile
+        </Typography>
 
-                    <TextField
-                        label="First Name"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        InputLabelProps={{
-                          style: { color: 'white' },
-                        }}
-                        InputProps={{
-                          style: { color: 'white' },
-                        }}
-                    />
-                    <TextField
-                        label="Last Name"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        InputLabelProps={{
-                          style: { color: 'white' },
-                        }}
-                        InputProps={{
-                          style: { color: 'white' },
-                        }}
-                    />
-                    <TextField
-                        label="Email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        InputLabelProps={{
-                          style: { color: 'white' },
-                        }}
-                        InputProps={{
-                          style: { color: 'white' },
-                        }}
-                    />
+        <TextField
+          label="First Name"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          fullWidth
+          sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
+          InputLabelProps={{ style: { color: 'white' } }}
+          InputProps={{ style: { color: 'white' } }}
+        />
+        
+        <TextField
+          label="Last Name"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          fullWidth
+          sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
+          InputLabelProps={{ style: { color: 'white' } }}
+          InputProps={{ style: { color: 'white' } }}
+        />
+        
+        <TextField
+          label="Email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          fullWidth
+          sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
+          InputLabelProps={{ style: { color: 'white' } }}
+          InputProps={{ style: { color: 'white' } }}
+          
+        />
 
-                    <Button variant="contained" sx={{ bgcolor: '#9c27b0', '&:hover': { bgcolor: '#7b1fa2' } }} onClick={handleUpdateProfile}>
-                        Save Changes
-                    </Button>
-                </Box>
-            </Modal>
+        <input type="file" accept="image/*" onChange={handleImageChange} style={{ color: 'white' }} />
+        <Button onClick={handleImageUpload} variant="contained" color="primary" sx={{ mt: 1, mb: 1 }}>
+            {uploading ? <CircularProgress size={24} color="inherit" /> : 'Upload Image'}
+        </Button>
 
-            <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
-                <Box sx={{ bgcolor: '#222', color: 'white' }}>
+        <Button 
+          variant="contained" 
+          sx={{ bgcolor: '#9c27b0', '&:hover': { bgcolor: '#7b1fa2' } }} 
+          onClick={handleUpdateProfile}
+          fullWidth
+        >
+          Save Changes
+        </Button>
+      </Box>
+    </Modal>
 
-                    <DialogTitle>Confirm Deletion</DialogTitle>
-                    <DialogContent>
-                        {user.user.id == id ? (<Typography>Are you sure you want to delete your account? This action cannot be undone.</Typography>) : (<Typography>Are you sure you want to delete this developer's account? This action cannot be undone.</Typography>)}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setDeleteModalOpen(false)} color="primary">
-                            Cancel
-                        </Button>
-                        <Button onClick={() => handleDeleteProfile()} color="error">
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Box>
-            </Dialog>
+      <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} >
+          <Box sx={{ bgcolor: '#222', color: 'white' }}>
+
+              <DialogTitle>Confirm Deletion</DialogTitle>
+              <DialogContent>
+                  {user.user.id == id ? (<Typography>Are you sure you want to delete your account? This action cannot be undone.</Typography>) : (<Typography>Are you sure you want to delete this developer's account? This action cannot be undone.</Typography>)}
+              </DialogContent>
+              <DialogActions>
+                  <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+                      Cancel
+                  </Button>
+                  <Button onClick={() => handleDeleteProfile()} color="error">
+                      Delete
+                  </Button>
+              </DialogActions>
+          </Box>
+      </Dialog>
     </Box>
 
     

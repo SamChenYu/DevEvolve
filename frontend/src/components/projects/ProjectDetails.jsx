@@ -19,7 +19,10 @@ import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { UserContext } from '../../context/UserContext';
+import axios from 'axios';
 
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const ProjectDetails = () => {
     const { clientId, projectId } = useParams();
@@ -37,11 +40,15 @@ const ProjectDetails = () => {
     const [hasRated, setHasRated] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
     const [modifyModalOpen, setModifyModalOpen] = useState(false);  
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        repoLink: ''
+        repoLink: '',
+        imageUrl: ''
     });
     
     
@@ -211,6 +218,28 @@ const ProjectDetails = () => {
             console.error("Error deleting project:", error);
             alert("Failed to delete project. Please try again.");
         }
+    };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+    };
+
+    const handleImageUpload = async () => {
+        if (!image) return;
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        
+        try {
+            const response = await axios.post(CLOUDINARY_URL, formData);
+            setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
+            alert('Image uploaded successfully!');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Image upload failed. Try again.');
+        }
+        setUploading(false);
     };
 
     return (
@@ -481,7 +510,7 @@ const ProjectDetails = () => {
                                     bgcolor: secondaryColor,
                                     border: '2px solid rgba(255, 255, 255, 0.1)'
                                 }} 
-                                src="/placeholder-profile.png" 
+                                src={ selectedDeveloper.imageUrl || "/placeholder-profile.png" } 
                                 alt={`${selectedDeveloper.firstName} ${selectedDeveloper.lastName}`} 
                             />
 
@@ -571,7 +600,7 @@ const ProjectDetails = () => {
                         name="title"
                         value={formData.title}
                         onChange={handleFormChange}
-                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' }}}
                     />
                     <TextField
                         label="Description"
@@ -582,7 +611,7 @@ const ProjectDetails = () => {
                         name="description"
                         value={formData.description}
                         onChange={handleFormChange}
-                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
                     />
                 
                     <TextField
@@ -590,10 +619,15 @@ const ProjectDetails = () => {
                         fullWidth
                         variant="outlined"
                         name="repoLink"
-                        value={formData.cost}
+                        value={formData.repoLink}
                         onChange={handleFormChange}
-                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' } }}
+                        sx={{ mb: 2, bgcolor: "#333", '& .MuiInputBase-input': { color: 'white' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.1)' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' }, '& .MuiInputLabel-root': { color: 'white' } }}
                     />
+
+                    <input type="file" accept="image/*" onChange={handleImageChange} style={{ color: 'white' }} />
+                    <Button onClick={handleImageUpload} variant="contained" color="primary" sx={{ mt: 1 }}>
+                        {uploading ? <CircularProgress size={24} color="inherit" /> : 'Upload Image'}
+                    </Button>
 
                     <Button 
                         variant="contained" 
