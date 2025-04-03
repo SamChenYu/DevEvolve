@@ -158,10 +158,10 @@ const LandingPage = () => {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      <AppBar 
-        position="fixed" 
+      <AppBar
+        position="fixed"
         elevation={trigger ? 4 : 0}
-        sx={{ 
+        sx={{
           background: trigger ? "rgba(255, 255, 255, 0.95)" : "transparent",
           backdropFilter: trigger ? "blur(8px)" : "none",
           transition: "all 0.4s ease",
@@ -181,7 +181,7 @@ const LandingPage = () => {
             <CodeIcon /> DevEvolve
           </Typography>
 
-        
+
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button 
               variant="outlined" 
@@ -189,15 +189,7 @@ const LandingPage = () => {
               onClick={() => navigate("/client-registration")}
               sx={{ borderRadius: '8px' }}
             >
-              Register as Client
-            </Button>
-            <Button 
-              variant="outlined" 
-              color="secondary"
-              onClick={() => navigate("/developer-registration")}
-              sx={{ borderRadius: '8px' }}
-            >
-              Register as Developer
+              Register
             </Button>
             <Button 
               variant="contained" 

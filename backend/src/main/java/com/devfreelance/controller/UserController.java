@@ -69,6 +69,16 @@ public class UserController {
     	
     }
 
+    @GetMapping("/allClients")
+    public ResponseEntity<?> getAllClients(@CookieValue(name = "access_token", required = false) String token) {
+    	if (token == null || !JwtProvider.isTokenValid(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid token");
+        }
+
+    	return ResponseEntity.ok(clientRepository.findAll());
+
+    }
+
     @DeleteMapping("/{userId}")
     public String deleteUser(@PathVariable Integer userId) throws Exception {
         if (clientRepository.existsById(userId)) {
@@ -87,6 +97,13 @@ public class UserController {
         List<Object> users = new ArrayList<>();
         //users.addAll(clientRepository.searchUser(query));
         users.addAll(developerRepository.searchUser(query));
+        return users;
+    }
+
+    @GetMapping("/searchClients")
+    public List<Object> searchClient(@RequestParam("query") String query) {
+        List<Object> users = new ArrayList<>();
+        users.addAll(clientRepository.searchUser(query));
         return users;
     }
 
