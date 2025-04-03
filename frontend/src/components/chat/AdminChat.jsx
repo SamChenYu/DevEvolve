@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Box, CssBaseline, Paper, Typography,
      TextField, IconButton, Grid, alpha, useTheme,
-    Container, Avatar} from '@mui/material';
+    Container, Avatar, Button} from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import SearchIcon from '@mui/icons-material/Search';
@@ -51,6 +51,8 @@ const AdminChat = () => {
             console.error("Failed to load chats", error);
         }
     }
+
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
 
 
@@ -106,7 +108,7 @@ const AdminChat = () => {
                     loadChats(userID)
                     setOpenModal(false);
                     setManageUserID(userID);
-                    setManageUserName(userFirstName + " " + userLastName);
+                    setManageUserName(userFirstName);
                     console.log("User selected:", userID);
                   }}
                   handleClose={() => {setOpenModal(false);}}
@@ -116,6 +118,12 @@ const AdminChat = () => {
                 />
                   {manageUserID && chats.length === 0 && (
                     <Typography variant="body" sx={{ color: "red", justifyContent: "center", alignContent: "center"}}>User has no chats</Typography>
+                  )}
+
+                  {manageUserID && chats.length > 0 && (
+                    <Typography variant="h6" sx={{ color: "white", mb: 2 }}>
+                      {manageUserName}'s Chats
+                    </Typography>
                   )}
 
                         {chats.map((chat) => (
@@ -130,6 +138,7 @@ const AdminChat = () => {
                                 }}
                                 >
                                 <Users size={24} />
+                              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                                 <Typography variant="body1" sx={{ ml: 2 }} onClick={() => console.log("Chat clicked")}>
                                 {("Chat with " +
                                   (chat.name1 === manageUserName
@@ -137,9 +146,20 @@ const AdminChat = () => {
                                     : chat.name1)
                                 )}
 
-                                
-
+                                <Button
+                                  variant="contained"
+                                  color="error"
+                                  onClick={() => setDeleteModalOpen(true)}
+                                  sx={{
+                                      fontWeight: 100,
+                                      marginRight: 0,
+                                      float: "right"
+                                  }}
+                                >
+                                    Clear Chat Messages
+                                </Button>
                                 </Typography>
+                              </div>
                             </Box>
                         ))}
 
