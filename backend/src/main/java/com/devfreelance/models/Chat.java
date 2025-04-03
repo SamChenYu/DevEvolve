@@ -30,8 +30,13 @@ public class Chat {
     @Column(name = "name1")
     private String name1 = "";
 
+    @Column(name= "user1ID")
+    private int user1ID = -1;
+
     @Column(name = "name2")
     private String name2 = "";
+    @Column(name= "user2ID")
+    private int user2ID = -1;
 
 
     @ManyToOne
@@ -112,5 +117,21 @@ public class Chat {
 
     public void setName2(String name2) {
         this.name2 = name2;
+    }
+
+    public void setUser1ID(int user1ID) {
+        this.user1ID = user1ID;
+    }
+
+    public void setUser2ID(int user2ID) {
+        this.user2ID = user2ID;
+    }
+
+    public int getUser1ID() {
+        return user1ID;
+    }
+
+    public int getUser2ID() {
+        return user2ID;
     }
 }
