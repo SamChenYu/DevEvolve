@@ -34,7 +34,6 @@ const BrowseProjects = () => {
       
       if (searchQuery.trim() === '') {
         const data = await fetchAllProjects();
-        
         const filteredProjects = data.filter(project => project.status === "FINDING_DEVELOPER");
         setProjects(filteredProjects);
       } else {

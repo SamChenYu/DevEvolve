@@ -15,6 +15,7 @@ public class ProjectResponse {
     private Integer cost;
     private String repoLink;
     private String finalReport;
+    private String imageUrl;
     private LocalDateTime postedAt;
     private ProjectStatus status;
     private Integer clientId;
@@ -29,6 +30,7 @@ public class ProjectResponse {
         this.cost = project.getCost();
         this.repoLink = project.getRepoLink();
         this.finalReport = project.getFinalReport();
+        this.imageUrl = project.getImageUrl();
         this.postedAt = project.getPostedAt();
         this.status = project.getStatus();
         this.clientId = (project.getClient() != null) ? project.getClient().getId() : null;
@@ -125,4 +127,13 @@ public class ProjectResponse {
     public void setBids(List<Bids> bids) {
         this.bids = bids;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 }
