@@ -48,7 +48,7 @@ public class DataSeedConfig {
             if (clientRepository.count() == 0 && developerRepository.count() == 0) {
                 Client client = new Client();
                 client.setFirstName("Andreas");
-                client.setLastName("Mantzoukos");
+                client.setLastName("Mantzoukis");
                 client.setEmail("andreas@gmail.com");
                 client.setPassword(passwordEncoder.encode("password"));
                 client.setCoins(1000);
