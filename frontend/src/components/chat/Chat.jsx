@@ -444,7 +444,8 @@ const Chat = () => {
       </div>
       <ChooseUserModal
         open={openModal}
-        onUserSelect={ async (userID) => {
+        onUserSelect={ async (userID, userFirstname, userLastName) => {
+          // userFirstName and userLastName is for the admin
           setOpenModal(false);
           const isClient = user.role === "CLIENT";
           const clientID = isClient ? user.user.id : searchResults[0].id;

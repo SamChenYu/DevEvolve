@@ -37,7 +37,7 @@ const ChooseUserModal = ({ open, handleClose, onUserSelect, users, setUsers, cha
             <Paper
                 sx={{
                     position: "absolute",
-                    top: "20%",
+                    top: "30%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     width: "60vw",
@@ -76,7 +76,7 @@ const ChooseUserModal = ({ open, handleClose, onUserSelect, users, setUsers, cha
                                 }}
                                 >
                                 <Users size={24} />
-                                <Typography variant="body1" sx={{ ml: 2 }} onClick={() => onUserSelect(user.id)}>
+                                <Typography variant="body1" sx={{ ml: 2 }} onClick={() => onUserSelect(user.id, user.firstName + " " + user.lastName)}>
                                     {user.firstName + " "+  user.lastName}
                                 </Typography>
                             </Box>
