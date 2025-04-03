@@ -8,6 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Users } from "lucide-react";
 import ChatService from '../../services/ChatService';
 import ChooseUserModal from './ChooseUserModal';
+import { ChairTwoTone } from '@mui/icons-material';
 
 const AdminChat = () => {
 
@@ -138,18 +139,19 @@ const AdminChat = () => {
                                 }}
                                 >
                                 <Users size={24} />
-                              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                <Typography variant="body1" sx={{ ml: 2 }} onClick={() => console.log("Chat clicked")}>
+                              <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                <Typography variant="body1" sx={{ ml: "20px", mt: "10px", textAlign: "left" }} onClick={() => console.log("Chat clicked")}>
                                 {("Chat with " +
                                   (chat.name1 === manageUserName
                                     ? chat.name2 
                                     : chat.name1)
                                 )}
 
+
                                 <Button
                                   variant="contained"
                                   color="error"
-                                  onClick={() => setDeleteModalOpen(true)}
+                                  onClick={() => setDeleteModalOpen(true, chat.id)}
                                   sx={{
                                       fontWeight: 100,
                                       marginRight: 0,
