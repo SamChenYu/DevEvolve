@@ -122,7 +122,7 @@ const BrowseClients =() => {
                                     onClick={() => navigate(`/client-profile/${clients.id}`)}
                                 >
                                     <ListItemAvatar>
-                                        <Avatar sx={{ p:3, mr: 3 }}>
+                                        <Avatar sx={{ width: 40, height: 40, mr: 3 }} src={clients.imageUrl}>
                                             {clients.firstName.charAt(0)}{clients.lastName.charAt(0)}
                                         </Avatar>
                                     </ListItemAvatar>
