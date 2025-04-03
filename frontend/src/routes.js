@@ -20,6 +20,7 @@ import ClientProfilePage from "./components/profile/ClientProfilePage";
 import Shop from "./components/purchase/Shop";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 import CreateIssueForm from "./components/Issues/CreateIssueForm";
+import AdminChat from "./components/chat/AdminChat";
 
 
 const AppRoutes = () => {
@@ -47,6 +48,7 @@ const AppRoutes = () => {
                 <Route path="/client-profile/:id" element={<ClientProfilePage />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/report-issue" element={<CreateIssueForm />} />
+                <Route path="/admin-chat" element={<AdminChat />} />
             </Routes>
         </Router>
     );

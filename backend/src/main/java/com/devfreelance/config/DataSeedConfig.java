@@ -48,14 +48,16 @@ public class DataSeedConfig {
             if (clientRepository.count() == 0 && developerRepository.count() == 0) {
                 Client client = new Client();
                 client.setFirstName("Andreas");
-                client.setLastName("Mantzoukos");
+                client.setLastName("Mantzoukis");
                 client.setEmail("andreas@gmail.com");
+                client.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743698008/fh1falkno6uciyb5lq5r.jpg");
                 client.setPassword(passwordEncoder.encode("password"));
                 client.setCoins(1000);
                 clientRepository.save(client);
 
                 Projects project = new Projects();
                 project.setTitle("QMUL Issues");
+                project.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743702239/b2nzxkgmthmlil3fn8gu.jpg");
                 project.setDescription("Fix the issues with the QMUL website");
                 project.setClient(client);
                 projectRepository.save(project);
@@ -64,12 +66,15 @@ public class DataSeedConfig {
                 client.setFirstName("Dominik");
                 client.setLastName("Chmielewski");
                 client.setEmail("dom@gmail.com");
+                client.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743696858/itkrf7uigbw4c0lvbmvr.webp");
+
                 client.setPassword(passwordEncoder.encode("password"));
                 client.setCoins(1000);
                 clientRepository.save(client);
 
                 project = new Projects();
                 project.setTitle("Crypto App");
+                project.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743702296/fwko4fykb6npllowabhd.webp");
                 project.setDescription("Create a new crypto app");
                 project.setClient(client);
                 projectRepository.save(project);
@@ -85,6 +90,7 @@ public class DataSeedConfig {
 
                 project = new Projects();
                 project.setTitle("E-commerce Website");
+                project.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743702386/cpntzczegppadlsaowmd.jpg");
                 project.setDescription("Create a new e-commerce website");
                 project.setClient(client);
                 projectRepository.save(project);

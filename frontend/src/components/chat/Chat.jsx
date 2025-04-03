@@ -36,9 +36,76 @@ const Chat = () => {
     fetchChats();
   }, [user]);
 
+
+
+
+  // Get the profile pictures of all users with chats
+  const defaultProfilePicture = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png";
+  const [currentUserID, setCurrentUserID] = useState("");
+  useEffect(() => {
+    if (user && user.user && user.user.id) {
+      setCurrentUserID(user.user.id);
+    }
+  }, [user]);
+  const [profilePictures, setProfilePictures] = useState({}); // Hashmap userID -> profile picture URL
+   useEffect(() => {
+     const fetchProfilePictures = async () => {
+       const newProfilePictures = {...profilePictures};
+       const uniqueUserIDs = new Set();
+       chats.forEach(({ user1ID, user2ID }) => {
+        if (!profilePictures[user1ID]) uniqueUserIDs.add(user1ID);
+        if (!profilePictures[user2ID]) uniqueUserIDs.add(user2ID);
+      });
+
+      const fetchPromises = Array.from(uniqueUserIDs).map(async (userID) => {
+        try {
+
+          const userData = await ChatService.getProfilePicture(userID);
+          //console.log("UserData Profile Picture:", userData);
+          if (userData && userData.imageUrl) {
+            console.log("Profile picture found for user:", userID, userData.imageUrl);
+            newProfilePictures[userID] = userData.imageUrl;
+          } else {
+            newProfilePictures[userID] = defaultProfilePicture; // Set default picture if not found
+          }
+        } catch (error) {
+          console.error("Error fetching profile picture:", error);
+          newProfilePictures[userID] = defaultProfilePicture; // Set default picture on error
+        }
+      });
+      await Promise.all(fetchPromises);
+      setProfilePictures(newProfilePictures); // Update state with new profile pictures
+
+
+     } // End of fetchProfilePictures
+     fetchProfilePictures();
+
+     if(Object.keys(profilePictures).length === 0) {
+     }
+    }, [chats]);
+
+    useEffect(() => {
+      console.log("Profile pictures state updated:", profilePictures);
+    }, [profilePictures]); // This will log the updated state whenever it changes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // Handling of active chats
   const [activeChatID, setActiveChatID] = useState(null); // To store the selected chat ID
   const [activeChatName, setActiveChatName] = useState(null); // To store the selected chat name
+  const [activeChatProfilePicture, setActiveChatProfilePicture] = useState(defaultProfilePicture); // To store the selected chat profile picture
   const [lastMessageID, setLastMessageID] = useState(0); // To store the last message ID
   const handleChatClick = (chatID) => {
     if (chatID !== activeChatID) { // Avoid setting activeChatID to the same value
@@ -56,6 +123,26 @@ const Chat = () => {
       if (activeChat && activeChat.messages && activeChat.messages.length > 0) {
         setLastMessageID(activeChat.messages[activeChat.messages.length - 1].id); // Set last message ID when activeChat changes
       }
+
+      // Fetch the profile picture of the active chat
+      const otherUserID = (user.user.id === activeChat.user1ID) ? activeChat.user2ID : activeChat.user1ID;
+      try  {
+        const fetchProfilePicture = async () => {
+          const userData = await ChatService.getProfilePicture(otherUserID);
+          if (userData && userData.imageUrl) {
+            setActiveChatProfilePicture(userData.imageUrl);
+          } else {
+            setActiveChatProfilePicture(defaultProfilePicture); // Set default picture if not found
+          }
+        };
+        fetchProfilePicture();
+      }
+      catch (error) {
+        console.error("Error fetching profile picture:", error);
+        setActiveChatProfilePicture(defaultProfilePicture); // Set default picture on error
+      }
+
+
     }
   }, [activeChatID, chats]); // Only re-run this effect when activeChatID or chats change
 
@@ -174,9 +261,12 @@ const Chat = () => {
   }, [chats, activeChatID]);
 
 
+
+
   if(loading) {
     return <Typography variant="h4">Loading...</Typography>;
   }
+
 
     return (
 
@@ -244,7 +334,13 @@ const Chat = () => {
                 <div key={chat.chatID} className={chatClass}  onClick={() => {handleChatClick(chat.chatID); setActiveChatName(chatName)}}>
                 <div
                   className="photo"
-                  style={{ backgroundImage: `url(${chat.photoUrl || 'https://i.pinimg.com/originals/a9/26/52/a926525d966c9479c18d3b4f8e64b434.jpg'})` }}
+                  style={{
+                    backgroundImage: `url(${
+                      (currentUserID === chat.user1ID || currentUserID === chat.user2ID)
+                        ? profilePictures[currentUserID === chat.user1ID ? chat.user2ID : chat.user1ID]
+                        : ""
+                    })`
+                  }}
                 >
                   <div className="online"></div>
                 </div>
@@ -265,7 +361,12 @@ const Chat = () => {
         <section className="chat">
           <div className="header-chat">
 
-            <div className="photo" style={{backgroundImage: 'url(https://i.pinimg.com/originals/a9/26/52/a926525d966c9479c18d3b4f8e64b434.jpg)'}}>
+            <div className="photo" 
+                  style={{
+                    backgroundImage: `url(${ activeChatProfilePicture ? activeChatProfilePicture : defaultProfilePicture
+                    })`
+                  }}
+            >
               <div className="online"></div>
             </div>
             <p className="name">{activeChatName}</p>
@@ -297,7 +398,7 @@ const Chat = () => {
                 }).format(messageDate); // Otherwise, show full date + time
 
 
-                if(message.text === "Chat has been deleted by admin") {
+                if(message.sender === "System") {
                   return (
                     <div key={message.id} className="message" style={{color: "red", justifyContent: "center", alignItems: "center"}}>
                       <p className="text">Chat has been deleted by admin</p>
@@ -343,7 +444,8 @@ const Chat = () => {
       </div>
       <ChooseUserModal
         open={openModal}
-        onUserSelect={ async (userID) => {
+        onUserSelect={ async (userID, userFirstname, userLastName) => {
+          // userFirstName and userLastName is for the admin
           setOpenModal(false);
           const isClient = user.role === "CLIENT";
           const clientID = isClient ? user.user.id : searchResults[0].id;

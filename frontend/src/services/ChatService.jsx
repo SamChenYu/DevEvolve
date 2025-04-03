@@ -74,5 +74,29 @@ const searchUser = async (searchRequest, isClient) => {
     }
 }
 
-const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate, searchUser };
+
+const getProfilePicture = async (userID) => {
+
+    try {
+        const response = await axiosInstance.get(`/auth/users/${userID}`);
+        return response.data;
+
+    } catch (error) {
+        console.error("Error fetching profile picture:", error);
+        throw error;
+    }
+}
+
+const deleteChat = async (chatID, adminID) => {
+    try {
+        const response = await axiosInstance.delete(`/chat/delete/${chatID}/${adminID}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting chat:", error);
+        throw error;
+    }
+}
+
+
+const ChatService = { fetchAllChats, newChat, sendMessage, messageUpdate, searchUser, getProfilePicture, deleteChat };
 export default ChatService;
