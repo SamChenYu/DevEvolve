@@ -7,11 +7,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import GroupsIcon from '@mui/icons-material/Groups';
+import PersonIcon from '@mui/icons-material/Person';
 import FactoryIcon from '@mui/icons-material/Factory';
 import CreateBidModal from '../bids/CreateBidModal';
 import { UserContext } from '../../context/UserContext';
 import CompleteProjectModal from './CompleteProjectModal';
 import ReviewModal from './ReviewModal';
+import { getDeveloperById } from '../../services/AuthenicationService';
 
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
@@ -25,6 +27,20 @@ const BrowseProjectItemDetails = () => {
   const [openReviewModal, setOpenReviewModal] = useState(false);
   const theme = useTheme();
   
+  const [clientName, setClientName] = useState("");
+  useEffect(() => {
+    const fetchClientName = async () => {
+      if (project && project.clientId) {
+        try {
+          const client = await getDeveloperById(project.clientId);
+          setClientName(client.firstName + " " + client.lastName);
+        } catch (error) {
+          console.error('Error fetching client name:', error);
+        }
+      }
+    };
+    fetchClientName();
+  }, [project]);
   
   const secondaryColor = theme.palette.secondary.main;
   const secondaryLight = theme.palette.secondary.light;
@@ -66,7 +82,7 @@ const BrowseProjectItemDetails = () => {
     };
 
     fetchProjectDetails();
-  }, [projectId, project, open]);
+  }, [projectId, open]);
 
   useEffect(() => {
     const fetchBid = async () => {
@@ -195,6 +211,14 @@ const BrowseProjectItemDetails = () => {
                       <GroupsIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
                       <Typography variant="body2" sx={{ color: '#8C8C8C' }}>
                         Proposals: {project.bids.length > 0 ? project.bids.length : 0}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                      <Typography variant="body2" sx={{ color: '#8C8C8C' }}>
+                        Posted By: {clientName}
                       </Typography>
                     </Box>
                   </Grid>
