@@ -220,6 +220,8 @@ const DevProfilePage = () => {
   const handleMessageDeveloper = async () => {
     console.log("Message Developer clicked");
     try {
+      console.log("Creating chat with developer ID:", developer.id);
+      console.log("User ID:", user.user.id);
       const response = await ChatService.newChat(user.user.id, developer.id);
       console.log(response);
       if (response) {
@@ -507,17 +509,21 @@ const DevProfilePage = () => {
                       }}
                     >
                       <Typography variant="h6" sx={{ mb: 2, color: "white" }}> <ConnectWithoutContactIcon sx={{verticalAlign: "text-bottom", color: "#9c27b0"}} /> Contact</Typography>
-                      <Button 
-                        variant="contained" 
-                        fullWidth 
-                        sx={{ 
-                          bgcolor: "#9c27b0", 
-                          '&:hover': { bgcolor: "#7b1fa2" } 
-                        }}
-                        onClick={() => handleMessageDeveloper()}
-                      >
-                        Message Developer
-                      </Button>
+                      
+                      { user.user?.id !== developer.id && (
+                              <Button 
+                              variant="contained" 
+                              fullWidth 
+                              sx={{ 
+                                bgcolor: "#9c27b0", 
+                                '&:hover': { bgcolor: "#7b1fa2" } 
+                              }}
+                              onClick={() => handleMessageDeveloper()}
+                            >
+                              Message Developer
+                            </Button>
+                      )}
+
                       <Button 
                         variant="outlined" 
                         fullWidth 

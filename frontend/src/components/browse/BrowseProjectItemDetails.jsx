@@ -183,7 +183,7 @@ const BrowseProjectItemDetails = () => {
               />
 
               <img
-                src={project.imageUrl || "/placeholder-image.png"}
+              src={project.imageUrl?.trim() ? project.imageUrl : "/placeholder-image.png"}
                 alt={project.title}
                 style={{
                     width: '100%',
