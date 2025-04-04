@@ -96,10 +96,12 @@ public class Chat {
 
     public void setClient(Client client) {
         this.client = client;
+        this.user1ID = client.getId();
     }
 
     public void setDeveloper(Developer developer) {
         this.developer = developer;
+        this.user2ID = developer.getId();
     }
 
 
