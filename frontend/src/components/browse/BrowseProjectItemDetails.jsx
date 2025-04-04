@@ -217,7 +217,7 @@ const BrowseProjectItemDetails = () => {
                   <Grid item xs={12} sm={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
-                      <Typography variant="body2" sx={{ color: '#8C8C8C' }}>
+                      <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/client-profile/${project.clientId}`)}>
                         Posted By: {clientName}
                       </Typography>
                     </Box>

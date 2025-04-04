@@ -27,7 +27,7 @@ const ClientProfilePage = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   
     useEffect(() => {
-      if (!loading && (!user || (user.role !== "CLIENT" && user.role !== "ADMIN"))) {
+      if (!loading && !user) {
         navigate("/login");
       }
     }, [navigate, user, loading]);
@@ -219,26 +219,29 @@ const ClientProfilePage = () => {
             <Grid container spacing={3} sx={{ px: 3, pb: 5 }}>
      
               <Grid item xs={12} >
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    bgcolor: "#222", 
-                    p: 3, 
-                    borderRadius: 2,
-                    height: "100%",
-                     border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <DashboardIcon sx={{ color: theme.palette.secondary.main, mr: 1 }} />
-                    <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
-                      Your Projects
-                    </Typography>
-                  </Box>
-                  <Divider sx={{ mb: 3, borderColor: alpha(theme.palette.secondary.main, 0.2) }} />
                 
-                  {user.user?.id && <ProjectList clientId={user.user?.id} />}
-                </Paper>
+                {(user.role === "CLIENT" || user.role === "ADMIN") && (
+                  <Paper 
+                    elevation={0} 
+                    sx={{ 
+                      bgcolor: "#222", 
+                      p: 3, 
+                      borderRadius: 2,
+                      height: "100%",
+                      border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <DashboardIcon sx={{ color: theme.palette.secondary.main, mr: 1 }} />
+                      <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+                        {user.role === "CLIENT" ? "Your" : "Their"} Projects
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ mb: 3, borderColor: alpha(theme.palette.secondary.main, 0.2) }} />
+                
+                    {user.user?.id && <ProjectList clientId={user.user?.id} />}
+                  </Paper>
+                )}
               </Grid>
             </Grid>
           </>
