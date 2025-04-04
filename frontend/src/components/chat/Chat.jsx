@@ -1,5 +1,6 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { Box, CssBaseline, Paper, Typography, TextField, IconButton } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import SendIcon from '@mui/icons-material/Send';
@@ -115,6 +116,22 @@ const Chat = () => {
     }
     
   };
+
+  // /chat/:chatID - URL parameter to go to ChatID
+  const { chatid: requestedChatID } = useParams();
+  const hasSetChatID = useRef(false);
+  useEffect(() => {
+    if (requestedChatID && user && !hasSetChatID.current && chats.length > 0) {
+      console.log("Active Chat ID preset from url:", requestedChatID);
+      setActiveChatID(requestedChatID);
+      const activeChat = chats.find(chat => chat.chatID === requestedChatID);
+      if (activeChat) {
+        const chatName = ((user.user.firstName + " " + user.user.lastName) === activeChat.name1) ? activeChat.name2 : activeChat.name1; // Get the name of the other user
+        setActiveChatName(chatName); // Set the new chat's name
+      }
+      hasSetChatID.current = true; // Prevent future updates
+    }
+  }, [requestedChatID, user, chats]); 
 
   // Effect to set the lastMessageID based on the active chat
   useEffect(() => {

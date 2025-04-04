@@ -99,6 +99,7 @@ public class DataSeedConfig {
                 developer.setFirstName("Sam Chen");
                 developer.setLastName("Yu");
                 developer.setEmail("Sam@gmail.com");
+                developer.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743798769/cfmovwn1jbz2yuyt8lkj.jpg");
                 developer.setPassword(passwordEncoder.encode("password"));
                 developer.setCoins(1000);
                 developerRepository.save(developer);

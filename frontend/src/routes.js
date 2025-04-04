@@ -44,6 +44,7 @@ const AppRoutes = () => {
                 <Route path="/your-bids" element={<BidList />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/chat" element={<Chat />} />
+                <Route path="/chat/:chatid" element={<Chat />} />
                 <Route path="/dev-profile/:id" element={<DevProfilePage />} />
                 <Route path="/client-profile/:id" element={<ClientProfilePage />} />
                 <Route path="/shop" element={<Shop />} />
