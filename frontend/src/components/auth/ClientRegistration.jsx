@@ -7,7 +7,7 @@ const ClientRegistration = () => {
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", password: "" });
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("error")
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
   const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,7 +57,7 @@ const ClientRegistration = () => {
             setOpenSnackbar(true);
             setTimeout(() => {
                 navigate('/login');
-            }, 2000);
+            }, 500);
         } catch (error) {
             console.error(error);
             setSnackbarMessage(error.message || 'An error occurred. Please try again.');

@@ -57,7 +57,7 @@ const DeveloperRegistration = () => {
             setOpenSnackbar(true);
             setTimeout(() => {
                 navigate('/login');
-            }, 2000);
+            }, 500);
         } catch (error) {
             console.error(error);
             setSnackbarMessage(error.message || 'An error occurred. Please try again.');
