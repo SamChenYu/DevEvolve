@@ -89,7 +89,7 @@ const BrowseClients =() => {
             <Sidebar />
 
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <Typography variant="h4" gutterBottom>Browse Clients</Typography>
+                <Typography variant="h4" fontWeight={600} gutterBottom>Browse Clients</Typography>
 
                 <TextField
                     fullWidth

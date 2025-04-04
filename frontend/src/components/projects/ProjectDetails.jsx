@@ -28,6 +28,7 @@ const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const ProjectDetails = () => {
     const { clientId, projectId } = useParams();
+    const img = new Image();
     const navigate = useNavigate();
     const theme = useTheme();
     const [project, setProject] = useState(null);
@@ -298,6 +299,19 @@ const ProjectDetails = () => {
                                 sx={{ 
                                     height: 12, 
                                     background: `linear-gradient(90deg, ${secondaryColor}, ${secondaryLight})`,
+                                }}
+                            />
+
+                            <img
+                                src={project.imageUrl || "/placeholder-image.png"}
+                                alt={project.title}
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    objectFit: 'cover',
+                                    maxHeight: 300,
+                                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                    filter: 'brightness(0.8)',
                                 }}
                             />
                             

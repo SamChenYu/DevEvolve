@@ -26,6 +26,7 @@ const BrowseProjectItemDetails = () => {
   const [projectRating, setProjectRating] = useState(null);
   const [openReviewModal, setOpenReviewModal] = useState(false);
   const theme = useTheme();
+  const img = new Image();
   
   const [clientName, setClientName] = useState("");
   useEffect(() => {
@@ -178,6 +179,19 @@ const BrowseProjectItemDetails = () => {
                 sx={{ 
                   height: 12, 
                   background: `linear-gradient(90deg, ${secondaryColor}, ${secondaryLight})`,
+                }}
+              />
+
+              <img
+                src={project.imageUrl || "/placeholder-image.png"}
+                alt={project.title}
+                style={{
+                    width: '100%',
+                    height: 'auto',
+                    objectFit: 'cover',
+                    maxHeight: 300,
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    filter: 'brightness(0.8)',
                 }}
               />
               

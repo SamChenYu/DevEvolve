@@ -6,7 +6,7 @@ import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import { useTheme } from '@mui/material/styles';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import { Box, Typography, TextField, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'; 
+import { Box, Typography, TextField, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip, Popover, LinearProgress } from '@mui/material'; 
 import { ArrowBack, GitHub, LinkedIn, Twitter, Facebook, Edit, Code, Star, Language, Verified } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,16 +18,40 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import axios from 'axios';
 
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
+const getLevelData = (coins) => {
+  if (coins >= 50000) {
+    return { level: "Expert", next: null, progress: 100 };
+  } else if (coins >= 20000) {
+    return {
+      level: "Advanced",
+      next: 50000,
+      progress: ((coins - 20000) / (50000 - 20000)) * 100,
+    };
+  } else if (coins >= 5000) {
+    return {
+      level: "Intermediate",
+      next: 20000,
+      progress: ((coins - 5000) / (20000 - 5000)) * 100,
+    };
+  } else {
+    return {
+      level: "Novice",
+      next: 5000,
+      progress: (coins / 5000) * 100,
+    };
+  }
+};
+
 const DevProfilePage = () => {
     const { user, loading } = useContext(UserContext);
     const { id } = useParams();
-
     const navigate = useNavigate();
     const [developer, setDeveloper] = useState(null);
     const [userLoading, setLoading] = useState(true);
@@ -45,9 +69,12 @@ const DevProfilePage = () => {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [hovered, setHovered] = useState(false);
+    
 
     useEffect(() => {
-      if (!loading && (!user || (user.role !== "DEVELOPER" && user.role !== "CLIENT" && user.role !== "ADMIN"))) {
+      if (!loading && !user) {
         navigate("/login");
       }
     }, [navigate, user, loading]);
@@ -57,6 +84,7 @@ const DevProfilePage = () => {
           try {
             const data = await getUser(id);
             setDeveloper(data);
+            
             setFormData({
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -87,6 +115,7 @@ const DevProfilePage = () => {
     const handleOpenEditModal = () => setOpenEditModal(true);
     const handleCloseEditModal = () => setOpenEditModal(false);
   
+
   
     if (loading) {
 
@@ -131,6 +160,9 @@ const DevProfilePage = () => {
         }
       ]
     };
+
+    const coins = developer?.coinsEarnedAllTime || 0;
+    const levelData = getLevelData(coins);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -292,6 +324,60 @@ const DevProfilePage = () => {
               <Typography variant="body2" color="white">
                 {developer.email || "email</Box>@example.com"}
               </Typography>
+
+              <Box 
+                onMouseEnter={(e) => {setHovered(true); setAnchorEl(e.currentTarget);}}
+                onMouseLeave={() => {setHovered(false); setAnchorEl(null);}} 
+                sx={{ display: "inline-block", mt: 2 }}
+              >
+                <Typography 
+                  variant="body2" 
+                  color="white" 
+                  sx={{ cursor: "pointer", display: "inline-flex", alignItems: "center" }}
+                >
+                  <WorkspacePremiumIcon sx={{ mr: 1 }} /> Level: {levelData.level}
+                </Typography>
+
+                <Popover
+                  id="level-popover"
+                  open={hovered}
+                  anchorEl={anchorEl}
+                  onClose={() => setHovered(false)}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                  PaperProps={{
+                    sx: { p: 2, bgcolor: "#1e1e1e", color: "white", borderRadius: 2, width: 250 },
+                    onMouseEnter: () => setHovered(true),
+                    onMouseLeave: () => setHovered(false),
+                  }}
+                  disableRestoreFocus
+                >
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    Progress to {levelData.next ? `next level (${levelData.next} coins)` : "max level"}
+                  </Typography>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={levelData.progress} 
+                    sx={{
+                      height: 10,
+                      borderRadius: 5,
+                      backgroundColor: "#333",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#9c27b0"
+                      }
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ mt: 1, display: "block", textAlign: "right" }}>
+                    {coins} / {levelData.next || coins} coins
+                  </Typography>
+                </Popover>
+              </Box>
               
           
               <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
