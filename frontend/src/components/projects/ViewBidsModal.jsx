@@ -3,6 +3,7 @@ import { fetchBidsForProject, hireDeveloper, modifyBid, minBidLevel, cancelBid }
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, Modal, IconButton, Divider, CircularProgress, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import PersonIcon from '@mui/icons-material/Person';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import EditBidModal from '../bids/EditBidModal';
 
@@ -115,6 +116,11 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                         <Box>
                             {bids.map((bid, index) => (
                                 <Box key={bid.id} sx={{ p: 1 }}>
+
+                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                        {bid.developerName}
+                                    </Typography>
+
                                     <Typography variant="body1">
                                         💰 Amount: <strong>{bid.amount} Coins</strong>
                                     </Typography>
