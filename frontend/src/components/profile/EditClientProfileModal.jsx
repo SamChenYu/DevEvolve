@@ -92,7 +92,7 @@ const EditClientProfileModal = ({ open, onClose, client, onSubmit }) => {
 
                     <Button variant="contained" component="label" disabled={uploading} sx={{ mb: 2 }}>
                         {uploading ? "Uploading..." : "Upload New Image"}
-                        <input type="file" hidden onChange={handleImageUpload} />
+                        <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
                     </Button>
 
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
