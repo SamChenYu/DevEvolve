@@ -30,6 +30,15 @@ public class Chat {
     @Column(name = "name1")
     private String name1 = "";
 
+
+
+    /*
+        The reason for user1ID and user2ID is because
+        the client and developer IDs are lazy loaded and not
+        sent to the frontend otherwise infinite loops
+        - this is a bit of a bootleg fix
+     */
+
     @Column(name= "user1ID")
     private int user1ID = -1;
 
