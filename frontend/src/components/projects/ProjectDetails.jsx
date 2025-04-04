@@ -20,6 +20,7 @@ import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { UserContext } from '../../context/UserContext';
+import ChatService from '../../services/ChatService';  
 import axios from 'axios';
 
 
@@ -142,6 +143,27 @@ const ProjectDetails = () => {
         }
         setDevLoading(false);
     };
+
+    const handleMessageDeveloper = async () => {
+        try {
+            // Firstly we need to get the developer ID from the project details
+            const devData = await browseProjectDetails(projectId);
+            console.log(devData);
+
+            const response = await ChatService.newChat(user.user.id, devData.developerId);
+            console.log(response);
+            if (response) {
+            if(response.chatID) {
+                navigate(`/chat/${response.chatID}`);
+            }
+            } else {
+            console.error("Failed to create chat.");
+        }
+        } catch (error) {
+          console.error("Error creating chat:", error);
+        }
+      }
+
 
     if (projectLoading) {
         return (
@@ -447,6 +469,22 @@ const ProjectDetails = () => {
                                 </Button>
                             )}
 
+                            {(user.role === "CLIENT" && project.status === "IN_PROGRESS") && (
+                                <Button 
+                                    variant="contained" 
+                                    fullWidth 
+                                    sx={{ 
+                                        fontWeight: 600,
+                                        py: 1.5,
+                                        mt: 2,
+                                        color: "primary",
+                                    }}
+                                    onClick={() => handleMessageDeveloper()}
+                                >
+                                    Message Developer
+                                </Button>
+                                )}
+
                             {(clientId == user.user?.id || user.role === "ADMIN") && (
                                 <>
                                     <Button
@@ -488,6 +526,7 @@ const ProjectDetails = () => {
                                     >
                                         Archive Project
                                     </Button>
+
                                 </>
                             )}
                         </Paper>
