@@ -19,6 +19,8 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import ChatService from '../../services/ChatService';
+
 import axios from 'axios';
 
 
@@ -114,9 +116,8 @@ const DevProfilePage = () => {
   
     const handleOpenEditModal = () => setOpenEditModal(true);
     const handleCloseEditModal = () => setOpenEditModal(false);
-  
-
-  
+      
+      
     if (loading) {
 
       return (
@@ -215,6 +216,23 @@ const DevProfilePage = () => {
     }
     setUploading(false);
   };
+
+  const handleMessageDeveloper = async () => {
+    console.log("Message Developer clicked");
+    try {
+      const response = await ChatService.newChat(user.user.id, developer.id);
+      console.log(response);
+      if (response) {
+        if(response.chatID) {
+          navigate(`/chat/${response.chatID}`);
+        }
+      } else {
+        console.error("Failed to create chat.");
+      }
+    } catch (error) {
+      console.error("Error creating chat:", error);
+    }
+  }
 
   
   const skills = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'GraphQL', 'UI/UX'];
@@ -496,6 +514,7 @@ const DevProfilePage = () => {
                           bgcolor: "#9c27b0", 
                           '&:hover': { bgcolor: "#7b1fa2" } 
                         }}
+                        onClick={() => handleMessageDeveloper()}
                       >
                         Message Developer
                       </Button>
