@@ -9,6 +9,7 @@ import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import FactoryIcon from '@mui/icons-material/Factory';
+import PersonIcon from '@mui/icons-material/Person';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ViewBidsModal from './ViewBidsModal';
@@ -20,6 +21,7 @@ import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { UserContext } from '../../context/UserContext';
 import axios from 'axios';
+
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
@@ -50,7 +52,7 @@ const ProjectDetails = () => {
         repoLink: '',
         imageUrl: ''
     });
-    
+    const [clientName, setClientName] = useState("");
     
     const secondaryColor = theme.palette.secondary.main;
     const secondaryLight = theme.palette.secondary.light;
@@ -87,6 +89,19 @@ const ProjectDetails = () => {
         fetchDetails();
     }, [clientId, projectId]);
 
+
+    useEffect(() => {
+        const fetchClientName = async () => {
+            try {
+                const response = await getDeveloperById(clientId);
+                
+                setClientName(response.firstName + " " + response.lastName);
+            } catch (error) {
+                console.error("Error fetching client name:", error);
+            }
+        };
+        fetchClientName();
+    }, [clientId]);
    
 
     if (loading) {
@@ -319,6 +334,14 @@ const ProjectDetails = () => {
                                             </Typography>
                                         </Box>
                                     </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                                    <Typography variant="body2" sx={{ color: '#8C8C8C' }}>
+                                        Posted By: {clientName}
+                                    </Typography>
+                                    </Box>
+                                </Grid>
                                 </Grid>
                             </Box>
                         </Paper>
