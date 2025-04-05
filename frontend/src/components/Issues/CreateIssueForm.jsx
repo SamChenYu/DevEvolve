@@ -12,13 +12,32 @@ const issueTypes = [
 ];
 
 const CreateIssueForm = () => {
+
+    
+    const { user, loading } = useContext(UserContext);
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         type: '', 
+        userID: null,
+        username: null,
     });
+
+    useEffect(() => {
+      console.log("user", user);
+
+      if(user) {
+        setFormData(prev => ({
+            ...prev,
+            userID: user.user.id,
+            username: user.user.firstName + " " + user.user.lastName,
+        }));
+      }
+      console.log("formData", formData);
+    }, [user]);
     
-    const { user, loading } = useContext(UserContext);
+    
     const navigate = useNavigate();
     const theme = useTheme();
 

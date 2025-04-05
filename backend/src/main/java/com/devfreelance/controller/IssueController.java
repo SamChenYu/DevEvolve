@@ -33,6 +33,8 @@ public class IssueController {
         issue.setTitle(entity.getTitle());
         issue.setDescription(entity.getDescription());
         issue.setType(entity.getType());
+        issue.setUsername(entity.getUsername());
+        issue.setUserID(entity.getUserID());
         issueRepository.save(issue);
         
         return ResponseEntity.ok("Issue created successfully");
