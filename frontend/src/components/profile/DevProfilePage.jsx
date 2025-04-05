@@ -510,7 +510,7 @@ const DevProfilePage = () => {
                     >
                       <Typography variant="h6" sx={{ mb: 2, color: "white" }}> <ConnectWithoutContactIcon sx={{verticalAlign: "text-bottom", color: "#9c27b0"}} /> Contact</Typography>
                       
-                      { user.user?.id !== developer.id && (
+                      { user.user?.id !== developer.id && user.role !== "ADMIN" && (
                               <Button 
                               variant="contained" 
                               fullWidth 
