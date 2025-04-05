@@ -12,13 +12,36 @@ const issueTypes = [
 ];
 
 const CreateIssueForm = () => {
+
+    
+    const { user, loading } = useContext(UserContext);
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         type: '', 
+        userID: null,
+        username: null,
+        client: false,
     });
+
+    useEffect(() => {
+      console.log("user", user);
+      if(user) {
+        setFormData(prev => ({
+            ...prev,
+            userID: user.user.id,
+            username: user.user.firstName + " " + user.user.lastName,
+            client: user.role === "CLIENT"
+        }));
+      }
+    }, [user]);
+
+    useEffect(() => {
+        console.log("formData", formData);
+    }, [formData]);
+
     
-    const { user, loading } = useContext(UserContext);
     const navigate = useNavigate();
     const theme = useTheme();
 

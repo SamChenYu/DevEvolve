@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Paper, Box, Typography, Chip, Divider, List, ListItem, ListItemText, IconButton, ListItemSecondaryAction, useTheme, CircularProgress, Button, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getAllIssues, deleteIssue } from "../../services/ProjectService";
@@ -10,13 +11,14 @@ const IssuesList = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
-
+  const navigate = useNavigate();
 
   const fetchIssues = async () => {
     try {
       setLoading(true);
       const data = await getAllIssues();
       setIssues(data);
+      console.log("Fetched issues:", data);
     } catch (err) {
       console.error("Error fetching issues", err);
     } finally {
@@ -125,12 +127,32 @@ const IssuesList = () => {
             </DialogTitle>
              
             <DialogContent sx={{ bgcolor: "#222", color: "#fff" }}>
-              
+
+            <Typography
+              variant="body1"
+              mb={3}
+              onClick={() => {
+                
+                if(selectedIssue.client) {
+                  navigate(`/client-profile/${selectedIssue.userID}`);
+                } else {
+                  navigate(`/dev-profile/${selectedIssue.userID}`);
+                }
+                
+                handleClose();
+              }}
+              sx={{ cursor: "pointer" }} // makes the whole line clickable
+            >
+              <strong>Submitted By:</strong>{" "}
+              <Box component="span" sx={{ color: "primary", textDecoration: "underline" }}>
+                {selectedIssue.username}
+              </Box>
+            </Typography>
               <Typography variant="body1" mb={3}>
                 <strong>Issue Type:</strong> {selectedIssue.type}
               </Typography>
               <DialogContentText sx={{ mb: 2, color: alpha("#fff", 0.8) }}>
-                {selectedIssue.description}
+                <strong>Description: </strong>{selectedIssue.description}
               </DialogContentText>
             </DialogContent>
             <DialogActions sx={{ bgcolor: "#222" }}>

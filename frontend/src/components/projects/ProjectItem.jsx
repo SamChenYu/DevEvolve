@@ -29,7 +29,7 @@ const ProjectItem = ({ project, clientId }) => {
       <CardContent>
         <Box sx={{ width: "100%", height: 200, mb: 2 }}>
           <img
-            src={project.imageUrl || placeholderThumbnail}
+            src={project.imageUrl?.trim() ? project.imageUrl : placeholderThumbnail}
             alt="Project Thumbnail"
             style={{
               width: "100%", 

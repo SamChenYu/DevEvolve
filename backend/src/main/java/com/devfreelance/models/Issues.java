@@ -14,6 +14,10 @@ public class Issues {
     private String title;
     private String description;
     private IssueType type;
+    // Identifying information on the submitting user
+    private String username;
+    private String userID;
+    private boolean client;
 
     public Issues() {
         super();
@@ -57,5 +61,25 @@ public class Issues {
 
     public void setType(IssueType type) {
         this.type = type;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public String getUserID() {
+        return userID;
+    }
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public boolean getClient() {
+        return client;
+    }
+    public void setClient(boolean isclient) {
+        client = isclient;
     }
 }
