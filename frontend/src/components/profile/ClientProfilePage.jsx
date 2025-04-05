@@ -13,6 +13,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import { alpha } from '@mui/material/styles';
 import EditClientProfileModal from './EditClientProfileModal';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ChatService from '../../services/ChatService';
 
 
 const ClientProfilePage = () => {
@@ -45,6 +46,26 @@ const ClientProfilePage = () => {
     
         fetchUser();
       }, [user, loading]);
+
+
+
+      const handleMessageClient = async () => {
+        console.log("Message Client clicked");
+        try {
+          console.log("User ID:", user.user.id);
+          const response = await ChatService.newChat(id, user.user.id);
+          console.log(response);
+          if (response) {
+            if(response.chatID) {
+              navigate(`/chat/${response.chatID}`);
+            }
+          } else {
+            console.error("Failed to create chat.");
+          }
+        } catch (error) {
+          console.error("Error creating chat:", error);
+        }
+      }
   
   
     if (loading) {
@@ -219,6 +240,33 @@ const ClientProfilePage = () => {
             <Grid container spacing={3} sx={{ px: 3, pb: 5 }}>
      
               <Grid item xs={12} >
+
+                { ( user.role === "DEVELOPER" && (
+                  <Paper
+                    elevation={0} 
+                    sx={{ 
+                      bgcolor: "#222", 
+                      p: 3, 
+                      borderRadius: 2,
+                      height: "100%",
+                      border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`
+                    }}
+                  >
+                        <Button 
+                        variant="contained" 
+                        fullWidth 
+                        sx={{ 
+                          bgcolor: "#9c27b0", 
+                          '&:hover': { bgcolor: "#7b1fa2" } 
+                        }}
+                        onClick={() => handleMessageClient()}
+                      >
+                        Message Client
+                      </Button>
+                  </Paper>
+                )
+                )}
+
                 
                 {(user.role === "CLIENT" || user.role === "ADMIN") && (
                   <Paper 
