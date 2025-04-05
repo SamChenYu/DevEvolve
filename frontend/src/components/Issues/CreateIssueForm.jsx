@@ -22,21 +22,25 @@ const CreateIssueForm = () => {
         type: '', 
         userID: null,
         username: null,
+        client: false,
     });
 
     useEffect(() => {
       console.log("user", user);
-
       if(user) {
         setFormData(prev => ({
             ...prev,
             userID: user.user.id,
             username: user.user.firstName + " " + user.user.lastName,
+            client: user.role === "CLIENT"
         }));
       }
-      console.log("formData", formData);
     }, [user]);
-    
+
+    useEffect(() => {
+        console.log("formData", formData);
+    }, [formData]);
+
     
     const navigate = useNavigate();
     const theme = useTheme();

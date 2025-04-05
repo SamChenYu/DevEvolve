@@ -18,6 +18,7 @@ const IssuesList = () => {
       setLoading(true);
       const data = await getAllIssues();
       setIssues(data);
+      console.log("Fetched issues:", data);
     } catch (err) {
       console.error("Error fetching issues", err);
     } finally {
@@ -131,7 +132,13 @@ const IssuesList = () => {
               variant="body1"
               mb={3}
               onClick={() => {
-                navigate(`/dev-profile/${selectedIssue.userID}`);
+                
+                if(selectedIssue.client) {
+                  navigate(`/client-profile/${selectedIssue.userID}`);
+                } else {
+                  navigate(`/dev-profile/${selectedIssue.userID}`);
+                }
+                
                 handleClose();
               }}
               sx={{ cursor: "pointer" }} // makes the whole line clickable

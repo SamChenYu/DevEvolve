@@ -35,6 +35,7 @@ public class IssueController {
         issue.setType(entity.getType());
         issue.setUsername(entity.getUsername());
         issue.setUserID(entity.getUserID());
+        issue.setClient(entity.getClient());
         issueRepository.save(issue);
         
         return ResponseEntity.ok("Issue created successfully");
