@@ -4,11 +4,18 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { placeBid } from "../../services/ProjectService";
 import { minBidLevel } from "../../services/ProjectService";
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import 'dayjs/locale/en-gb'; 
+import 'dayjs/plugin/timezone';
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLevel }) => {
-    const [formData, setFormData] = useState({ amount: "", proposal: "", bidDate: null });
+    const [formData, setFormData] = useState({ amount: "", proposal: "", bidDate: dayjs().tz('Europe/London') });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [minBid, setMinBid] = useState(0);
@@ -46,12 +53,32 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        const currentTime = dayjs().tz('Europe/London');
+
+        if (!formData.proposal.trim()) {
+            alert("Proposal cannot be empty.");
+            setLoading(false);
+            return;
+        }
+    
+        if (!formData.bidDate) {
+            alert("Please select a bid deadline.");
+            setLoading(false);
+            return;
+        }
         
+        if (dayjs(formData.bidDate).isBefore(currentTime)) {
+            alert("Selected bid date/time has already passed. Please choose a future time. Reopen the modal to select a new date.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const bidData = {
                 amount: parseFloat(formData.amount), 
                 proposal: formData.proposal,
-                bidDate: formData.bidDate,
+                bidDate: dayjs(formData.bidDate).tz('Europe/London').local().format('YYYY-MM-DDTHH:mm:ss'),
             };
 
             await placeBid(developerId, projectId, bidData);
@@ -66,7 +93,7 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-GB">
             <Modal open={open} onClose={handleClose}>
                 <Box 
                     sx={{ 
@@ -136,7 +163,7 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                                 label="Proposed Deadline for Finishing the Project"
                                 value={formData.bidDate}
                                 onChange={handleDateChange}
-                                minDateTime={dayjs()}
+                                minDateTime={dayjs().tz('Europe/London')}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,

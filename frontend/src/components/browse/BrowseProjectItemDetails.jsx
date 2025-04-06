@@ -313,6 +313,28 @@ const BrowseProjectItemDetails = () => {
                         <FeedbackIcon sx={{ mr: 1 }} />
                         View Client Feedback
                       </Button>
+                    ) : bid.status === "ACCEPTED" && project.status === "LATE" ? (
+                      <Badge 
+                        
+                        color="error"
+                        sx={{ 
+                          width: '100%',
+                        }}
+                      >
+                        <Button 
+                          variant="outlined" 
+                          fullWidth
+                          color="error"
+                          sx={{
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            py: 1.5,
+                            interaction: 'none',
+                            cursor: 'none',
+                          }}
+                        >
+                          Project is Late
+                        </Button>
+                      </Badge>
                     ) : (
                       <Badge 
                         
@@ -335,8 +357,7 @@ const BrowseProjectItemDetails = () => {
                         >
                           Awaiting Client Review
                         </Button>
-                      </Badge>
-                    )
+                      </Badge>)
                   ) : null}
                 </Box>
               ) : (
