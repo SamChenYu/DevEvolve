@@ -39,6 +39,9 @@ public class BidController {
         Developer developer = developerRepository.findById(developerId)
                 .orElseThrow(() -> new Exception("Developer not found."));
 
+        developer.setCoins(developer.getCoins() - bid.getAmount());
+        developerRepository.save(developer);
+
         Projects project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new Exception("Project not found."));
         

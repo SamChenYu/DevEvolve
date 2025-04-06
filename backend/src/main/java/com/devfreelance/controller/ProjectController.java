@@ -163,6 +163,7 @@ public class ProjectController {
         for (Bids otherBid : project.getBids()) {
             if (!otherBid.getId().equals(bidId)) {
                 otherBid.setStatus(BidStatus.REJECTED);
+                otherBid.getDeveloper().setCoins(otherBid.getDeveloper().getCoins() + otherBid.getAmount());
                 bidRepository.save(otherBid); 
             }
         }
