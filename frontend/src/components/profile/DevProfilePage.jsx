@@ -508,7 +508,7 @@ const DevProfilePage = () => {
                         mt: 1
                       }}
                     >
-                      <Typography variant="h6" sx={{ mb: 2, color: "white" }}> <ConnectWithoutContactIcon sx={{verticalAlign: "text-bottom", color: "#9c27b0"}} /> Contact</Typography>
+                      <Typography variant="h6" sx={{ mb: 2, color: "white" }}> <ConnectWithoutContactIcon sx={{verticalAlign: "text-bottom", color: "#9c27b0"}} /> {user.user?.id === developer.id ? "Your Work" : "Contact"}</Typography>
                       
                       { user.user?.id !== developer.id && user.role !== "ADMIN" && (
                               <Button 
