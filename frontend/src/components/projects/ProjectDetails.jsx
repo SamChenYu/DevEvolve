@@ -22,6 +22,12 @@ import TextField from '@mui/material/TextField';
 import { UserContext } from '../../context/UserContext';
 import ChatService from '../../services/ChatService';  
 import axios from 'axios';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ChatIcon from '@mui/icons-material/Chat';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -435,6 +441,7 @@ const ProjectDetails = () => {
                                         py: 1.5,
                                     }}
                                 >
+                                    <RateReviewIcon sx={{ mr: 1 }} />
                                     Rate Developer
                                 </Button>
                             )}
@@ -451,6 +458,7 @@ const ProjectDetails = () => {
                                         mt: 2
                                     }}
                                 >
+                                    <PersonIcon sx={{ mr: 1 }} />
                                     View Developer Profile
                                 </Button>
                             ) : (
@@ -465,6 +473,7 @@ const ProjectDetails = () => {
                                         mt: 2
                                     }}
                                 >
+                                    <ViewListIcon sx={{ mr: 1 }} />
                                     View Bids
                                 </Button>
                             )}
@@ -481,6 +490,7 @@ const ProjectDetails = () => {
                                     }}
                                     onClick={() => handleMessageDeveloper()}
                                 >
+                                    <ChatIcon sx={{ mr: 1 }} />
                                     Message Developer
                                 </Button>
                                 )}
@@ -498,6 +508,7 @@ const ProjectDetails = () => {
                                             mt: 2
                                         }}
                                     >
+                                        <EditIcon sx={{ mr: 1 }} />
                                         Modify Project
                                     </Button>
                                     <Button
@@ -511,6 +522,7 @@ const ProjectDetails = () => {
                                             mt: 2
                                         }}
                                     >
+                                        <DeleteIcon sx={{ mr: 1 }} />
                                         Delete Project
                                     </Button>
                                     <Button
@@ -524,6 +536,7 @@ const ProjectDetails = () => {
                                         }}
                                         onClick={() => archiveProject(projectId)}
                                     >
+                                        <ArchiveIcon sx={{ mr: 1 }} />
                                         Archive Project
                                     </Button>
 
@@ -596,6 +609,10 @@ const ProjectDetails = () => {
                             
                             <Typography variant="subtitle2" sx={{ color: '#8C8C8C', mb: 2 }}>
                                 {selectedDeveloper.email}
+                            </Typography>
+
+                            <Typography variant="body2" sx={{ mt: 1, color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/dev-profile/${selectedDeveloper.id}`)}>
+                                View Profile
                             </Typography>
 
                             <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>

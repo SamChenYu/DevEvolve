@@ -14,6 +14,9 @@ import { UserContext } from '../../context/UserContext';
 import CompleteProjectModal from './CompleteProjectModal';
 import ReviewModal from './ReviewModal';
 import { getDeveloperById } from '../../services/AuthenicationService';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import SendTimeExtensionIcon from '@mui/icons-material/SendTimeExtension';
 
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
@@ -292,6 +295,7 @@ const BrowseProjectItemDetails = () => {
                         py: 1.5,
                       }}
                     >
+                      <CheckCircleIcon sx={{ mr: 1 }} />
                       Complete Project
                     </Button>
                   ) : bid.status === "ACCEPTED" && project.finalReport ? (
@@ -306,6 +310,7 @@ const BrowseProjectItemDetails = () => {
                           py: 1.5,
                         }}
                       >
+                        <FeedbackIcon sx={{ mr: 1 }} />
                         View Client Feedback
                       </Button>
                     ) : (
@@ -345,6 +350,7 @@ const BrowseProjectItemDetails = () => {
                     py: 1.5,
                   }}
                 >
+                  <SendTimeExtensionIcon sx={{ mr: 1 }} />
                   Submit Proposal
                 </Button>
               )}
