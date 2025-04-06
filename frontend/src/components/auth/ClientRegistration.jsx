@@ -53,7 +53,7 @@ const ClientRegistration = () => {
       setSnackbarOpen(true);
       setTimeout(() => {
         navigate('/login');
-      }, 2000);
+      }, 500);
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data.message || "Registration failed.");
