@@ -60,6 +60,7 @@ public class BidController {
         newBid.setDeveloper(developer); 
         newBid.setProject(project);
         newBid.setProposal(bid.getProposal());
+        newBid.setBidDate(bid.getBidDate());
         System.out.println("Current bids for the project: ");
         projectRepository.save(project);
 
