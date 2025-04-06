@@ -88,6 +88,8 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
         }
     };
 
+    const sortedBids = [...bids].sort((a, b) => a.amount - b.amount);
+
     return (
         <>
             <Modal open={open} onClose={onClose}>
@@ -114,7 +116,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                         <Typography textAlign="center" sx={{ mt: 2 }}>No bids yet.</Typography>
                     ) : (
                         <Box>
-                            {bids.map((bid, index) => (
+                            {sortedBids.map((bid, index) => (
                                 <Box key={bid.id} sx={{ p: 1 }}>
 
                                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
