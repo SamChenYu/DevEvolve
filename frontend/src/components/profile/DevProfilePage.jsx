@@ -6,7 +6,29 @@ import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import { useTheme } from '@mui/material/styles';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import { Box, Typography, TextField, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip, Popover, LinearProgress } from '@mui/material'; 
+import {
+    Box,
+    Typography,
+    TextField,
+    Avatar,
+    Grid,
+    Paper,
+    IconButton,
+    Divider,
+    Chip,
+    CssBaseline,
+    CircularProgress,
+    Button,
+    Modal,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Tooltip,
+    Popover,
+    LinearProgress,
+    Alert, Snackbar
+} from '@mui/material';
 import { ArrowBack, GitHub, LinkedIn, Twitter, Facebook, Edit, Code, Star, Language, Verified } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
@@ -73,6 +95,10 @@ const DevProfilePage = () => {
     const [uploading, setUploading] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [hovered, setHovered] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     
 
     useEffect(() => {
@@ -116,7 +142,10 @@ const DevProfilePage = () => {
   
     const handleOpenEditModal = () => setOpenEditModal(true);
     const handleCloseEditModal = () => setOpenEditModal(false);
-      
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
       
     if (loading) {
 
@@ -209,10 +238,14 @@ const DevProfilePage = () => {
     try {
         const response = await axios.post(CLOUDINARY_URL, formData);
         setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
-        alert('Image uploaded successfully!');
+        setSuccessMessage("Image uploaded successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
     } catch (error) {
         console.error('Error uploading image:', error);
-        alert('Image upload failed. Try again.');
+        setErrorMessage("Image upload failed. Try again.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
     }
     setUploading(false);
   };
@@ -731,6 +764,17 @@ const DevProfilePage = () => {
               </DialogActions>
           </Box>
       </Dialog>
+
+        <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={5000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                {snackbarSeverity === "success" ? successMessage : errorMessage}
+            </Alert>
+        </Snackbar>
     </Box>
 
     

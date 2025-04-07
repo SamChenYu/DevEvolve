@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Box, CssBaseline, Paper, Typography, TextField, Button, CircularProgress } from '@mui/material';
+import {Box, CssBaseline, Paper, Typography, TextField, Button, CircularProgress, Alert, Snackbar} from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
@@ -22,6 +22,10 @@ const CreateProjectForm = () => {
       const [uploading, setUploading] = useState(false);
       const { user, loading } = useContext(UserContext);
       const navigate = useNavigate();
+      const [errorMessage, setErrorMessage] = useState("");
+      const [successMessage, setSuccessMessage] = useState("");
+      const [snackbarOpen, setSnackbarOpen] = useState(false);
+      const [snackbarSeverity, setSnackbarSeverity] = useState("success");
       
       
       useEffect(() => {
@@ -31,7 +35,10 @@ const CreateProjectForm = () => {
           navigate("/login");
         }
       }, [user, loading, navigate]);
-    
+
+      const handleSnackbarClose = () => {
+          setSnackbarOpen(false);
+      };
 
       const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,10 +58,14 @@ const CreateProjectForm = () => {
         try {
             const response = await axios.post(CLOUDINARY_URL, formData);
             setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
-            alert('Image uploaded successfully!');
+            setSuccessMessage("Image uploaded successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Image upload failed. Try again.');
+            setErrorMessage("Image upload failed. Try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
         }
         setUploading(false);
     };
@@ -64,11 +75,17 @@ const CreateProjectForm = () => {
         e.preventDefault();
         try {
           await createProject(user.user.id, formData);
-          alert("Project Created Successfully!");
-          navigate("/client-dashboard");
-          window.location.reload();
+          setSuccessMessage("Project created successfully!");
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+          setTimeout(() => {
+            navigate('/client-dashboard');
+            window.location.reload();
+          }, 1000);
         } catch (error) {
-          alert("An error occurred. Please try again.");
+          setErrorMessage("An error occurred. Please try again.");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
         }
       };
     
@@ -146,6 +163,16 @@ const CreateProjectForm = () => {
               </Box>
             </Paper>
           </Box>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarSeverity === "success" ? successMessage : errorMessage}
+                </Alert>
+            </Snackbar>
         </Box>
       );
 }

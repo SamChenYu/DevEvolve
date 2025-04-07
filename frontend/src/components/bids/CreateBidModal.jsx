@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField, Typography, Box, Modal, Paper, IconButton } from "@mui/material";
+import {Button, TextField, Typography, Box, Modal, Paper, IconButton, Alert, Snackbar} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { placeBid } from "../../services/ProjectService";
 import { minBidLevel } from "../../services/ProjectService";
@@ -7,8 +7,11 @@ import { minBidLevel } from "../../services/ProjectService";
 const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLevel }) => {
     const [formData, setFormData] = useState({ amount: "", proposal: "" });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const [minBid, setMinBid] = useState(0);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     useEffect(() => {
         if (open && developerLevel) {
@@ -20,7 +23,9 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                 })
                 .catch((err) => {
                     console.error("Error fetching min bid:", err);
-                    setError("Failed to fetch minimum bid.");
+                    setErrorMessage("Failed to fetch minimum bid.");
+                    setSnackbarSeverity("error");
+                    setSnackbarOpen(true);
                 });
         }
     }, [open, developerLevel]);
@@ -47,14 +52,20 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
             };
 
             await placeBid(developerId, projectId, bidData);
-            alert("Bid placed successfully!");
+            setSuccessMessage("Bid placed successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
             handleClose(); 
             window.location.reload();
         } catch (err) {
-            setError(err);
+            console.log(err);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -142,6 +153,16 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                     </Box>
                 </Paper>
             </Box>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarSeverity === "success" ? successMessage : errorMessage}
+                </Alert>
+            </Snackbar>
         </Modal>
     );
 };

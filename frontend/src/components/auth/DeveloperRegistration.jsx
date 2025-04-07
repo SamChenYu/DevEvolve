@@ -323,7 +323,7 @@ const DeveloperRegistration = () => {
       {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={500}
+        autoHideDuration={5000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
