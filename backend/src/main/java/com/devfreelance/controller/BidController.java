@@ -39,6 +39,11 @@ public class BidController {
         Developer developer = developerRepository.findById(developerId)
                 .orElseThrow(() -> new Exception("Developer not found."));
 
+
+        if(developer.getCoins() < bid.getAmount()) {
+            throw new Exception("Insufficient coins.");
+        }
+
         developer.setCoins(developer.getCoins() - bid.getAmount());
         developerRepository.save(developer);
 

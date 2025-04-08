@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Button, TextField, Typography, Box, Modal, Paper, IconButton } from "@mui/material";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
+import { getUserFromToken } from "../../services/AuthenicationService";
+import { UserContext } from '../../context/UserContext';
+import { Button, TextField, Typography, Box, Modal, Paper, IconButton, alpha, Grid, Avatar, useTheme } from "@mui/material";
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { placeBid } from "../../services/ProjectService";
 import { minBidLevel } from "../../services/ProjectService";
@@ -15,6 +19,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLevel }) => {
+    
+    const theme = useTheme();
+    const { user, userLoading } = useContext(UserContext);
     const [formData, setFormData] = useState({ amount: "", proposal: "", bidDate: dayjs().tz('Europe/London') });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -49,6 +56,33 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
 
         setFormData({ ...formData, [name]: value });
     };
+
+
+    const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
+    useEffect(() => {
+      if (user) {
+        setUserBalance(user.user.coins); // Update user balance from context
+      }
+    }, [user]);
+  
+    const { id } = useParams();
+    useEffect(() => {
+      try {
+        const fetchUser = async () => {
+          const userData = await getUserFromToken();
+          console.log("Coins fetched from token:", userData);
+          setUserBalance(userData.user.coins); // Update user balance from context
+        };
+        fetchUser();
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }, [id]);
+
+
+
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -86,11 +120,30 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
             handleClose(); 
             window.location.reload();
         } catch (err) {
+            alert(err);
             setError(err);
         } finally {
             setLoading(false);
         }
     };
+    
+    if(userLoading) {
+        return (
+            <Box 
+                sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '100vh',
+                    bgcolor: 'background.default'
+                }}
+            >
+                <Typography variant="h4" sx={{ color: theme.palette.secondary.main }}>
+                    Loading...
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-GB">
@@ -126,6 +179,43 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                         <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
                             Place a Bid
                         </Typography>
+                        
+
+                        <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: "center", mb: 2 }}>
+                            <Paper 
+                            elevation={6}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                bgcolor: alpha('#fff', 0.15),
+                                borderRadius: 3,
+                                p: 2,
+                                backdropFilter: 'blur(10px)'
+                            }}
+                            >
+                            <Avatar 
+                                sx={{ 
+                                bgcolor: theme.palette.secondary.light, 
+                                width: 46, 
+                                height: 46,
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+                                }}
+                            >
+                                <MonetizationOnIcon sx={{ color: '#FFD700', fontSize: 28 }} />
+                            </Avatar>
+                            <Box sx={{ ml: 2 }}>
+                                <Typography variant="overline" sx={{ color: alpha('#fff', 0.7), display: 'block' }}>
+                                Available Balance
+                                </Typography>
+                                <Typography variant="h5" sx={{ color: 'white', fontWeight: 700 }}>
+                                {userBalance} Coins
+                                </Typography>
+                            </Box>
+                            </Paper>
+                        </Grid>
+
+
+
 
                         <Box 
                             component="form" 
