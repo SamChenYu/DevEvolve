@@ -67,7 +67,7 @@ const DeveloperRegistration = () => {
       setSnackbarOpen(true);
       setTimeout(() => {
         navigate('/login');
-      }, 2000);
+      }, 500);
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data.message || "Registration failed.");
@@ -323,7 +323,7 @@ const DeveloperRegistration = () => {
       {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={500}
+        autoHideDuration={5000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

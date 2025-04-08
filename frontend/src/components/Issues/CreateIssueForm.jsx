@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, CssBaseline, Paper, Typography, TextField, Button, MenuItem, Select, InputLabel, FormControl, useTheme } from '@mui/material';
+import { Box, CssBaseline, Paper, Typography, TextField, Button, MenuItem, Select, InputLabel, FormControl, useTheme, Alert, Snackbar } from '@mui/material';
 import Sidebar from '../layout/Sidebar';
 import { createIssue } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
@@ -44,6 +44,11 @@ const CreateIssueForm = () => {
     
     const navigate = useNavigate();
     const theme = useTheme();
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
 
     useEffect(() => {
         if (!loading && (!user)) {
@@ -78,16 +83,26 @@ const CreateIssueForm = () => {
     }));
   };
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await createIssue(formData);
-      alert("Issue created successfully!");
-      navigate("/");
-      window.location.reload();
+      setSuccessMessage("Issue created successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error creating issue:", error);
-      alert("An error occurred while creating the issue. Please try again.");
+      setErrorMessage("An error occurred while creating the issue. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -192,6 +207,16 @@ const CreateIssueForm = () => {
           </Box>
         </Paper>
       </Box>
+        <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={5000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                {snackbarSeverity === "success" ? successMessage : errorMessage}
+            </Alert>
+        </Snackbar>
     </Box>
   );
 };

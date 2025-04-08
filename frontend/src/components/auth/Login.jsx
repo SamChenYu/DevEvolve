@@ -57,7 +57,7 @@ const Login = () => {
             } else if (fullUser.role === "ADMIN") {
                 navigate("/admin-dashboard");
             }
-          }, 2000);
+          }, 500);
       } catch (error) {
         if (error.response && error.response.data) {
           setErrorMessage(error.response.data.message || "Registration failed.");
@@ -206,7 +206,7 @@ const Login = () => {
           {/* Snackbar */}
           <Snackbar
             open={snackbarOpen}
-            autoHideDuration={500}
+            autoHideDuration={5000}
             onClose={handleSnackbarClose}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           >

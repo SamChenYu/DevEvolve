@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Box, Grid, Avatar, useTheme, CssBaseline, Paper, Typography, TextField, Button, CircularProgress, alpha } from '@mui/material';
+import { Box, Grid, Avatar, useTheme, CssBaseline, Paper, Typography, TextField, Button, CircularProgress, alpha, Alert, Snackbar } from '@mui/material';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 import Sidebar from '../layout/Sidebar';
@@ -28,6 +28,10 @@ const CreateProjectForm = () => {
       const { user, loading } = useContext(UserContext);
       const theme = useTheme();
       const navigate = useNavigate();
+      const [errorMessage, setErrorMessage] = useState("");
+      const [successMessage, setSuccessMessage] = useState("");
+      const [snackbarOpen, setSnackbarOpen] = useState(false);
+      const [snackbarSeverity, setSnackbarSeverity] = useState("success");
       
       
       useEffect(() => {
@@ -37,7 +41,10 @@ const CreateProjectForm = () => {
           navigate("/login");
         }
       }, [user, loading, navigate]);
-    
+
+      const handleSnackbarClose = () => {
+          setSnackbarOpen(false);
+      };
 
       const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,15 +64,17 @@ const CreateProjectForm = () => {
         try {
             const response = await axios.post(CLOUDINARY_URL, formData);
             setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
-            alert('Image uploaded successfully!');
+            setSuccessMessage("Image uploaded successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Image upload failed. Try again.');
+            setErrorMessage("Image upload failed. Try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
         }
         setUploading(false);
     };
-
-
 
     const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
     useEffect(() => {
@@ -88,10 +97,6 @@ const CreateProjectForm = () => {
       }
     }, [id]);
 
-
-
-
-
     const validateForm = () => {
       let formErrors = {};
       if (!formData.title) formErrors.title = "Project title is required.";
@@ -108,11 +113,17 @@ const CreateProjectForm = () => {
 
         try {
           await createProject(user.user.id, formData);
-          alert("Project Created Successfully!");
-          navigate("/client-dashboard");
-          window.location.reload();
+          setSuccessMessage("Project created successfully!");
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+          setTimeout(() => {
+              navigate('/client-dashboard');
+              window.location.reload();
+          }, 1000);
         } catch (error) {
-          alert(error|| "Error creating project. Please try again.");
+            setErrorMessage(error || "An error occurred. Please try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
         }
       };
     
@@ -172,9 +183,6 @@ const CreateProjectForm = () => {
                   </Box>
                 </Paper>
               </Grid>
-
-
-
 
               <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <TextField
@@ -259,6 +267,17 @@ const CreateProjectForm = () => {
               </Box>
             </Paper>
           </Box>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarSeverity === "success" ? successMessage : errorMessage}
+                </Alert>
+            </Snackbar>
         </Box>
       );
 }
