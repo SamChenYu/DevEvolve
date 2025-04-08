@@ -17,6 +17,10 @@ import { getDeveloperById } from '../../services/AuthenicationService';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import SendTimeExtensionIcon from '@mui/icons-material/SendTimeExtension';
+import SourceIcon from '@mui/icons-material/Source';
+
+const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
+
 
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
@@ -186,7 +190,7 @@ const BrowseProjectItemDetails = () => {
               />
 
               <img
-              src={project.imageUrl?.trim() ? project.imageUrl : "/placeholder-image.png"}
+              src={project.imageUrl?.trim() ? project.imageUrl : placeholderThumbnail}
                 alt={project.title}
                 style={{
                     width: '100%',
@@ -239,6 +243,16 @@ const BrowseProjectItemDetails = () => {
                       </Typography>
                     </Box>
                   </Grid>
+                  {project.repoLink && (
+                    <Grid item xs={12} sm={6}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <SourceIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                            <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer', mr: 1.5 }}>
+                                Repository Link: {project.repoLink}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                  )}
                 </Grid>
               </Box>
             </Paper>
@@ -313,6 +327,28 @@ const BrowseProjectItemDetails = () => {
                         <FeedbackIcon sx={{ mr: 1 }} />
                         View Client Feedback
                       </Button>
+                    ) : bid.status === "ACCEPTED" && project.status === "LATE" ? (
+                      <Badge 
+                        
+                        color="error"
+                        sx={{ 
+                          width: '100%',
+                        }}
+                      >
+                        <Button 
+                          variant="outlined" 
+                          fullWidth
+                          color="error"
+                          sx={{
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            py: 1.5,
+                            interaction: 'none',
+                            cursor: 'none',
+                          }}
+                        >
+                          Project is Late
+                        </Button>
+                      </Badge>
                     ) : (
                       <Badge 
                         
@@ -335,8 +371,7 @@ const BrowseProjectItemDetails = () => {
                         >
                           Awaiting Client Review
                         </Button>
-                      </Badge>
-                    )
+                      </Badge>)
                   ) : null}
                 </Box>
               ) : (

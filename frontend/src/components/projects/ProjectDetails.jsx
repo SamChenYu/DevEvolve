@@ -44,10 +44,14 @@ import ChatIcon from '@mui/icons-material/Chat';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import SummarizeIcon from '@mui/icons-material/Summarize';
+import SourceIcon from '@mui/icons-material/Source';
 
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
+
 
 const ProjectDetails = () => {
     const { clientId, projectId } = useParams();
@@ -69,6 +73,7 @@ const ProjectDetails = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+    const [finalReportModalOpen, setFinalReportModalOpen] = useState(false);
 
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -369,7 +374,7 @@ const ProjectDetails = () => {
                             />
 
                             <img
-                                src={project.imageUrl?.trim() ? project.imageUrl : "/placeholder-image.png"}
+                                src={project.imageUrl?.trim() ? project.imageUrl : placeholderThumbnail}
                                 alt={project.title}
                                 style={{
                                     width: '100%',
@@ -414,14 +419,25 @@ const ProjectDetails = () => {
                                             </Typography>
                                         </Box>
                                     </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
-                                    <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/client-profile/${clientId}`)}>
-                                        Posted By: {(user.role === "ADMIN")? clientName : "You"}
-                                    </Typography>
-                                    </Box>
-                                </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                                        <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/client-profile/${clientId}`)}>
+                                            Posted By: {(user.role === "ADMIN")? clientName : "You"}
+                                        </Typography>
+                                        </Box>
+                                    </Grid>
+                                    {project.repoLink && (
+                                        <Grid item xs={12} sm={6}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <SourceIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                                                <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer', mr: 1.5 }}>
+                                                    Repository Link: {project.repoLink}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                    )}
+                                    
                                 </Grid>
                             </Box>
                         </Paper>
@@ -484,6 +500,23 @@ const ProjectDetails = () => {
                                 </Button>
                             )}
 
+                            {(project.status === "COMPLETED" || project.status === "LATE" || project.status === "ARCHIVED") && project.finalReport && (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    onClick={() => setFinalReportModalOpen(true)}
+                                    sx={{
+                                        fontWeight: 600,
+                                        py: 1.5,
+                                        mt: 2
+                                    }}
+                                >
+                                    <SummarizeIcon sx={{ mr: 1 }} />
+                                    View Final Report
+                                </Button>
+                            )}
+
                             {developerHired ? (
                                 <Button
                                     variant="contained"
@@ -516,11 +549,11 @@ const ProjectDetails = () => {
                                 </Button>
                             )}
 
-                            {(user.role === "CLIENT" && project.status === "IN_PROGRESS") && (
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    sx={{
+                            {(user.role === "CLIENT" && (project.status !== "FINDING_DEVELOPER")) && (
+                                <Button 
+                                    variant="contained" 
+                                    fullWidth 
+                                    sx={{ 
                                         fontWeight: 600,
                                         py: 1.5,
                                         mt: 2,
@@ -563,6 +596,8 @@ const ProjectDetails = () => {
                                         <DeleteIcon sx={{ mr: 1 }} />
                                         Delete Project
                                     </Button>
+
+                                    { project.status === "COMPLETED" &&
                                     <Button
                                         variant="contained"
                                         color="secondary"
@@ -572,11 +607,12 @@ const ProjectDetails = () => {
                                             py: 1.5,
                                             mt: 2
                                         }}
-                                        onClick={() => archiveProject(projectId)}
+                                        onClick={() => {archiveProject(projectId); navigate(`/client-dashboard`);}}
                                     >
                                         <ArchiveIcon sx={{ mr: 1 }} />
                                         Archive Project
                                     </Button>
+                                    }
 
                                 </>
                             )}
@@ -672,6 +708,36 @@ const ProjectDetails = () => {
                         <Typography variant="body1">Developer not found.</Typography>
                     )}
                 </Box>
+            </Modal> 
+
+            <Modal open={finalReportModalOpen} onClose={() => setFinalReportModalOpen(false)}>
+                <Box
+                    sx={{
+                        position: 'absolute', top: '50%', left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        bgcolor: '#222', color: 'white',
+                        boxShadow: 24, p: 3, borderRadius: 2,
+                        textAlign: 'center'
+                    }}
+                >
+                    <IconButton 
+                        onClick={() => setFinalReportModalOpen(false)} 
+                        sx={{ 
+                            position: 'absolute', 
+                            top: 10, 
+                            right: 10, 
+                            color: '#E0E0E0',
+                            bgcolor: 'rgba(255, 255, 255, 0.05)',
+                            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' }
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography variant="h5" fontWeight={600} sx={{ mt: 2 }}>Final Report</Typography>
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        {project.finalReport}
+                    </Typography>
+                </Box>
             </Modal>
             <Modal open={ratingModalOpen} onClose={() => setRatingModalOpen(false)}>
                 <Box
@@ -690,11 +756,22 @@ const ProjectDetails = () => {
                     <Typography variant="h5" sx={{ mt: 2 }}>Rate Developer</Typography>
 
                     <Box sx={{ mt: 2 }}>
-                        <Rating
-                            name="rating"
-                            value={rating}
-                            onChange={(event, newValue) => setRating(newValue)}
-                            precision={1}
+                    <Rating
+                        name="rating"
+                        value={rating}
+                        onChange={(event, newValue) => setRating(newValue)}
+                        precision={1}
+                        sx={{
+                            "& .MuiRating-icon": {
+                            color: "white",
+                            },
+                            "& .MuiRating-iconFilled": {
+                            color: "inherit",
+                            },
+                            "& .MuiRating-iconHover": {
+                            color: "inherit", 
+                            }
+                        }}
                         />
                     </Box>
 

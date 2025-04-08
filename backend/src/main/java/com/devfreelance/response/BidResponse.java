@@ -1,5 +1,9 @@
 package com.devfreelance.response;
 
+import java.time.LocalDateTime;
+
+import org.springframework.cglib.core.Local;
+
 import com.devfreelance.models.BidStatus;
 import com.devfreelance.models.Bids;
 
@@ -8,6 +12,7 @@ public class BidResponse {
     private Integer amount;
     private String proposal;
     private BidStatus status;
+    private LocalDateTime bidDate;
     private Integer developerId;
     private String developerName; 
     private Integer projectId;
@@ -17,6 +22,7 @@ public class BidResponse {
         this.amount = bid.getAmount();
         this.proposal = bid.getProposal();
         this.status = bid.getStatus();
+        this.bidDate = bid.getBidDate();
         this.developerId = (bid.getDeveloper() != null) ? bid.getDeveloper().getId() : null;
         this.developerName = (bid.getDeveloper() != null) ? bid.getDeveloper().getFirstName() + " " + bid.getDeveloper().getLastName() : "Unknown";
         this.projectId = (bid.getProject() != null) ? bid.getProject().getId() : null;
@@ -51,6 +57,14 @@ public class BidResponse {
 
     public void setStatus(BidStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getBidDate() {
+        return bidDate;
+    }
+
+    public void setBidDate(LocalDateTime bidDate) {
+        this.bidDate = bidDate;
     }
 
     public Integer getDeveloperId() {

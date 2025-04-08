@@ -1,4 +1,6 @@
 package com.devfreelance.controller;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +165,7 @@ public class ProjectController {
         for (Bids otherBid : project.getBids()) {
             if (!otherBid.getId().equals(bidId)) {
                 otherBid.setStatus(BidStatus.REJECTED);
+                otherBid.getDeveloper().setCoins(otherBid.getDeveloper().getCoins() + otherBid.getAmount());
                 bidRepository.save(otherBid); 
             }
         }
@@ -179,11 +182,24 @@ public class ProjectController {
         Projects project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new Exception("Project not found."));
 
+        Integer developerId = project.getDeveloper().getId();
+        Bids bid = bidRepository.findByProjectIdAndDeveloperId(projectId, developerId);
+
         if (project.getDeveloper() == null) {
             throw new Exception("No developer worked on this project.");
         }
 
-        project.setStatus(ProjectStatus.COMPLETED);
+        if (Duration.between(LocalDateTime.now(), bid.getBidDate()).toMillis() >= 0) {
+            project.setStatus(ProjectStatus.COMPLETED);
+        }
+        else {
+            project.setStatus(ProjectStatus.LATE);
+
+            // refund the client
+            project.getClient().setCoins(bid.getAmount() + project.getClient().getCoins());
+            
+        }
+        
         project.setFinalReport(report);
         projectRepository.save(project);
 
@@ -214,7 +230,7 @@ public class ProjectController {
         int rating = ratings.getRatingOutOfFive();  // Assuming one developer per project in this context
         
         Bids bid = bidRepository.findByProjectIdAndDeveloperId(projectId, developer.getId());
-        int totalPayment = (int) (bid.getAmount() * (rating / 5.0));
+        int totalPayment = (int) (bid.getAmount() + (bid.getAmount() * (rating / 5.0)));
 
 
         developer.setCoins(developer.getCoins() + totalPayment);

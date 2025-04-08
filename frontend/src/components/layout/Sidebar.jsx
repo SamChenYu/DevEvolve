@@ -68,10 +68,11 @@ const Sidebar = () => {
     if (user.role === "CLIENT") {
       navigate("/client-dashboard");
     } else if (user.role === "DEVELOPER") {
-      navigate("/developer-dashboard");
+      navigate(`/developer-dashboard`);
     } else if (user.role === "ADMIN") {
       navigate("/admin-dashboard");
     }
+    window.location.reload();
   };
 
   return (

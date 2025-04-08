@@ -117,6 +117,8 @@ const LandingPage = () => {
         navigate("/client-dashboard");
       } else if (user.role === "DEVELOPER") {
         navigate("/developer-dashboard");
+      } else if (user.role === "ADMIN") {
+        navigate("/admin-dashboard");
       }
     }
   }, [loading, user, navigate]);
