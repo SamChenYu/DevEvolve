@@ -92,9 +92,20 @@ const CreateProjectForm = () => {
 
 
 
+    const validateForm = () => {
+      let formErrors = {};
+      if (!formData.title) formErrors.title = "Project title is required.";
+      if (!formData.description) formErrors.description = "Project description is required.";
+  
+      
+      return Object.keys(formErrors).length === 0;
+    };
     
       const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) return;
+
         try {
           await createProject(user.user.id, formData);
           alert("Project Created Successfully!");
