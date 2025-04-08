@@ -558,6 +558,8 @@ const ProjectDetails = () => {
                                         <DeleteIcon sx={{ mr: 1 }} />
                                         Delete Project
                                     </Button>
+
+                                    { project.status === "COMPLETED" &&
                                     <Button
                                         variant="contained"
                                         color="secondary"
@@ -567,11 +569,12 @@ const ProjectDetails = () => {
                                             py: 1.5,
                                             mt: 2
                                         }}
-                                        onClick={() => archiveProject(projectId)}
+                                        onClick={() => {archiveProject(projectId); navigate(`/client-dashboard`);}}
                                     >
                                         <ArchiveIcon sx={{ mr: 1 }} />
                                         Archive Project
                                     </Button>
+                                    }
 
                                 </>
                             )}
@@ -716,11 +719,22 @@ const ProjectDetails = () => {
                     <Typography variant="h5" sx={{ mt: 2 }}>Rate Developer</Typography>
 
                     <Box sx={{ mt: 2 }}>
-                        <Rating
-                            name="rating"
-                            value={rating}
-                            onChange={(event, newValue) => setRating(newValue)}
-                            precision={1}
+                    <Rating
+                        name="rating"
+                        value={rating}
+                        onChange={(event, newValue) => setRating(newValue)}
+                        precision={1}
+                        sx={{
+                            "& .MuiRating-icon": {
+                            color: "white",
+                            },
+                            "& .MuiRating-iconFilled": {
+                            color: "inherit",
+                            },
+                            "& .MuiRating-iconHover": {
+                            color: "inherit", 
+                            }
+                        }}
                         />
                     </Box>
 
