@@ -34,6 +34,8 @@ import SourceIcon from '@mui/icons-material/Source';
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
+
 
 const ProjectDetails = () => {
     const { clientId, projectId } = useParams();
@@ -334,7 +336,7 @@ const ProjectDetails = () => {
                             />
 
                             <img
-                                src={project.imageUrl?.trim() ? project.imageUrl : "/placeholder-image.png"}
+                                src={project.imageUrl?.trim() ? project.imageUrl : placeholderThumbnail}
                                 alt={project.title}
                                 style={{
                                     width: '100%',
