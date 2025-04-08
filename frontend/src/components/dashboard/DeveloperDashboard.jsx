@@ -13,6 +13,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { fetchProjectsByDeveloper } from "../../services/ProjectService";
 import BrowseProjectItem from "../browse/BrowseProjectItem";
+import { getUserFromToken } from "../../services/AuthenicationService";
+import { useParams } from "react-router-dom";
 
 const DeveloperDashboard = () => {
   const { user, loading } = useContext(UserContext);
@@ -37,6 +39,31 @@ const DeveloperDashboard = () => {
         .catch((err) => console.error("Error fetching developer projects:", err));
     }
   }, [user]);
+
+  const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
+  useEffect(() => {
+    if (user) {
+      setUserBalance(user.user.coins); // Update user balance from context
+    }
+  }, [user]);
+  const { id } = useParams();
+  useEffect(() => {
+    try {
+      const fetchUser = async () => {
+        const userData = await getUserFromToken();
+        console.log("Coins fetched from token:", userData);
+        setUserBalance(userData.user.coins); // Update user balance from context
+      };
+      fetchUser();
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }, [id]);
+
+
+
+
+
 
   if (loading) {
     return (
@@ -146,7 +173,7 @@ const DeveloperDashboard = () => {
                       Available Balance
                     </Typography>
                     <Typography variant="h5" sx={{ color: 'white', fontWeight: 700 }}>
-                      {user.user?.coins} Coins
+                      {userBalance} Coins
                     </Typography>
                   </Box>
                 </Paper>
