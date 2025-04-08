@@ -558,6 +558,8 @@ const ProjectDetails = () => {
                                         <DeleteIcon sx={{ mr: 1 }} />
                                         Delete Project
                                     </Button>
+
+                                    { project.status === "COMPLETED" &&
                                     <Button
                                         variant="contained"
                                         color="secondary"
@@ -567,11 +569,12 @@ const ProjectDetails = () => {
                                             py: 1.5,
                                             mt: 2
                                         }}
-                                        onClick={() => archiveProject(projectId)}
+                                        onClick={() => {archiveProject(projectId); navigate(`/client-dashboard`);}}
                                     >
                                         <ArchiveIcon sx={{ mr: 1 }} />
                                         Archive Project
                                     </Button>
+                                    }
 
                                 </>
                             )}
@@ -723,13 +726,13 @@ const ProjectDetails = () => {
                         precision={1}
                         sx={{
                             "& .MuiRating-icon": {
-                            color: "white", // Make the stars transparent by default
+                            color: "white",
                             },
                             "& .MuiRating-iconFilled": {
-                            color: "inherit", // Ensure the filled stars remain transparent
+                            color: "inherit",
                             },
                             "& .MuiRating-iconHover": {
-                            color: "inherit", // Keep the hover color as default (no change on hover)
+                            color: "inherit", 
                             }
                         }}
                         />
