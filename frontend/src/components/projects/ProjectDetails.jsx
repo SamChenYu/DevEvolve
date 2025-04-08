@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel, archiveProject } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
-import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle, Alert, Snackbar } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -54,6 +54,10 @@ const ProjectDetails = () => {
     const [hasRated, setHasRated] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [finalReportModalOpen, setFinalReportModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -139,6 +143,10 @@ const ProjectDetails = () => {
     return null; 
     }
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
     const handleDeveloperHired = () => {
         setDeveloperHired(true);
         setProject(prev => ({ ...prev, status: "IN_PROGRESS" }));
@@ -223,12 +231,16 @@ const ProjectDetails = () => {
     const handleRatingSubmitClick = () => {
         handleRatingSubmit(projectId, rating, feedback)
             .then(() => {
-                alert("Rating submitted successfully!");
-                setRatingModalOpen(false); 
-                window.location.reload(); 
+                setSuccessMessage("Rating submitted successfully!");
+                setSnackbarSeverity("success");
+                setSnackbarOpen(true);
+                setRatingModalOpen(false);
+                window.location.reload();
             })
             .catch((error) => {
-                alert("Failed to submit rating. Please try again.");
+                setErrorMessage("Failed to submit rating. Please try again.");
+                setSnackbarSeverity("error");
+                setSnackbarOpen(true);
                 console.error("Rating submission failed:", error);
             });
     };
@@ -240,11 +252,15 @@ const ProjectDetails = () => {
     const handleModifySubmit = async () => {
         try {
             await modifyProject(projectId, formData);
-            alert("Project modified successfully!");
+            setSuccessMessage("Project modified successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
             setModifyModalOpen(false);
             window.location.reload(); 
         } catch (error) {
-            alert("Failed to modify project. Please try again.");
+            setErrorMessage("Failed to modify project. Please try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
             console.error("Error modifying project:", error);
         }
     };
@@ -265,7 +281,9 @@ const ProjectDetails = () => {
             navigate(`/client-dashboard`);
         } catch (error) {
             console.error("Error deleting project:", error);
-            alert("Failed to delete project. Please try again.");
+            setErrorMessage("Failed to delete project. Please try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
         }
     };
 
@@ -283,10 +301,14 @@ const ProjectDetails = () => {
         try {
             const response = await axios.post(CLOUDINARY_URL, formData);
             setFormData((prevData) => ({ ...prevData, imageUrl: response.data.secure_url }));
-            alert('Image uploaded successfully!');
+            setSuccessMessage("Image uploaded successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Image upload failed. Try again.');
+            setErrorMessage("Image upload failed. Try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
         }
         setUploading(false);
     };
@@ -829,6 +851,17 @@ const ProjectDetails = () => {
                     </DialogActions>
                 </Box>
             </Dialog>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarSeverity === "success" ? successMessage : errorMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

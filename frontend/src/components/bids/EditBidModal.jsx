@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, TextField, Button, Paper, IconButton } from '@mui/material';
+import { Modal, Box, Typography, TextField, Button, Paper, IconButton, Alert, Snackbar } from '@mui/material';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -12,6 +12,12 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
+
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
     const [formData, setFormData] = useState({
         amount: bid.amount,
         proposal: bid.proposal,
@@ -42,12 +48,18 @@ const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
         setFormData({ ...formData, bidDate: newValue });
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
     const handleSubmit = () => {
 
         const nowLondon = dayjs().tz('Europe/London');
 
         if (!formData.bidDate || formData.bidDate.isBefore(nowLondon)) {
-            alert("Please select a valid future date & time for your bid deadline.");
+            setErrorMessage("Please select a valid future date & time for your bid deadline.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
             return;
         }
 
@@ -162,6 +174,17 @@ const EditBidModal = ({ open, onClose, bid, onSubmit, minBid }) => {
                     </Paper>
                 </Box>
             </Modal>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarSeverity === "success" ? successMessage : errorMessage}
+                </Alert>
+            </Snackbar>
         </LocalizationProvider>
     );
 };

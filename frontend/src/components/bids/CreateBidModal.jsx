@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { getUserFromToken } from "../../services/AuthenicationService";
 import { UserContext } from '../../context/UserContext';
-import { Button, TextField, Typography, Box, Modal, Paper, IconButton, alpha, Grid, Avatar, useTheme } from "@mui/material";
+import { Button, TextField, Typography, Box, Modal, Paper, IconButton, alpha, Grid, Avatar, useTheme, Snackbar, Alert } from "@mui/material";
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { placeBid } from "../../services/ProjectService";
@@ -24,8 +24,11 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
     const { user, userLoading } = useContext(UserContext);
     const [formData, setFormData] = useState({ amount: "", proposal: "", bidDate: dayjs().tz('Europe/London') });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const [minBid, setMinBid] = useState(0);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     useEffect(() => {
         if (open && developerLevel) {
@@ -37,7 +40,9 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                 })
                 .catch((err) => {
                     console.error("Error fetching min bid:", err);
-                    setError("Failed to fetch minimum bid.");
+                    setErrorMessage("Failed to fetch minimum bid.");
+                    setSnackbarSeverity("error");
+                    setSnackbarOpen(true);
                 });
         }
     }, [open, developerLevel]);
@@ -57,6 +62,9 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
 
     const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
     useEffect(() => {
@@ -79,11 +87,6 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
       }
     }, [id]);
 
-
-
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -91,19 +94,25 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
         const currentTime = dayjs().tz('Europe/London');
 
         if (!formData.proposal.trim()) {
-            alert("Proposal cannot be empty.");
+            setErrorMessage("Proposal cannot be empty.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
             setLoading(false);
             return;
         }
     
         if (!formData.bidDate) {
-            alert("Please select a bid deadline.");
+            setErrorMessage("Please select a bid deadline.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
             setLoading(false);
             return;
         }
         
         if (dayjs(formData.bidDate).isBefore(currentTime)) {
-            alert("Selected bid date/time has already passed. Please choose a future time. Reopen the modal to select a new date.");
+            setErrorMessage("Selected bid date/time has already passed. Please choose a future time. Reopen the modal to select a new date.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
             setLoading(false);
             return;
         }
@@ -116,12 +125,16 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
             };
 
             await placeBid(developerId, projectId, bidData);
-            alert("Bid placed successfully!");
+            setSuccessMessage("Bid placed successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
             handleClose(); 
             window.location.reload();
         } catch (err) {
-            alert(err);
-            setError(err);
+            setErrorMessage(err);
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+            console.log(err);
         } finally {
             setLoading(false);
         }
@@ -293,6 +306,17 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                         </Box>
                     </Paper>
                 </Box>
+
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={5000}
+                    onClose={handleSnackbarClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                >
+                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                        {snackbarSeverity === "success" ? successMessage : errorMessage}
+                    </Alert>
+                </Snackbar>
             </Modal>
         </LocalizationProvider>
     );
