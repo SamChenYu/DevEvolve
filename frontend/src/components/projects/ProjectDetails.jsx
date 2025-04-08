@@ -716,11 +716,22 @@ const ProjectDetails = () => {
                     <Typography variant="h5" sx={{ mt: 2 }}>Rate Developer</Typography>
 
                     <Box sx={{ mt: 2 }}>
-                        <Rating
-                            name="rating"
-                            value={rating}
-                            onChange={(event, newValue) => setRating(newValue)}
-                            precision={1}
+                    <Rating
+                        name="rating"
+                        value={rating}
+                        onChange={(event, newValue) => setRating(newValue)}
+                        precision={1}
+                        sx={{
+                            "& .MuiRating-icon": {
+                            color: "white", // Make the stars transparent by default
+                            },
+                            "& .MuiRating-iconFilled": {
+                            color: "inherit", // Ensure the filled stars remain transparent
+                            },
+                            "& .MuiRating-iconHover": {
+                            color: "inherit", // Keep the hover color as default (no change on hover)
+                            }
+                        }}
                         />
                     </Box>
 
