@@ -63,6 +63,30 @@ public class AdminController {
         return ResponseEntity.ok(entity);
     }
 
+    @PutMapping("/incrementClientCoins/{id}/{coins}")
+    public ResponseEntity<Client> updateClientCoins(@PathVariable Integer id, @PathVariable Integer coins) {
+        Client entity = clientRepository.findById(id).orElse(null);
+        if (entity == null) {
+            return ResponseEntity.notFound().build();
+        }
+        int currentCoins = entity.getCoins();
+        entity.setCoins(currentCoins + coins);
+        clientRepository.save(entity);
+        return ResponseEntity.ok(entity);
+    }
+
+    @PutMapping("/incrementDeveloperCoins/{id}/{coins}")
+    public ResponseEntity<Developer> updateDeveloperCoins(@PathVariable Integer id, @PathVariable Integer coins) {
+        Developer entity = developerRepository.findById(id).orElse(null);
+        if (entity == null) {
+            return ResponseEntity.notFound().build();
+        }
+        int currentCoins = entity.getCoins();
+        entity.setCoins(currentCoins + coins);
+        developerRepository.save(entity);
+        return ResponseEntity.ok(entity);
+    }
+
     
     @DeleteMapping("/deleteClient/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {

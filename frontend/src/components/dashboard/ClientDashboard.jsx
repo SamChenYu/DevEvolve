@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getUserFromToken } from '../../services/AuthenicationService';
+import {
   Box, 
   CssBaseline, 
   Typography, 
@@ -23,12 +24,39 @@ const ClientDashboard = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { user, loading } = useContext(UserContext);
-  
+
   useEffect(() => {
     if (!loading && (!user || user.role !== "CLIENT")) {
       navigate("/login");
     }
   }, [navigate, user, loading]);
+
+  const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
+  useEffect(() => {
+    if (user) {
+      setUserBalance(user.user.coins); // Update user balance from context
+    }
+  }, [user]);
+
+  const { id } = useParams();
+  useEffect(() => {
+    try {
+      const fetchUser = async () => {
+        const userData = await getUserFromToken();
+        console.log("Coins fetched from token:", userData);
+        setUserBalance(userData.user.coins); // Update user balance from context
+      };
+      fetchUser();
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }, [id]);
+    
+
+
+
+
+
 
   if (loading) {
     return (
@@ -122,7 +150,7 @@ const ClientDashboard = () => {
                       Available Balance
                     </Typography>
                     <Typography variant="h5" sx={{ color: 'white', fontWeight: 700 }}>
-                      {user.user?.coins} Coins
+                      {userBalance} Coins
                     </Typography>
                   </Box>
                 </Paper>

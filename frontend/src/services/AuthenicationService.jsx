@@ -146,4 +146,25 @@ export const deleteDeveloperProfile = async (developerId) => {
         throw error.response?.data?.message || "Failed to delete developer profile";
     }
 };
+
+
+export const incrementClientCoins = async (clientId, amount) => {
+    try {
+        const response = await axiosInstance.put(`/auth/admin/incrementClientCoins/${clientId}/${amount}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error incrementing client coins:", error);
+        throw error.response?.data?.message || "Failed to increment client coins";
+    }
+}
+
+export const incrementDeveloperCoins = async (developerId, amount) => {
+    try {
+        const response = await axiosInstance.put(`/auth/admin/incrementDeveloperCoins/${developerId}/${amount}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error incrementing developer coins:", error);
+        throw error.response?.data?.message || "Failed to increment developer coins";
+    }
+}
   
