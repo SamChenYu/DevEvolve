@@ -194,7 +194,10 @@ public class ProjectController {
         }
         else {
             project.setStatus(ProjectStatus.LATE);
-            // project.getDeveloper().setCoins(project.getDeveloper().getCoins() + bid.getAmount());
+
+            // refund the client
+            project.getClient().setCoins(bid.getAmount() + project.getClient().getCoins());
+            
         }
         
         project.setFinalReport(report);

@@ -17,6 +17,7 @@ import { getDeveloperById } from '../../services/AuthenicationService';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import SendTimeExtensionIcon from '@mui/icons-material/SendTimeExtension';
+import SourceIcon from '@mui/icons-material/Source';
 
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
@@ -239,6 +240,16 @@ const BrowseProjectItemDetails = () => {
                       </Typography>
                     </Box>
                   </Grid>
+                  {project.repoLink && (
+                    <Grid item xs={12} sm={6}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <SourceIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                            <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer', mr: 1.5 }}>
+                                Repository Link: {project.repoLink}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                  )}
                 </Grid>
               </Box>
             </Paper>

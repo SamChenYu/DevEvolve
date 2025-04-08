@@ -28,6 +28,8 @@ import ChatIcon from '@mui/icons-material/Chat';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import SummarizeIcon from '@mui/icons-material/Summarize';
+import SourceIcon from '@mui/icons-material/Source';
 
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -49,6 +51,7 @@ const ProjectDetails = () => {
     const [feedback, setFeedback] = useState("");
     const [hasRated, setHasRated] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [finalReportModalOpen, setFinalReportModalOpen] = useState(false);
 
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -376,14 +379,25 @@ const ProjectDetails = () => {
                                             </Typography>
                                         </Box>
                                     </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
-                                    <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/client-profile/${clientId}`)}>
-                                        Posted By: {(user.role === "ADMIN")? clientName : "You"}
-                                    </Typography>
-                                    </Box>
-                                </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <PersonIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                                        <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/client-profile/${clientId}`)}>
+                                            Posted By: {(user.role === "ADMIN")? clientName : "You"}
+                                        </Typography>
+                                        </Box>
+                                    </Grid>
+                                    {project.repoLink && (
+                                        <Grid item xs={12} sm={6}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <SourceIcon sx={{ color: '#8C8C8C', mr: 1.5, fontSize: 20 }} />
+                                                <Typography variant="body2" sx={{ color: '#00bcd4', cursor: 'pointer', mr: 1.5 }}>
+                                                    Repository Link: {project.repoLink}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                    )}
+                                    
                                 </Grid>
                             </Box>
                         </Paper>
@@ -446,6 +460,23 @@ const ProjectDetails = () => {
                                 </Button>
                             )}
 
+                            {(project.status === "COMPLETED" || project.status === "LATE" || project.status === "ARCHIVED") && project.finalReport && (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    onClick={() => setFinalReportModalOpen(true)}
+                                    sx={{
+                                        fontWeight: 600,
+                                        py: 1.5,
+                                        mt: 2
+                                    }}
+                                >
+                                    <SummarizeIcon sx={{ mr: 1 }} />
+                                    View Final Report
+                                </Button>
+                            )}
+
                             {developerHired ? (
                                 <Button 
                                     variant="contained" 
@@ -478,7 +509,7 @@ const ProjectDetails = () => {
                                 </Button>
                             )}
 
-                            {(user.role === "CLIENT" && project.status === "IN_PROGRESS") && (
+                            {(user.role === "CLIENT" && (project.status !== "FINDING_DEVELOPER")) && (
                                 <Button 
                                     variant="contained" 
                                     fullWidth 
@@ -635,6 +666,37 @@ const ProjectDetails = () => {
                     )}
                 </Box>
             </Modal> 
+
+            <Modal open={finalReportModalOpen} onClose={() => setFinalReportModalOpen(false)}>
+                <Box
+                    sx={{
+                        position: 'absolute', top: '50%', left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        bgcolor: '#222', color: 'white',
+                        boxShadow: 24, p: 3, borderRadius: 2,
+                        textAlign: 'center'
+                    }}
+                >
+                    <IconButton 
+                        onClick={() => setFinalReportModalOpen(false)} 
+                        sx={{ 
+                            position: 'absolute', 
+                            top: 10, 
+                            right: 10, 
+                            color: '#E0E0E0',
+                            bgcolor: 'rgba(255, 255, 255, 0.05)',
+                            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' }
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography variant="h5" fontWeight={600} sx={{ mt: 2 }}>Final Report</Typography>
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        {project.finalReport}
+                    </Typography>
+                </Box>
+            </Modal>
+
             <Modal open={ratingModalOpen} onClose={() => setRatingModalOpen(false)}>
                 <Box
                     sx={{
