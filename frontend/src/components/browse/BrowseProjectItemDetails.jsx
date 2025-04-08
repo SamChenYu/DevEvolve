@@ -19,6 +19,9 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import SendTimeExtensionIcon from '@mui/icons-material/SendTimeExtension';
 import SourceIcon from '@mui/icons-material/Source';
 
+const placeholderThumbnail = "https://images.squarespace-cdn.com/content/v1/649087af1b2b0e356cbd5516/1687193634202-J7IC7003UGR4EF0T0E3V/blank-thumbnail.jpg";
+
+
 const BrowseProjectItemDetails = () => {
   const { user, loading } = useContext(UserContext);
   const { projectId } = useParams();
@@ -187,7 +190,7 @@ const BrowseProjectItemDetails = () => {
               />
 
               <img
-              src={project.imageUrl?.trim() ? project.imageUrl : "/placeholder-image.png"}
+              src={project.imageUrl?.trim() ? project.imageUrl : placeholderThumbnail}
                 alt={project.title}
                 style={{
                     width: '100%',

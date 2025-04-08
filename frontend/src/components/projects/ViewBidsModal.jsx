@@ -26,6 +26,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
     const [selectedBid, setSelectedBid] = useState(null);
     const [minBid, setMinBid] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedProposalDeadline, setSelectedProposalDeadline] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -98,6 +99,10 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
     };
 
     const sortedBids = [...bids].sort((a, b) => a.amount - b.amount);
+    const futureBids = sortedBids.filter(bid => {
+        const nowLondon = dayjs().tz('Europe/London');
+        return dayjs(bid.bidDate).isAfter(nowLondon);
+    });
 
     return (
         <>
@@ -121,14 +126,11 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
 
                     {loading ? (
                         <CircularProgress color="secondary" sx={{ display: 'block', mx: 'auto', mt: 2 }} />
-                    ) : bids.length === 0 ? (
+                    ) : futureBids.length === 0 ? (
                         <Typography textAlign="center" sx={{ mt: 2 }}>No bids yet.</Typography>
                     ) : (
                         <Box>
-                            {sortedBids.filter(bid => {
-                                const nowLondon = dayjs().tz('Europe/London');
-                                return dayjs(bid.bidDate).isAfter(nowLondon); 
-                            }).map((bid, index) => (
+                            {futureBids.map((bid, index) => (
                                 <Box key={bid.id} sx={{ p: 1 }}>
 
                                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -142,7 +144,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                                     <Typography 
                                         variant="body2" 
                                         sx={{ color: '#00bcd4', cursor: 'pointer', mt: 1 }}
-                                        onClick={() => setSelectedProposal(bid.proposal)}
+                                        onClick={() => {setSelectedProposal(bid.proposal); setSelectedProposalDeadline(bid.bidDate)}}
                                     >
                                         📝 View Proposal
                                     </Typography>
@@ -219,6 +221,22 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                     <Typography variant="body1" sx={{ mt: 2 }}>
                         {selectedProposal}
                     </Typography>
+                    <Typography variant="body2" sx={{ mt: 2, fontSize: '16px', color: '#ccc' }}>
+                        {selectedProposalDeadline ? (
+                            <>
+                                <Typography variant="body2" color={'secondary.main'} sx={{ fontWeight: 'bold' }}>
+                                    Proposed Completion Date:
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'white' }}>
+                                    {dayjs(selectedProposalDeadline).tz('Europe/London').format('MMMM D, YYYY [at] h:mm A')}
+                                </Typography>
+                            </>
+                        ) : (
+                            <Typography variant="body2" sx={{ color: 'gray' }}>
+                                No completion date proposed yet.
+                            </Typography>
+                        )}
+                    </Typography>
                 </Box>
             </Modal>
 
@@ -253,10 +271,18 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                             </Typography>
 
                             <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
-                                <IconButton sx={{ color: "white" }}><Facebook /></IconButton>
-                                <IconButton sx={{ color: "white" }}><Twitter /></IconButton>
-                                <IconButton sx={{ color: "white" }}><LinkedIn /></IconButton>
-                                <IconButton sx={{ color: "white" }}><GitHub /></IconButton>
+                                <IconButton sx={{ color: "#1877F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <Facebook />
+                                </IconButton>
+                                <IconButton sx={{ color: "#1DA1F2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <Twitter />
+                                </IconButton>
+                                <IconButton sx={{ color: "#0A66C2", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <LinkedIn />
+                                </IconButton>
+                                <IconButton sx={{ color: "#fff", bgcolor: "rgba(255,255,255,0.05)" }}>
+                                    <GitHub />
+                                </IconButton>
                             </Box>
                         </>
                     ) : (
