@@ -1,10 +1,13 @@
 import React, { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Box, CssBaseline, Paper, Typography, TextField, Button, CircularProgress } from '@mui/material';
+import { Box, Grid, Avatar, useTheme, CssBaseline, Paper, Typography, TextField, Button, CircularProgress, alpha } from '@mui/material';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+
 import Sidebar from '../layout/Sidebar';
 import { createProject } from '../../services/ProjectService';
 import { UserContext } from '../../context/UserContext';
+import { getUserFromToken } from '../../services/AuthenicationService';
 import axios from 'axios';
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -12,15 +15,18 @@ const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 
 const CreateProjectForm = () => {
+
     const [formData, setFormData] = useState({
         title: "",
         description: "",
         repoLink: "",
         imageUrl: "",
       });
+      
       const [image, setImage] = useState(null);
       const [uploading, setUploading] = useState(false);
       const { user, loading } = useContext(UserContext);
+      const theme = useTheme();
       const navigate = useNavigate();
       
       
@@ -59,6 +65,33 @@ const CreateProjectForm = () => {
         setUploading(false);
     };
 
+
+
+    const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
+    useEffect(() => {
+      if (user) {
+        setUserBalance(user.user.coins); // Update user balance from context
+      }
+    }, [user]);
+  
+    const { id } = useParams();
+    useEffect(() => {
+      try {
+        const fetchUser = async () => {
+          const userData = await getUserFromToken();
+          console.log("Coins fetched from token:", userData);
+          setUserBalance(userData.user.coins); // Update user balance from context
+        };
+        fetchUser();
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }, [id]);
+
+
+
+
+
     
       const handleSubmit = async (e) => {
         e.preventDefault();
@@ -68,7 +101,7 @@ const CreateProjectForm = () => {
           navigate("/client-dashboard");
           window.location.reload();
         } catch (error) {
-          alert("An error occurred. Please try again.");
+          alert(error|| "Error creating project. Please try again.");
         }
       };
     
@@ -89,13 +122,82 @@ const CreateProjectForm = () => {
                 width: "50%",
                 textAlign: "center",
                 border: "1px solid rgba(255,255,255,0.3)",
-               
+                justifyContent: "center",
               }}
             >
               <Typography variant="h4" fontWeight={700} sx={{ mb: 2, color: "white" }}>
                 Create Project
               </Typography>
+
+              <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: "center", mb: 2 }}>
+                <Paper 
+                  elevation={6}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    bgcolor: alpha('#fff', 0.15),
+                    borderRadius: 3,
+                    p: 2,
+                    backdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <Avatar 
+                    sx={{ 
+                      bgcolor: theme.palette.secondary.light, 
+                      width: 46, 
+                      height: 46,
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    <MonetizationOnIcon sx={{ color: '#FFD700', fontSize: 28 }} />
+                  </Avatar>
+                  <Box sx={{ ml: 2 }}>
+                    <Typography variant="overline" sx={{ color: alpha('#fff', 0.7), display: 'block' }}>
+                      Available Balance
+                    </Typography>
+                    <Typography variant="h5" sx={{ color: 'white', fontWeight: 700 }}>
+                      {userBalance} Coins
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+
+
+
+
               <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <TextField
+                name="projectCost"
+                label="Project Cost"
+                value="250 Coins"
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                  readOnly: true,
+                  style: {
+                    color: "white",
+                    backgroundColor: "#333",
+                    borderRadius: "8px",
+                    cursor: "not-allowed",  // Makes it clear it's non-editable
+                  },
+                }}
+                InputLabelProps={{
+                  style: { color: "rgba(255,255,255,0.7)" },
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "&:hover": {
+                      borderColor: "red",  // Change border color on hover
+                    },
+                    "&.Mui-focused": {
+                      borderColor: "red",  // Focused border color
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    cursor: "not-allowed",  // Change cursor to not-allowed to indicate non-editability
+                  },
+                }}
+              />
                 <TextField
                   name="title"
                   label="Project Title"
