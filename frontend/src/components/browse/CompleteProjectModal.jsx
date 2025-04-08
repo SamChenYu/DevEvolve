@@ -24,7 +24,17 @@ const CompleteProjectModal = ({ open, handleClose, handleSubmit }) => {
           label="Final Report" 
           value={report} 
           onChange={(e) => setReport(e.target.value)} 
-          sx={{ bgcolor: 'white', borderRadius: 1, mb: 2 }}
+          sx={{
+            bgcolor: '#333',
+            borderRadius: 1,
+            mb: 2,
+            "& .MuiInputBase-input": {
+              color: "white", // Sets the text color to white
+            },
+            "& .MuiInputLabel-root": {
+              color: "rgba(255,255,255,0.7)", // Optional: Sets label color to a lighter white for contrast
+            }
+          }}
         />
         <Button onClick={handleComplete} variant="contained" sx={{ mr: 1 }}>Submit</Button>
         <Button onClick={handleClose} variant="outlined" sx={{ color: 'white', borderColor: 'white' }}>Cancel</Button>
