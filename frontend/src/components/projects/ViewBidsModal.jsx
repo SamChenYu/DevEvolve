@@ -7,6 +7,13 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import EditBidModal from '../bids/EditBidModal';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => {
     const [bids, setBids] = useState([]);
@@ -20,7 +27,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
     const [minBid, setMinBid] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         if (!open) return; 
         const fetchBids = async () => {
@@ -118,7 +125,10 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                         <Typography textAlign="center" sx={{ mt: 2 }}>No bids yet.</Typography>
                     ) : (
                         <Box>
-                            {sortedBids.map((bid, index) => (
+                            {sortedBids.filter(bid => {
+                                const nowLondon = dayjs().tz('Europe/London');
+                                return dayjs(bid.bidDate).isAfter(nowLondon); 
+                            }).map((bid, index) => (
                                 <Box key={bid.id} sx={{ p: 1 }}>
 
                                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
