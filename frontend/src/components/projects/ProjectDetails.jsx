@@ -734,7 +734,7 @@ const ProjectDetails = () => {
                             "& .MuiRating-iconHover": {
                             color: "inherit", 
                             }
-                        }}
+                        }} 
                         />
                     </Box>
 
