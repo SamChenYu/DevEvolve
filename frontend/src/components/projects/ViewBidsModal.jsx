@@ -6,6 +6,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import PersonIcon from '@mui/icons-material/Person';
 import { Facebook, Twitter, LinkedIn, GitHub } from '@mui/icons-material';
 import EditBidModal from '../bids/EditBidModal';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => {
     const [bids, setBids] = useState([]);
@@ -18,6 +26,7 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
     const [selectedBid, setSelectedBid] = useState(null);
     const [minBid, setMinBid] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!open) return; 
@@ -88,6 +97,8 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
         }
     };
 
+    const sortedBids = [...bids].sort((a, b) => a.amount - b.amount);
+
     return (
         <>
             <Modal open={open} onClose={onClose}>
@@ -114,7 +125,10 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
                         <Typography textAlign="center" sx={{ mt: 2 }}>No bids yet.</Typography>
                     ) : (
                         <Box>
-                            {bids.map((bid, index) => (
+                            {sortedBids.filter(bid => {
+                                const nowLondon = dayjs().tz('Europe/London');
+                                return dayjs(bid.bidDate).isAfter(nowLondon); 
+                            }).map((bid, index) => (
                                 <Box key={bid.id} sx={{ p: 1 }}>
 
                                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -234,6 +248,9 @@ const ViewBidsModal = ({ user, open, onClose, projectId, onDeveloperHired }) => 
 
                             <Typography variant="h5" sx={{ mt: 2 }}>{selectedDeveloper.firstName} {selectedDeveloper.lastName}</Typography>
                             <Typography variant="subtitle2" sx={{ color: "gray" }}>{selectedDeveloper.email}</Typography>
+                            <Typography variant="body2" sx={{ mt: 1, color: '#00bcd4', cursor: 'pointer' }} onClick={() => navigate(`/dev-profile/${selectedDeveloper.id}`)}>
+                                View Profile
+                            </Typography>
 
                             <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
                                 <IconButton sx={{ color: "white" }}><Facebook /></IconButton>

@@ -10,6 +10,10 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import CreateIcon from '@mui/icons-material/Create';
 import EditBidModal from './EditBidModal';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import 'dayjs/locale/en-gb';
 
 const BidList = () => {
   const { user, loading } = useContext(UserContext);
@@ -47,10 +51,6 @@ const BidList = () => {
     }
   }, [user]);
 
-  if (loading || isLoading) {
-    return <Typography variant="h4" sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Typography>;
-  }
-
   const handleEditBid = (bid) => {
     setSelectedBid(bid);
     setEditModalOpen(true);
@@ -81,6 +81,37 @@ const BidList = () => {
 
   const acceptedBids = bids.filter((bid) => bid.status === "ACCEPTED");
   const pendingBids = bids.filter((bid) => bid.status !== "ACCEPTED");
+
+  useEffect(() => {
+    const cancelExpiredBids = async () => {
+      const now = dayjs().tz('Europe/London');
+
+      const expiredBids = pendingBids.filter((bid) => {
+        return dayjs(bid.bidDate).tz('Europe/London').isBefore(now);
+      });
+
+      for (const bid of expiredBids) {
+        try {
+          await cancelBid(bid.id);
+        } catch (error) {
+          console.error(`Error canceling expired bid with id ${bid.id}:`, error);
+        }
+      }
+
+      if (expiredBids.length > 0) {
+        const updatedBids = await developerBids(user.user.id);
+        setBids(updatedBids);
+      }
+    };
+
+    if (pendingBids.length > 0) {
+      cancelExpiredBids();
+    }
+  }, [pendingBids, user]);
+
+  if (loading || isLoading) {
+    return <Typography variant="h4" sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Typography>;
+  }
 
   return (
     <Box display="flex" color="white" bgcolor="black" minHeight="100vh">

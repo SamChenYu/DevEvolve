@@ -1,5 +1,7 @@
 package com.devfreelance.models;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
@@ -36,6 +38,8 @@ public class Bids {
     @JoinColumn(name = "project_id")
     @JsonBackReference("project-bids")
     private Projects project;
+
+    private LocalDateTime bidDate;
 
     public Bids() {
         super();
@@ -96,5 +100,13 @@ public class Bids {
 
     public void setProject(Projects project) {
         this.project = project;
+    }
+
+    public LocalDateTime getBidDate() {
+        return bidDate;
+    }
+
+    public void setBidDate(LocalDateTime bidDate) {
+        this.bidDate = bidDate;
     }
 }

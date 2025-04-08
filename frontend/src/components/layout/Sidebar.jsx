@@ -72,6 +72,7 @@ const Sidebar = () => {
     } else if (user.role === "ADMIN") {
       navigate("/admin-dashboard");
     }
+    window.location.reload();
   };
 
   return (

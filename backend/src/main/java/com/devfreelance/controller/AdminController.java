@@ -1,5 +1,7 @@
 package com.devfreelance.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +20,8 @@ import com.devfreelance.repository.BidRepository;
 import com.devfreelance.repository.ClientRepository;
 import com.devfreelance.repository.DeveloperRepository;
 import com.devfreelance.repository.ProjectRepository;
+
+import jakarta.transaction.Transactional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -163,18 +167,43 @@ public class AdminController {
             entity.setProposal(bid.getProposal());
         }
 
+        if (bid.getBidDate() != null) {
+            entity.setBidDate(bid.getBidDate());
+        }
+
 
         bidsRepository.save(entity);
         return ResponseEntity.ok(entity);
     }
 
+    @Transactional
     @DeleteMapping("/deleteBid/{id}")
     public ResponseEntity<Void> deleteBid(@PathVariable Integer id) {
-        if (!bidsRepository.existsById(id)) {
+        Optional<Bids> optionalBid = bidsRepository.findById(id);
+        if (optionalBid.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        bidsRepository.deleteById(id);
+
+        Bids bid = optionalBid.get();
+
+        Developer developer = bid.getDeveloper();
+        Projects project = bid.getProject();
+
+        
+        developer.setCoins(developer.getCoins() + bid.getAmount());
+
+        
+        project.getBids().remove(bid);
+
+        
+        developerRepository.save(developer);
+        projectsRepository.save(project);
+
+        
+        bidsRepository.delete(bid);
+
         return ResponseEntity.noContent().build();
     }
+
 
 }
