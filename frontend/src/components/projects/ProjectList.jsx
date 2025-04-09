@@ -7,10 +7,11 @@ import axios from 'axios';
 const ProjectList = ({ clientId }) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/auth/projects/client/${clientId}`, { withCredentials: true })
+      .get(`${API_URL}/auth/projects/client/${clientId}`, { withCredentials: true })
       .then((res) => {
         setProjects(res.data);
         console.log("Projects fetched:", res.data);
