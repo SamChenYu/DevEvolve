@@ -102,12 +102,15 @@ const CreateProjectForm = () => {
           setErrorMessage("Project title is required.");
           setSnackbarSeverity("error");
           setSnackbarOpen(true);
+          return false;
       }
       if (!formData.description) {
           setErrorMessage("Project description is required.");
           setSnackbarSeverity("error");
           setSnackbarOpen(true);
+          return false;
       }
+      return true;
     };
     
       const handleSubmit = async (e) => {
