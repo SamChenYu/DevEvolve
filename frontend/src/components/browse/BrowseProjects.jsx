@@ -34,12 +34,21 @@ const BrowseProjects = () => {
       
       if (searchQuery.trim() === '') {
         const data = await fetchAllProjects();
+        if(user.role === "ADMIN") {
+          setProjects(data);
+          setLoadingProjects(false);
+          return;
+        }
         const filteredProjects = data.filter(project => project.status === "FINDING_DEVELOPER");
         setProjects(filteredProjects);
       } else {
         
         const data = await searchProjects(searchQuery);
-        
+        if(user.role === "ADMIN") {
+          setProjects(data);
+          setLoadingProjects(false);
+          return;
+        }
         const filteredProjects = data.filter(project => project.status === "FINDING_DEVELOPER");
         setProjects(filteredProjects);
       }
