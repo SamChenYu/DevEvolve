@@ -56,6 +56,9 @@ public class AuthController {
     @Autowired
     private UserDetailService userDetailService;
 
+
+    private final boolean cookieIsSecure = false;
+    private final String cookieSameSite = "Strict";
 	
 	
     @PostMapping("/register/client")
@@ -113,16 +116,16 @@ public class AuthController {
         
         ResponseCookie accessCookie = ResponseCookie.from("access_token", token)
                 .httpOnly(true)
-                .secure(true) 
-                .sameSite("Strict")
+                .secure(cookieIsSecure)
+                .sameSite(cookieSameSite)
                 .path("/")
                 .maxAge(Duration.ofHours(1))
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
             .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
+            .secure(cookieIsSecure)
+            .sameSite(cookieSameSite)
             .path("/")
             .maxAge(Duration.ofDays(7))
             .build();
@@ -188,8 +191,8 @@ public class AuthController {
         
         ResponseCookie newAccessCookie = ResponseCookie.from("access_token", newAccessToken)
             .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
+            .secure(cookieIsSecure)
+            .sameSite(cookieSameSite)
             .path("/")
             .maxAge(Duration.ofMinutes(15))
             .build();
@@ -203,8 +206,8 @@ public class AuthController {
 	public ResponseEntity<?> logout(HttpServletResponse response) {
 	    ResponseCookie accessCookie = ResponseCookie.from("access_token", "")
 	        .httpOnly(true)
-	        .secure(true)
-	        .sameSite("Strict")
+	        .secure(cookieIsSecure)
+	        .sameSite(cookieSameSite)
 	        .path("/")
 	        .maxAge(0) // Expire immediately
 	        .build();
@@ -212,7 +215,7 @@ public class AuthController {
 	    ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "")
 	        .httpOnly(true)
 	        .secure(true)
-	        .sameSite("Strict")
+	        .sameSite(cookieSameSite)
 	        .path("/")
 	        .maxAge(0)
 	        .build();

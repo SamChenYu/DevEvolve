@@ -40,6 +40,8 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                     break;
                 }
             }
+        } else {
+            System.out.println("JwtTokenValidator: No cookies found.");
         }
 
         if (jwt != null) {
