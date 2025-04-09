@@ -30,6 +30,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import SourceIcon from '@mui/icons-material/Source';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone'; 
+import utc from 'dayjs/plugin/utc';
+
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -446,7 +453,7 @@ const ProjectDetails = () => {
 
                             <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', my: 2 }} />
                             
-                            {project.status === "COMPLETED" && !hasRated && (
+                            {project.status === "COMPLETED" && !hasRated &&  (
                                 <Button 
                                     variant="contained" 
                                     color="secondary"

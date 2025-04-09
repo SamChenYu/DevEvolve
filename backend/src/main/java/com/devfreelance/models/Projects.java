@@ -37,6 +37,7 @@ public class Projects {
     private String repoLink;
     private String finalReport;
     private LocalDateTime postedAt = LocalDateTime.now();
+    private LocalDateTime RatingDeadlineReference;
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -182,5 +183,13 @@ public class Projects {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public LocalDateTime getRatingDeadlineReference() {
+        return RatingDeadlineReference;
+    }
+
+    public void setRatingDeadlineReference(LocalDateTime ratingDeadlineReference) {
+        RatingDeadlineReference = ratingDeadlineReference;
     }
 }
