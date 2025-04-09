@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField, Typography, Box, Modal, Paper, IconButton } from "@mui/material";
+import { Button, TextField, Typography, Box, Modal, Paper, IconButton, Snackbar, Alert } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { placeBid } from "../../services/ProjectService";
 import { minBidLevel } from "../../services/ProjectService";
@@ -19,6 +19,7 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [minBid, setMinBid] = useState(0);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
     useEffect(() => {
         if (open && developerLevel) {
@@ -57,19 +58,26 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
         const currentTime = dayjs().tz('Europe/London');
 
         if (!formData.proposal.trim()) {
-            alert("Proposal cannot be empty.");
+            setSnackbar({ open: true, message: "Proposal cannot be empty.", severity: 'error' });
             setLoading(false);
             return;
         }
-    
+
         if (!formData.bidDate) {
-            alert("Please select a bid deadline.");
+            setSnackbar({ open: true, message: "Please select a bid deadline.", severity: 'error' });
             setLoading(false);
             return;
         }
-        
-        if (dayjs(formData.bidDate).isBefore(currentTime)) {
-            alert("Selected bid date/time has already passed. Please choose a future time. Reopen the modal to select a new date.");
+
+        const bidDate = dayjs(formData.bidDate).tz('Europe/London');
+        if (!bidDate.isValid()) {
+            setSnackbar({ open: true, message: "Invalid date format. Please select a valid date and time.", severity: 'error' });
+            setLoading(false);
+            return;
+        }
+
+        if (bidDate.isBefore(currentTime)) {
+            setSnackbar({ open: true, message: "Selected bid date/time has already passed. Please choose a future time.", severity: 'error' });
             setLoading(false);
             return;
         }
@@ -78,19 +86,21 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
             const bidData = {
                 amount: parseFloat(formData.amount), 
                 proposal: formData.proposal,
-                bidDate: dayjs(formData.bidDate).tz('Europe/London').local().format('YYYY-MM-DDTHH:mm:ss'),
+                bidDate: bidDate.local().format('YYYY-MM-DDTHH:mm:ss'),
             };
 
             await placeBid(developerId, projectId, bidData);
-            alert("Bid placed successfully!");
+            setSnackbar({ open: true, message: "Bid placed successfully!", severity: 'success' });
             handleClose(); 
             window.location.reload();
         } catch (err) {
+            setSnackbar({ open: true, message: "Something went wrong. Please try again.", severity: 'error' });
             setError(err);
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-GB">
@@ -204,6 +214,17 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                     </Paper>
                 </Box>
             </Modal>
+
+            <Snackbar 
+                open={snackbar.open} 
+                autoHideDuration={2000} 
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert severity={snackbar.severity} variant="filled" width="150%">
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </LocalizationProvider>
     );
 };

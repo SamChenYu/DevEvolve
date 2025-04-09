@@ -6,7 +6,7 @@ import Sidebar from '../layout/Sidebar';
 import { UserContext } from '../../context/UserContext';
 import { useTheme } from '@mui/material/styles';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import { Box, Typography, TextField, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip, Popover, LinearProgress } from '@mui/material'; 
+import { Box, Typography, TextField, Avatar, Grid, Paper, IconButton, Divider, Chip, CssBaseline, CircularProgress, Button, Modal, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip, Popover, LinearProgress, Snackbar, Alert } from '@mui/material'; 
 import { ArrowBack, GitHub, LinkedIn, Twitter, Facebook, Edit, Code, Star, Language, Verified } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
@@ -73,6 +73,9 @@ const DevProfilePage = () => {
     const [uploading, setUploading] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [hovered, setHovered] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     
 
     useEffect(() => {
@@ -174,16 +177,30 @@ const DevProfilePage = () => {
   };
 
   const handleUpdateProfile = async () => {
-      try {
-          await updateDeveloperProfile(id, formData);
-          setDeveloper(prevState => ({
-              ...prevState,
-              ...formData
-          }));
-          handleCloseEditModal();  
-      } catch (error) {
-          console.error("Error updating profile:", error);
-      }
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
+      setSnackbarMessage("Please fill out all fields.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+  
+    try {
+      await updateDeveloperProfile(id, formData);
+      setDeveloper(prevState => ({
+        ...prevState,
+        ...formData
+      }));
+      handleCloseEditModal();
+  
+      setSnackbarMessage("Profile updated successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setSnackbarMessage("Failed to update profile.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
 
   const handleDeleteProfile = async () => {
@@ -731,6 +748,20 @@ const DevProfilePage = () => {
               </DialogActions>
           </Box>
       </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setSnackbarOpen(false)} 
+          severity={snackbarSeverity} 
+          sx={{ width: '150%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
 
     

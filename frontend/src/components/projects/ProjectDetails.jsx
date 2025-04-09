@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel, archiveProject, fetchProjectsByDeveloper } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
-import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle, Snackbar, Alert } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Sidebar from '../layout/Sidebar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -84,6 +84,14 @@ const ProjectDetails = () => {
     const secondaryLight = theme.palette.secondary.light;
 
     const { user, loading } = useContext(UserContext);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const showSnackbar = (message, severity = 'success') => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
       
     useEffect(() => {
     if (!loading && (!user || (user.role !== "CLIENT" && user.role !== "ADMIN"))) {
@@ -234,14 +242,19 @@ const ProjectDetails = () => {
     };
 
     const handleRatingSubmitClick = () => {
+        if (!rating || feedback.trim() === "") {
+            showSnackbar("Please provide both a rating and feedback.", "error");
+            return;
+        }
+    
         handleRatingSubmit(projectId, rating, feedback)
             .then(() => {
-                alert("Rating submitted successfully!");
-                setRatingModalOpen(false); 
-                window.location.reload(); 
+                showSnackbar("Rating submitted successfully!");
+                setRatingModalOpen(false);
+                window.location.reload();
             })
             .catch((error) => {
-                alert("Failed to submit rating. Please try again.");
+                showSnackbar("Failed to submit rating. Please try again.", "error");
                 console.error("Rating submission failed:", error);
             });
     };
@@ -251,16 +264,22 @@ const ProjectDetails = () => {
     };
 
     const handleModifySubmit = async () => {
+        if (!formData.title.trim() || !formData.description.trim()) {
+            showSnackbar("Please fill in all fields.", "error");
+            return;
+        }
+    
         try {
             await modifyProject(projectId, formData);
-            alert("Project modified successfully!");
+            showSnackbar("Project modified successfully!");
             setModifyModalOpen(false);
-            window.location.reload(); 
+            window.location.reload();
         } catch (error) {
-            alert("Failed to modify project. Please try again.");
+            showSnackbar("Failed to modify project. Please try again.", "error");
             console.error("Error modifying project:", error);
         }
     };
+    
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
@@ -859,6 +878,17 @@ const ProjectDetails = () => {
                     </DialogActions>
                 </Box>
             </Dialog>
+
+            <Snackbar 
+                open={snackbarOpen} 
+                autoHideDuration={2000} 
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

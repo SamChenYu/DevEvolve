@@ -14,6 +14,7 @@ import { alpha } from '@mui/material/styles';
 import EditClientProfileModal from './EditClientProfileModal';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ChatService from '../../services/ChatService';
+import { Snackbar, Alert } from '@mui/material';
 
 
 const ClientProfilePage = () => {
@@ -26,6 +27,9 @@ const ClientProfilePage = () => {
     const theme = useTheme();
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   
     useEffect(() => {
       if (!loading && !user) {
@@ -92,12 +96,25 @@ const ClientProfilePage = () => {
     };
 
     const handleUpdateProfile = async (updatedData) => {
+      if (!updatedData) return;
+      if (updatedData.firstName.trim() === "" || updatedData.lastName.trim() === "" || updatedData.email.trim() === "") {
+        setSnackbarMessage("Please fill in all fields.");
+        setSnackbarSeverity("warning");
+        setSnackbarOpen(true);
+        return;
+      }
       try {
         await updateClientProfile(Client.id, updatedData);
         setClient({ ...Client, ...updatedData });
         setEditModalOpen(false);
+        setSnackbarMessage("Profile updated successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
       } catch (error) {
         console.error("Error updating client profile:", error);
+        setSnackbarMessage("Failed to update profile. Please try again.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     };
   
@@ -324,6 +341,20 @@ const ClientProfilePage = () => {
             </DialogActions>
         </Box>
       </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: '150%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
