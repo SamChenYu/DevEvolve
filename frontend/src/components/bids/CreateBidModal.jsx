@@ -47,6 +47,10 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
         }
     }, [open, developerLevel]);
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
     const handleDateChange = (newValue) => {
         setFormData({ ...formData, bidDate: newValue });
     };
@@ -60,10 +64,6 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
         }
 
         setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSnackbarClose = () => {
-        setSnackbarOpen(false);
     };
 
     const [userBalance, setUserBalance] = useState(null); // Initialize user balance from context
@@ -102,9 +102,6 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
         }
     
         if (!formData.bidDate) {
-            setErrorMessage("Please select a bid deadline.");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
             setLoading(false);
             return;
         }
@@ -227,9 +224,6 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                             </Paper>
                         </Grid>
 
-
-
-
                         <Box 
                             component="form" 
                             onSubmit={handleSubmit} 
@@ -306,18 +300,18 @@ const CreateBidModal = ({ open, handleClose, developerId, projectId, developerLe
                         </Box>
                     </Paper>
                 </Box>
-
-                <Snackbar
-                    open={snackbarOpen}
-                    autoHideDuration={5000}
-                    onClose={handleSnackbarClose}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                >
-                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
-                        {snackbarSeverity === "success" ? successMessage : errorMessage}
-                    </Alert>
-                </Snackbar>
             </Modal>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '150%' }}>
+                    {snackbarSeverity === "success" ? successMessage : errorMessage}
+                </Alert>
+            </Snackbar>
         </LocalizationProvider>
     );
 };
