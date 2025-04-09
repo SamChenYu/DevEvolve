@@ -278,7 +278,7 @@ const ProjectDetails = () => {
         try {
             await deleteProject(projectId);
             console.log("Here.")
-            navigate(`/client-dashboard`);
+            navigate(-1);
         } catch (error) {
             console.error("Error deleting project:", error);
             setErrorMessage("Failed to delete project. Please try again.");
