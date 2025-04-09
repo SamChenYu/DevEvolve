@@ -30,7 +30,6 @@ import com.devfreelance.response.ProjectResponse;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/auth/projects")
 public class ProjectController {

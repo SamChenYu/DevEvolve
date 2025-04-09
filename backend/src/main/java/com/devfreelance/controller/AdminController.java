@@ -23,7 +23,6 @@ import com.devfreelance.repository.ProjectRepository;
 
 import jakarta.transaction.Transactional;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/auth/admin")
 public class AdminController {
