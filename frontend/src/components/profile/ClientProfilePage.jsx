@@ -104,7 +104,12 @@ const ClientProfilePage = () => {
     const handleDeleteProfile = async () => {
       try {
         await deleteClientProfile(Client.id);
-        navigate("/logout");
+        if (user.role === "ADMIN") {
+            navigate(-1);
+        }
+        else {
+            navigate("/logout");
+        }
       } catch (error) {
         console.error("Error deleting client profile:", error);
       }

@@ -196,7 +196,12 @@ const DevProfilePage = () => {
   const handleDeleteProfile = async () => {
       try {
           await deleteDeveloperProfile(id);
-          navigate('/logout');  
+          if (user.role === "ADMIN") {
+              navigate(-1);
+          }
+          else {
+              navigate('/logout');
+          }
       } catch (error) {
           console.error("Error deleting profile:", error);
       }
