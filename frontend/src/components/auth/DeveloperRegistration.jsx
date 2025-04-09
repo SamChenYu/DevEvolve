@@ -67,7 +67,7 @@ const DeveloperRegistration = () => {
       setSnackbarOpen(true);
       setTimeout(() => {
         navigate('/login');
-      }, 500);
+      }, 1000);
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data.message || "Registration failed.");
