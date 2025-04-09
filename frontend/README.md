@@ -1,24 +1,5 @@
-## Steps to Run the Project
-
-## Prerequisites
-Make sure you have the following installed on your system:
-- [Node.js](https://nodejs.org/) 
-- [npm](https://www.npmjs.com/) (comes with Node.js)
-- [Git](https://git-scm.com/)
-
-1. **Navigate to the project directory**
-```sh
-cd DevEvolve/frontend
-```
-
-2. **Install dependencies**
-```sh
-npm install
-```
-
-3. **Start the development server**
-```sh
-npm start run
-```
-
-Accessible through localhost:3000
+# BACKEND CORS SETUP
+## So this is the branch used to host it on a laptop then broadcast to LAN
+- Change the frontend .env to local IP address  
+- Change the backend application.properties host.ip to local IP address
+- Accessible via http://host.ip:3000
