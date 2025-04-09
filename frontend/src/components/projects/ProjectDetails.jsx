@@ -83,6 +83,7 @@ const ProjectDetails = () => {
     const [ratingDeadline, setRatingDeadline] = useState(null);
     const [showTimer, setShowTimer] = useState(false);
     
+    
     const secondaryColor = theme.palette.secondary.main;
     const secondaryLight = theme.palette.secondary.light;
 
@@ -326,10 +327,15 @@ const ProjectDetails = () => {
     };
 
     const isRatingDeadlineLater = async () => {
-        const now = dayjs().tz('Europe/London'); // Current time in Europe/London
-        const response = await fetchProjectDetails(clientId, projectId);
-        setProject(response);
-        const deadline = response.ratingDeadlineReference;
+        const now = dayjs().tz('Europe/London'); 
+        
+        if (!ratingDeadline) {
+            const response = await fetchProjectDetails(clientId, projectId);
+            setRatingDeadline(response.ratingDeadlineReference);
+            setProject(response);
+        }
+
+        const deadline = ratingDeadline || project.ratingDeadlineReference; 
         return deadline && dayjs(deadline).isAfter(now);
     };
 
