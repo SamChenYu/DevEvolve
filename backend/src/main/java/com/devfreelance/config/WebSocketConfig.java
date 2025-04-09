@@ -4,6 +4,7 @@ import com.devfreelance.service.MessagingService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.WebSocketHandler;
@@ -33,10 +34,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         this.messagingService = messagingService;
     }
 
+
+    @Value("${host.ip}")
+    private String hostIP;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+
+        String frontendOrigin = "http://" + hostIP + ":3000";
+        String backendOrigin = "http://" + hostIP + ":8080";
+
         registry.addEndpoint("/message")
-                .setAllowedOrigins("http://localhost:3000", "http://localhost:8080")
+                .setAllowedOrigins(frontendOrigin, backendOrigin)
                 .withSockJS()
                 .setInterceptors(new HandshakeInterceptor() {
                     @Override
