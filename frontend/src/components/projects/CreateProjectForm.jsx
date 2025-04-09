@@ -98,12 +98,16 @@ const CreateProjectForm = () => {
     }, [id]);
 
     const validateForm = () => {
-      let formErrors = {};
-      if (!formData.title) formErrors.title = "Project title is required.";
-      if (!formData.description) formErrors.description = "Project description is required.";
-  
-      
-      return Object.keys(formErrors).length === 0;
+      if (!formData.title) {
+          setErrorMessage("Project title is required.");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
+      }
+      if (!formData.description) {
+          setErrorMessage("Project description is required.");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
+      }
     };
     
       const handleSubmit = async (e) => {
