@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel, archiveProject } from '../../services/ProjectService';
+import { browseProjectDetails, fetchProjectDetails, handleRatingSubmit, fetchProjectRating, modifyProject, deleteProject, minBidLevel, archiveProject, fetchProjectsByDeveloper } from '../../services/ProjectService';
 import { getDeveloperById } from '../../services/AuthenicationService';
 import { Box, Typography, CircularProgress, Button, IconButton, Paper, Grid, Divider, useTheme, Dialog, Slide, DialogActions, DialogContent, DialogTitle, Alert, Snackbar } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -30,6 +30,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import SourceIcon from '@mui/icons-material/Source';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone'; 
+import utc from 'dayjs/plugin/utc';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(duration);
+dayjs.extend(timezone);
 
 
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -70,6 +79,9 @@ const ProjectDetails = () => {
         imageUrl: ''
     });
     const [clientName, setClientName] = useState("");
+
+    const [ratingDeadline, setRatingDeadline] = useState(null);
+    const [showTimer, setShowTimer] = useState(false);
     
     const secondaryColor = theme.palette.secondary.main;
     const secondaryLight = theme.palette.secondary.light;
@@ -313,6 +325,24 @@ const ProjectDetails = () => {
         setUploading(false);
     };
 
+    const isRatingDeadlineLater = async () => {
+        const now = dayjs().tz('Europe/London'); // Current time in Europe/London
+        const response = await fetchProjectDetails(clientId, projectId);
+        setProject(response);
+        const deadline = response.ratingDeadlineReference;
+        return deadline && dayjs(deadline).isAfter(now);
+    };
+
+    const getRemainingTime = () => {
+        if (!project?.ratingDeadlineReference) return '';
+        const deadline = dayjs(project.ratingDeadlineReference); // Parse deadline as a dayjs object
+        const duration = dayjs.duration(deadline.diff(dayjs().tz('Europe/London')));
+        const days = Math.floor(duration.asDays());
+        const hours = duration.hours();
+        const minutes = duration.minutes();
+        return `${days} days ${hours} hours ${minutes} minutes`;
+    };
+
     return (
         <Box sx={{ display: 'flex', backgroundColor: '#121212', minHeight: '100vh', color: '#E0E0E0' }}>
             <CssBaseline />
@@ -468,7 +498,7 @@ const ProjectDetails = () => {
 
                             <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', my: 2 }} />
                             
-                            {project.status === "COMPLETED" && !hasRated && (
+                            {project.status === "COMPLETED" && !hasRated && isRatingDeadlineLater() && (
                                 <Button 
                                     variant="contained" 
                                     color="secondary"
@@ -478,9 +508,17 @@ const ProjectDetails = () => {
                                         fontWeight: 600,
                                         py: 1.5,
                                     }}
+                                    onMouseEnter={() => setShowTimer(true)}
+                                    onMouseLeave={() => setShowTimer(false)}
                                 >
                                     <RateReviewIcon sx={{ mr: 1 }} />
                                     Rate Developer
+                                    
+                                    {showTimer && (
+                                        <Typography style={{ marginLeft: 8, fontSize: '0.85rem', color: 'white' }}>
+                                            Time Remaining to Review Developer {getRemainingTime()}
+                                        </Typography>
+                                    )}
                                 </Button>
                             )}
 

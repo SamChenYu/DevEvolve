@@ -139,6 +139,11 @@ const BrowseProjectItemDetails = () => {
   }
 
   const handleProjectCompletion = async (report) => {
+
+    if (!report) {
+      alert("Please provide a report before completing the project.");
+      return;
+    }
     try {
       const response = await completeProject(projectId, report);
       setProject(response);

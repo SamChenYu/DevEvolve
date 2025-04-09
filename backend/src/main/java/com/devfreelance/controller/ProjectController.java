@@ -191,6 +191,7 @@ public class ProjectController {
 
         if (Duration.between(LocalDateTime.now(), bid.getBidDate()).toMillis() >= 0) {
             project.setStatus(ProjectStatus.COMPLETED);
+            project.setRatingDeadlineReference(LocalDateTime.now().plusDays(2));
         }
         else {
             project.setStatus(ProjectStatus.LATE);

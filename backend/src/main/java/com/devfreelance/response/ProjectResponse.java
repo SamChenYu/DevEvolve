@@ -17,6 +17,7 @@ public class ProjectResponse {
     private String finalReport;
     private String imageUrl;
     private LocalDateTime postedAt;
+    private LocalDateTime RatingDeadlineReference;
     private ProjectStatus status;
     private Integer clientId;
     private Integer developerId;
@@ -32,6 +33,7 @@ public class ProjectResponse {
         this.finalReport = project.getFinalReport();
         this.imageUrl = project.getImageUrl();
         this.postedAt = project.getPostedAt();
+        this.RatingDeadlineReference = project.getRatingDeadlineReference();
         this.status = project.getStatus();
         this.clientId = (project.getClient() != null) ? project.getClient().getId() : null;
         this.developerId = (project.getDeveloper() != null) ? project.getDeveloper().getId() : null;
@@ -94,6 +96,14 @@ public class ProjectResponse {
 
     public void setPostedAt(LocalDateTime postedAt) {
         this.postedAt = postedAt;
+    }
+
+    public LocalDateTime getRatingDeadlineReference() {
+        return RatingDeadlineReference;
+    }
+
+    public void setRatingDeadlineReference(LocalDateTime ratingDeadlineReference) {
+        this.RatingDeadlineReference = ratingDeadlineReference;
     }
 
     public ProjectStatus getStatus() {
