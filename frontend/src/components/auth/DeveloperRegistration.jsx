@@ -162,6 +162,8 @@ const DeveloperRegistration = () => {
         <Toolbar sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>
           <Typography
             variant="h5"
+            onClick={() => navigate("/")}
+            style ={{ cursor: "pointer" }}
             sx={{
               fontWeight: 700,
               color: "white",
