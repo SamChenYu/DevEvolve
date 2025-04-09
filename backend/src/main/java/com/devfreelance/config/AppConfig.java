@@ -3,6 +3,7 @@ package com.devfreelance.config;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -22,6 +23,10 @@ import jakarta.servlet.http.HttpServletRequest;
 @Configuration
 @EnableWebSecurity
 public class AppConfig {
+
+
+	@Value("${host.ip}")
+	private String hostIP;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -50,7 +55,9 @@ public class AppConfig {
 	        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 	            CorsConfiguration config = new CorsConfiguration();
 	            // Remove the trailing slash
-	            config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+				String origin = "http://" + hostIP + ":3000";
+				//System.out.println("Origin: " + origin);
+	            config.setAllowedOrigins(Arrays.asList(origin));
 	            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	            config.setAllowCredentials(true);
 	            config.setAllowedHeaders(Arrays.asList(
