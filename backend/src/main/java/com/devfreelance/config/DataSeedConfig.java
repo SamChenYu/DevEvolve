@@ -60,6 +60,7 @@ public class DataSeedConfig {
                 project.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743702239/b2nzxkgmthmlil3fn8gu.jpg");
                 project.setDescription("Fix the issues with the QMUL website");
                 project.setClient(client);
+                project.setStatus(ProjectStatus.FINDING_DEVELOPER);
                 projectRepository.save(project);
 
                 client = new Client();
@@ -77,6 +78,7 @@ public class DataSeedConfig {
                 project.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743702296/fwko4fykb6npllowabhd.webp");
                 project.setDescription("Create a new crypto app");
                 project.setClient(client);
+                project.setStatus(ProjectStatus.FINDING_DEVELOPER);
                 projectRepository.save(project);
 
 
@@ -93,6 +95,7 @@ public class DataSeedConfig {
                 project.setImageUrl("https://res.cloudinary.com/dmavzy5eg/image/upload/v1743702386/cpntzczegppadlsaowmd.jpg");
                 project.setDescription("Create a new e-commerce website");
                 project.setClient(client);
+                project.setStatus(ProjectStatus.FINDING_DEVELOPER);
                 projectRepository.save(project);
 
                 Developer developer = new Developer();
@@ -103,12 +106,6 @@ public class DataSeedConfig {
                 developer.setPassword(passwordEncoder.encode("password"));
                 developer.setCoins(1000);
                 developerRepository.save(developer);
-
-                Developer sam = developerRepository.findByEmail("Sam@gmail.com").get();
-                project = projectRepository.findById(1).get();
-                project.setDeveloper(sam);
-                project.setStatus(ProjectStatus.IN_PROGRESS);
-                projectRepository.save(project);
 
                 developer = new Developer();
                 developer.setFirstName("Vishva");
