@@ -1,35 +1,25 @@
 # DevEvolve
+![React](https://img.shields.io/badge/Frontend-React-blue)
+![Spring Boot](https://img.shields.io/badge/Backend-Spring%20Boot-blue)
+![MySQL](https://img.shields.io/badge/Database-MySQL-orange)  
 
-## Git Commands
-Make sure you have the following installed on your system:
-- [Git](https://git-scm.com/)
+![Issues](https://img.shields.io/github/issues/SamChenYu/devevolve)
+![Forks](https://img.shields.io/github/forks/SamChenYu/devevolve)
+![Stars](https://img.shields.io/github/stars/SamChenYu/devevolve)
 
-## Main branch is protected
-## Steps to Branch and Push
 
-1. **Clone the repository**
-   ```sh
-   git clone https://github.com/SamChenYu/DevEvolve
-   ```
+## 🌐 Features
 
-2. **Change directory**
-   ```sh
-   cd DevEvolve
-   ```
+- Sign up as a **client** or a **developer**
+- Post and browse development projects
+- Match with developers based on project needs and skills
+- Transparent and decentralized workflow for hiring and collaboration
+- Integrated chat with other users
 
-3. **Create a new branch**
-   ```sh
-   git checkout -b your-branch-name
-   ```
+**Homepage**
+<img width="1528" alt="image" src="https://github.com/user-attachments/assets/3b3b717e-a778-4f5b-a439-413eba5ad006" />
+**Developer Dashboard**
+<img width="1530" alt="image" src="https://github.com/user-attachments/assets/ec6e036c-01c3-496a-ac8c-8da3a57d6949" />
 
-4. **Make changes to branch**
-
-5. **Push changes**
-   ```sh
-   git add .
-   git commit -m "FE/BE: changes made"
-   git push origin your-branch-name
-   ```
-
-6. **Submit a Pull Request on Github**
-
+## 📄 License
+This project is licensed under the MIT License.
