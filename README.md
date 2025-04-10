@@ -1,7 +1,8 @@
 # DevEvolve
 ![React](https://img.shields.io/badge/Frontend-React-blue)
 ![Spring Boot](https://img.shields.io/badge/Backend-Spring%20Boot-blue)
-![MySQL](https://img.shields.io/badge/Database-MySQL-orange)  
+![MySQL](https://img.shields.io/badge/Database-MySQL-orange)
+![Cloudinary](https://img.shields.io/badge/Image%20Storage-Cloudinary-blueviolet?logo=cloudinary&logoColor=white)  
 
 ![Issues](https://img.shields.io/github/issues/SamChenYu/devevolve)
 ![Forks](https://img.shields.io/github/forks/SamChenYu/devevolve)
